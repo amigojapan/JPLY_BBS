@@ -73,18 +73,18 @@
     #input-line {
         display: flex;
         align-items: center;
-        color: var(--c64-cyan);
     }
 
     #command-input {
         background: transparent;
         border: none;
         outline: none;
-        color: var(--c64-cyan);
+        color: transparent;
+        caret-color: transparent;
         font-family: 'C64', monospace;
         font-size: inherit;
-        flex: 1;
-        caret-color: transparent;
+        position: absolute;
+        left: -9999px;
     }
 
     .cursor {
@@ -96,10 +96,6 @@
 
     @keyframes blink { to { visibility: hidden; } }
 
-    @font-face {
-        font-family: 'C64';
-        src: url(data:font/ttf;base64,AAEAAAALAIAAAwAwT1MvMg8SPh0AAAC8AAAAYGNtYXAYVB9VAAABHAAAAFRnYXNwAAAAEAAAA+gAAAAIZ2x5ZlQ1T7AAABAkAAAEKGhlYWQHpD4bAAAANAAAADZoaGVhBnQC8AAAAzgAAAAkaG10eC7q9gAAAEAAAAAUbG9jYQA4AFAAAABsAAAAGm1heHAApgm8AAAA5AAAAAdubWRhBsT+3gAAAOwAAAABAAAAAgAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAQAABdoAAAABAAAAAAAQAAAQAAAAAAAgAABAAAAAAA6AAAAAgABAAAAAAACAAcAAQAAAAAAAwAA ...) format('truetype');
-    }
 </style>
 </head>
 
@@ -109,34 +105,47 @@
 </div>
 
 <script>
-/* -------------------------------------------------
-   GLOBAL CURSOR & SCREEN SETUP
--------------------------------------------------- */
+/* ==================================================
+   GLOBALS
+================================================== */
+let echo = true;
+
+
 let cursorX = 0;
 let cursorY = 0;
 
-// INPUT mode flag: null = command mode, otherwise = resolver function
 let inputMode = null;
+let currentFG = "#6cffee";     // default C64 cyan
+let currentBG = "#352879";     // default C64 blue background
 
-const screen = document.getElementById('screen');
+
+const screen = document.getElementById("screen");
 const lines = [];
 
+function ECHOOFF(){
+    echo = false;
+}
+function ECHOON(){
+    echo = true;
+}
+
+/* ==================================================
+   BUILD 24 ROWS + INPUT LINE
+================================================== */
 function makeRow() {
-    const d = document.createElement('div');
-    d.className = 'line';
+    const d = document.createElement("div");
+    d.className = "line";
     return d;
 }
 
-// 24 printable rows
 for (let i = 0; i < 24; i++) {
     const row = makeRow();
     screen.appendChild(row);
     lines.push(row);
 }
 
-// Input line
 const inputLine = makeRow();
-inputLine.id = 'input-line';
+inputLine.id = "input-line";
 inputLine.innerHTML =
     `<span class="double-wide prompt">></span>
      <span id="input-text"></span>
@@ -144,17 +153,19 @@ inputLine.innerHTML =
 screen.appendChild(inputLine);
 lines.push(inputLine);
 
-const inputText = document.getElementById('input-text');
+const inputText = document.getElementById("input-text");
 
-// hidden input handler
-const commandInput = document.createElement('input');
-commandInput.type = 'text';
-commandInput.id = 'command-input';
+const commandInput = document.createElement("input");
+commandInput.type = "text";
+commandInput.id = "command-input";
 document.body.appendChild(commandInput);
 
+/* ==================================================
+   UTILITY FUNCTIONS
+================================================== */
 function wide(text) {
-    const span = document.createElement('span');
-    span.className = 'double-wide';
+    const span = document.createElement("span");
+    span.className = "double-wide";
     span.textContent = text;
     return span;
 }
@@ -177,44 +188,96 @@ function LOCATE(x, y) {
     cursorY = Math.max(0, Math.min(23, parseInt(y)));
 }
 
-function PRINT(text="") {
-    text = String(text);
-    const row = lines[cursorY];
-    let current = row.textContent || "";
-    current = current.padEnd(40, " ");
-    let arr = current.split("");
+function getColor(n) {
+    const table = {
+        0:"#000000", 1:"#ffffff", 2:"#808080", 3:"#b0c4de",
+        4:"#a9a9a9", 7:"#c0c0c0", 8:"#dda0dd", 9:"#ee82ee",
+        10:"#ff0000", 11:"#ffa500", 12:"#ffff00", 13:"#008000",
+        14:"#0000ff", 15:"#4b0082", 16:"#ee82ee"
+    };
+    return table[n] || "#ffffff";
+}
 
-    for (let i = 0; i < text.length && cursorX + i < 40; i++) {
-        arr[cursorX + i] = text[i];
-    }
-
-    row.innerHTML = "";
-    row.appendChild(wide(arr.join("")));
-
-    cursorX += text.length;
-    if (cursorX > 39) cursorX = 39;
-
-    nextLine();
+function COLOR(fg, bg) {
+    if (fg !== undefined) currentFG = getColor(parseInt(fg));
+    if (bg !== undefined) currentBG = getColor(parseInt(bg));
 }
 
 function echoCommand(cmd) {
     const row = lines[cursorY];
     row.innerHTML = "";
-    const p = document.createElement('span');
-    p.className = 'double-wide prompt';
-    p.textContent = ">";
-    row.appendChild(p);
-    row.appendChild(wide(cmd));
+    const wrap = document.createElement("span");
+    wrap.className = "double-wide";
+
+    const promptSpan = document.createElement("span");
+    promptSpan.textContent = ">";
+    wrap.appendChild(promptSpan);
+
+    const textSpan = document.createElement("span");
+    textSpan.textContent = cmd;
+    wrap.appendChild(textSpan);
+
+    row.appendChild(wrap);
     nextLine();
 }
 
-commandInput.addEventListener('input', ()=>{
+/* ==================================================
+   PRINT WITH WRAPPING + COLORS + ONE DOUBLE-WIDE WRAPPER
+================================================== */
+function PRINT(text = "") {
+    text = String(text);
+    let idx = 0;
+
+    while (idx < text.length) {
+
+        const row = lines[cursorY];
+
+        let current = row.textContent || "";
+        current = current.padEnd(40, " ");
+        let arr = current.split("");
+
+        let space = 40 - cursorX;
+        let chunk = text.substring(idx, idx + space);
+
+        let cellSpans = [];
+
+        for (let ch of arr) {
+            const inner = document.createElement("span");
+            inner.textContent = ch;
+            cellSpans.push(inner);
+        }
+
+        for (let i = 0; i < chunk.length; i++) {
+            const inner = document.createElement("span");
+            inner.textContent = chunk[i];
+            inner.style.color = currentFG;
+            inner.style.backgroundColor = currentBG;
+            cellSpans[cursorX + i] = inner;
+        }
+
+        row.innerHTML = "";
+        const wrap = document.createElement("span");
+        wrap.className = "double-wide";
+
+        cellSpans.forEach(s => wrap.appendChild(s));
+        row.appendChild(wrap);
+
+        cursorX += chunk.length;
+        idx += chunk.length;
+
+        if (cursorX >= 40) nextLine();
+    }
+
+    nextLine();
+}
+
+/* ==================================================
+   REAL INPUT()
+================================================== */
+commandInput.addEventListener("input", () => {
     inputText.textContent = commandInput.value;
 });
 
-/* -------------------------------------------------
-   REAL WORKING INPUT() USING REAL INPUT LINE
--------------------------------------------------- */
 function INPUT(promptText = "") {
     return new Promise(resolve => {
 
@@ -224,63 +287,47 @@ function INPUT(promptText = "") {
         commandInput.value = "";
         inputText.textContent = "";
 
-        // Enter INPUT mode (handled inside keydown)
         inputMode = resolve;
 
         commandInput.focus();
     });
 }
 
-/* -------------------------------------------------
-   THE ONE TRUE KEYDOWN HANDLER (handles INPUT + commands)
--------------------------------------------------- */
-commandInput.addEventListener('keydown', async (e) => {
+/* ==================================================
+   MAIN KEYDOWN HANDLER
+================================================== */
+commandInput.addEventListener("keydown", async (e) => {
 
-    if (e.key !== 'Enter') return;
+    if (e.key !== "Enter") return;
 
     const typed = commandInput.value.trim();
 
-    /* ------------------------------
-       INPUT MODE: RETURN TO USER
-    --------------------------------*/
     if (inputMode) {
-
-        echoCommand(typed);
+        if(echo) {
+            echoCommand(typed);
+        }
         const resolver = inputMode;
         inputMode = null;
-
         commandInput.value = "";
         inputText.textContent = "";
-
         resolver(typed);
         return;
     }
 
-    /* ---------------------------------
-       NORMAL COMMAND MODE
-    ---------------------------------- */
-    if (typed === '') {
-        commandInput.value = '';
-        inputText.textContent = '';
+    if (typed === "") {
+        commandInput.value = "";
+        inputText.textContent = "";
         return;
     }
+    if(echo) {
+        echoCommand(typed);
+    }
 
-    echoCommand(typed);
-
-    commandInput.value = '';
-    inputText.textContent = '';
-    
-    const originalCode = typed;
-    //replace INPUT with await INPUT
-    // Use a regular expression with the global flag (/g) to replace all occurrences.
-    //const updatedCode = originalCode.replace(/= INPUT\(/g, '= await INPUT(');
-    //modify this code so that it replaces anys paces between = and INPUT with await no matter how many spaces tere are: const updatedCode = originalCode.replace(/= INPUT\(/g, '= await INPUT(');
-    const updatedCode = originalCode.replace(/=\s*INPUT\(/g, '= await INPUT(');
-    //alert(updatedCode);
-
+    commandInput.value = "";
+    inputText.textContent = "";
 
     try {
-        let result = await eval(`(async()=>{ ${updatedCode} })()`);
+        let result = await eval(`(async()=>{ ${typed} })()`);
         if (result !== undefined) PRINT(result);
     } catch (err) {
         PRINT("?SYNTAX  ERROR:"+err);
@@ -290,22 +337,23 @@ commandInput.addEventListener('keydown', async (e) => {
     commandInput.focus();
 });
 
-/* -------------------------------------------------
-   BOOT TEXT
--------------------------------------------------- */
+/* ==================================================
+   BOOT SCREEN
+================================================== */
 LOCATE(0,0);
 PRINT("**** JPLY 64 JS_BASIC V1 ****");
 PRINT("");
 PRINT("64K RAM SYSTEM  38911 BASIC BYTES FREE");
 PRINT("");
 PRINT("READY.");
-for (let i=0;i<17;i++) PRINT("");
+for (let i = 0; i < 17; i++) PRINT("");
 
-document.addEventListener('click', ()=> commandInput.focus());
+document.addEventListener("click", () => commandInput.focus());
 commandInput.focus();
 /*
 //test input and locate 
 
+ECHOOFF();
 PRINT("ENTER NAME:");
 A =INPUT();
 PRINT("HELLO " + A);
@@ -319,14 +367,50 @@ PRINT("A");
 PRINT("ENTER NAME:");A =INPUT();PRINT("HELLO " + A);AGE = INPUT("AGE?");PRINT("YOU ARE " + AGE + " YEARS OLD");LOCATE(5,5);PRINT("HELLO");LOCATE(5,5);PRINT("A");
 
 this is the news on my C64 simulator , I added the INPUT command, fixed soime bugs too, including the one of LOCATE that you mentiones, please try it amjp.psy-k.org/JPLY_BBS/TerminalEmulator.html this is the sample program to test everything PRINT("ENTER NAME:");A =INPUT();PRINT("HELLO " + A);AGE = INPUT("AGE?");PRINT("YOU ARE " + AGE + " YEARS OLD");LOCATE(5,5);PRINT("HELLO");LOCATE(5,5);PRINT("A");
-tomorrow I think I will add the COLOR command, and maybe a b it of syntax sugar so it can be used more like BASIC 
-// Define a variable using backticks (`)
-LOCATE(0,0);JPLYBBS = "⣟⣙⣿⡟⠛⠛⠛⠛⠻⠿⠟⠙⠚⠑⠏⢻⣙⣛⠊⠳⠛⠛⠛⢛⡑⠞⠿⠿⢛⡗⣋⣛⠿⠿⠻⠹⠚⡓⣋⣻⡿⡿⣹⠧⢸⠉⠉⠉⣷⡏⠉⠉⠉⠉⠉⠿⠭⠩⢸⠉⠉⠉⢹⣮⠇⣿⠉⠩⠧⡵⠇⣯⢸⠉⠉⢹⣏⢷⡟⣿⠧⠯⠥⠄⢸⠀⠀⠀⣿⡇⠀⠀⠀⣀⠀⠀⠀⠉⣾⠀⠀⠀⢸⣿⣷⣿⡀⠀⠀⠉⣶⣸⠉⠀⠀⢸⣿⣿⣭⠭⣚⣿⢻⡏⢸⠀⠀⠀⣿⡇⠀⠀⠀⠿⠒⠀⠀⠀⣿⠀⠀⠀⢸⣿⣿⣿⣧⢠⠀⠀⠉⠉⠀⢠⠀⣿⣿⣿⣿⣿⡊⣿⠛⠛⠚⠀⠀⠀⣿⡇⠀⠀⠀⣀⣀⣀⣤⣷⣿⠀⠀⠀⠘⠛⠛⠛⢻⣼⡶⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣧⡅⣿⡀⠀⠀⠀⠀⣤⣿⡇⠀⠀⢀⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⢸⣿⣧⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣿⠏⡋⢙⡇⠀⡇⣿⣿⣿⣧⣇⡇⢸⣿⣿⣿⡟⣿⢹⡀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡇⢸⢸⣿⣿⣿⠿⠿⠿⠟⡛⣽⣿⣷⡂⣓⣿⣿⡏⠉⠉⠁⠈⠉⠙⠿⡍⣿⠉⠉⠉⠉⠉⠙⠛⢿⣿⣿⡿⠉⠀⠀⠈⠉⠙⢯⢩⡍⣥⣭⢟⣙⢛⣛⣛⣛⣛⣛⡇⠀⠀⢠⣤⡄⠀⠀⠀⣿⠀⠀⠀⣤⣤⠀⠀⠀⢸⠀⠀⠀⣤⣶⣤⡀⣶⣿⣿⣖⣧⣿⣭⣿⣿⣿⣷⣷⢿⣿⡇⠀⠀⠈⠉⠁⠀⣤⣿⣿⠀⠀⠀⠉⠉⠀⢠⣾⣿⠀⠀⠀⠈⠉⠉⠿⢿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣏⣿⣿⢿⡇⠀⠀⢰⣶⡆⠀⠀⠉⣿⠀⠀⠀⣶⣶⠀⠀⠀⢹⣶⡇⣄⣀⣀⡀⠀⠀⢸⣿⣻⣿⣿⣼⣶⣚⣻⣿⣷⣯⣶⡇⠀⠀⠈⠉⠁⠀⠀⣠⣿⠀⠀⠀⠉⠉⠀⠀⢀⣸⣿⠛⠉⠛⠛⠃⠀⠀⣸⣿⣿⣟⣛⠭⣶⣶⣖⡶⠶⡖⣲⡇⣤⠀⣤⣤⣤⣴⣿⣿⣿⠀⣤⠀⣤⣤⣤⣼⣿⣿⣁⡄⠀⡀⢀⡀⣄⣿⣿⣿⣿⣿⣿⣿⢩⣭⠽⡿⠿⠿⣿⡇⠸⠀⣿⣿⣿⣿⣿⣿⣿⠶⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⠃⢸⣷⣿⣿⣿⣿⡿⣏⣿⣿⣿⣿⣧⣿⣷⣷⣿⣽⠍⠀⣯⣿⣿⣯⢿⠿⡿⣾⠍⠀⢽⣿⢿⠿⢽⣿⣿⠿⠿⠇⢸⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿⣾⡿⣿⣿⢿⠀⣿⣿⣿⣿⣿⣿⣿⢿⣿⡇⢸⣿⣾⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣯⣿⣷⣶⣶⣿⣿⣾⣾⣿⣿⣿⣿⣶⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿";PRINT(JPLYBBS);
+(done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
+add a bit of syntax sugar so it can be used more like BASIC 
+
+ECHOOFF();
+COLOR(0,10);LOCATE(0,0);
+JPLYBBS = `
+⣟⣙⣿⡟⠛⠛⠛⠛⠻⠿⠟⠙⠚⠑⠏⢻⣙⣛⠊⠳⠛⠛⠛⢛⡑⠞⠿⠿⢛⡗⣋⣛⠿⠿⠻⠹⠚⡓⣋⣻
+⡿⡿⣹⠧⢸⠉⠉⠉⣷⡏⠉⠉⠉⠉⠉⠿⠭⠩⢸⠉⠉⠉⢹⣮⠇⣿⠉⠩⠧⡵⠇⣯⢸⠉⠉⢹⣏⢷⡟⣿
+⠧⠯⠥⠄⢸⠀⠀⠀⣿⡇⠀⠀⠀⣀⠀⠀⠀⠉⣾⠀⠀⠀⢸⣿⣷⣿⡀⠀⠀⠉⣶⣸⠉⠀⠀⢸⣿⣿⣭⠭
+⣚⣿⢻⡏⢸⠀⠀⠀⣿⡇⠀⠀⠀⠿⠒⠀⠀⠀⣿⠀⠀⠀⢸⣿⣿⣿⣧⢠⠀⠀⠉⠉⠀⢠⠀⣿⣿⣿⣿⣿
+⡊⣿⠛⠛⠚⠀⠀⠀⣿⡇⠀⠀⠀⣀⣀⣀⣤⣷⣿⠀⠀⠀⠘⠛⠛⠛⢻⣼⡶⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣧
+⡅⣿⡀⠀⠀⠀⠀⣤⣿⡇⠀⠀⢀⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⢸⣿⣧⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣿
+⠏⡋⢙⡇⠀⡇⣿⣿⣿⣧⣇⡇⢸⣿⣿⣿⡟⣿⢹⡀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡇⢸⢸⣿⣿⣿⠿⠿⠿⠟
+⡛⣽⣿⣷⡂⣓⣿⣿⡏⠉⠉⠁⠈⠉⠙⠿⡍⣿⠉⠉⠉⠉⠉⠙⠛⢿⣿⣿⡿⠉⠀⠀⠈⠉⠙⢯⢩⡍⣥⣭
+⢟⣙⢛⣛⣛⣛⣛⣛⡇⠀⠀⢠⣤⡄⠀⠀⠀⣿⠀⠀⠀⣤⣤⠀⠀⠀⢸⠀⠀⠀⣤⣶⣤⡀⣶⣿⣿⣖⣧⣿
+⣭⣿⣿⣿⣷⣷⢿⣿⡇⠀⠀⠈⠉⠁⠀⣤⣿⣿⠀⠀⠀⠉⠉⠀⢠⣾⣿⠀⠀⠀⠈⠉⠉⠿⢿⣿⣿⣿⣿⣿
+⣿⢿⣿⣿⣏⣿⣿⢿⡇⠀⠀⢰⣶⡆⠀⠀⠉⣿⠀⠀⠀⣶⣶⠀⠀⠀⢹⣶⡇⣄⣀⣀⡀⠀⠀⢸⣿⣻⣿⣿
+⣼⣶⣚⣻⣿⣷⣯⣶⡇⠀⠀⠈⠉⠁⠀⠀⣠⣿⠀⠀⠀⠉⠉⠀⠀⢀⣸⣿⠛⠉⠛⠛⠃⠀⠀⣸⣿⣿⣟⣛
+⠭⣶⣶⣖⡶⠶⡖⣲⡇⣤⠀⣤⣤⣤⣴⣿⣿⣿⠀⣤⠀⣤⣤⣤⣼⣿⣿⣁⡄⠀⡀⢀⡀⣄⣿⣿⣿⣿⣿⣿
+⣿⢩⣭⠽⡿⠿⠿⣿⡇⠸⠀⣿⣿⣿⣿⣿⣿⣿⠶⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⠃⢸⣷⣿⣿⣿⣿⡿⣏⣿
+⣿⣿⣿⣧⣿⣷⣷⣿⣽⠍⠀⣯⣿⣿⣯⢿⠿⡿⣾⠍⠀⢽⣿⢿⠿⢽⣿⣿⠿⠿⠇⢸⣿⣿⣿⣿⣿⣿⡿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿⣾⡿⣿⣿⢿⠀⣿⣿⣿⣿⣿⣿⣿⢿⣿⡇⢸⣿⣾⣿⣿⣿⣿⣿⣿
+⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣯⣿⣷⣶⣶⣿⣿⣾⣾⣿⣿⣿⣿⣶⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿
+`;
+JPLYBBS = JPLYBBS.trim().replace(/(\r\n|\n|\r)/gm, '');
+PRINT(JPLYBBS);
+
+ECHOOFF();
+COLOR(0,10);LOCATE(0,0);
+JPLYBBS = "⣟⣙⣿⡟⠛⠛⠛⠛⠻⠿⠟⠙⠚⠑⠏⢻⣙⣛⠊⠳⠛⠛⠛⢛⡑⠞⠿⠿⢛⡗⣋⣛⠿⠿⠻⠹⠚⡓⣋⣻⡿⡿⣹⠧⢸⠉⠉⠉⣷⡏⠉⠉⠉⠉⠉⠿⠭⠩⢸⠉⠉⠉⢹⣮⠇⣿⠉⠩⠧⡵⠇⣯⢸⠉⠉⢹⣏⢷⡟⣿⠧⠯⠥⠄⢸⠀⠀⠀⣿⡇⠀⠀⠀⣀⠀⠀⠀⠉⣾⠀⠀⠀⢸⣿⣷⣿⡀⠀⠀⠉⣶⣸⠉⠀⠀⢸⣿⣿⣭⠭⣚⣿⢻⡏⢸⠀⠀⠀⣿⡇⠀⠀⠀⠿⠒⠀⠀⠀⣿⠀⠀⠀⢸⣿⣿⣿⣧⢠⠀⠀⠉⠉⠀⢠⠀⣿⣿⣿⣿⣿⡊⣿⠛⠛⠚⠀⠀⠀⣿⡇⠀⠀⠀⣀⣀⣀⣤⣷⣿⠀⠀⠀⠘⠛⠛⠛⢻⣼⡶⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣧⡅⣿⡀⠀⠀⠀⠀⣤⣿⡇⠀⠀⢀⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⢸⣿⣧⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣿⠏⡋⢙⡇⠀⡇⣿⣿⣿⣧⣇⡇⢸⣿⣿⣿⡟⣿⢹⡀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡇⢸⢸⣿⣿⣿⠿⠿⠿⠟⡛⣽⣿⣷⡂⣓⣿⣿⡏⠉⠉⠁⠈⠉⠙⠿⡍⣿⠉⠉⠉⠉⠉⠙⠛⢿⣿⣿⡿⠉⠀⠀⠈⠉⠙⢯⢩⡍⣥⣭⢟⣙⢛⣛⣛⣛⣛⣛⡇⠀⠀⢠⣤⡄⠀⠀⠀⣿⠀⠀⠀⣤⣤⠀⠀⠀⢸⠀⠀⠀⣤⣶⣤⡀⣶⣿⣿⣖⣧⣿⣭⣿⣿⣿⣷⣷⢿⣿⡇⠀⠀⠈⠉⠁⠀⣤⣿⣿⠀⠀⠀⠉⠉⠀⢠⣾⣿⠀⠀⠀⠈⠉⠉⠿⢿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣏⣿⣿⢿⡇⠀⠀⢰⣶⡆⠀⠀⠉⣿⠀⠀⠀⣶⣶⠀⠀⠀⢹⣶⡇⣄⣀⣀⡀⠀⠀⢸⣿⣻⣿⣿⣼⣶⣚⣻⣿⣷⣯⣶⡇⠀⠀⠈⠉⠁⠀⠀⣠⣿⠀⠀⠀⠉⠉⠀⠀⢀⣸⣿⠛⠉⠛⠛⠃⠀⠀⣸⣿⣿⣟⣛⠭⣶⣶⣖⡶⠶⡖⣲⡇⣤⠀⣤⣤⣤⣴⣿⣿⣿⠀⣤⠀⣤⣤⣤⣼⣿⣿⣁⡄⠀⡀⢀⡀⣄⣿⣿⣿⣿⣿⣿⣿⢩⣭⠽⡿⠿⠿⣿⡇⠸⠀⣿⣿⣿⣿⣿⣿⣿⠶⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⠃⢸⣷⣿⣿⣿⣿⡿⣏⣿⣿⣿⣿⣧⣿⣷⣷⣿⣽⠍⠀⣯⣿⣿⣯⢿⠿⡿⣾⠍⠀⢽⣿⢿⠿⢽⣿⣿⠿⠿⠇⢸⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿⣾⡿⣿⣿⢿⠀⣿⣿⣿⣿⣿⣿⣿⢿⣿⡇⢸⣿⣾⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣯⣿⣷⣶⣶⣿⣿⣾⣾⣿⣿⣿⣿⣶⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿";PRINT(JPLYBBS);
+
+//test colors
+
+COLOR(10,0);
+PRINT("RED ON BLACK");
+COLOR(1,4);
+PRINT("WHITE ON DARK GRAY");
+COLOR(14,1);
+PRINT("BLUE ON WHITE");
 
 
 PRINT("日本語");
 PRINT("012345678901234567890123456789012345678901")
-//nug seems it is not creating a newline when it reacher the end of hte width of the screen.
+//(fixed)bug seems it is not creating a newline when it reacher the end of hte width of the screen.
 */
 </script>
 </body>
