@@ -129,6 +129,28 @@ function ECHOON(){
     echo = true;
 }
 
+function ASCIIART(str) {
+    // normalize newlines
+    str = str.replace(/\r/g, "");
+
+    // strip leading/trailing blank lines
+    str = str.replace(/^\s*\n+/, "").replace(/\n+\s*$/, "");
+
+    // split into lines
+    const lines = str.split("\n");
+
+    // compute minimum indentation (in spaces/tabs) of non-empty lines
+    let minIndent = Infinity;
+    for (const ln of lines) {
+    if (!ln.trim()) continue;
+    const m = ln.match(/^[ \t]*/)[0].length;
+    if (m < minIndent) minIndent = m;
+    }
+    if (!isFinite(minIndent)) minIndent = 0;
+
+    // remove that indentation from every line, then join without separators
+    return lines.map(l => l.slice(minIndent)).join("");
+}
 /* ==================================================
    BUILD 24 ROWS + INPUT LINE
 ================================================== */
@@ -351,7 +373,7 @@ for (let i = 0; i < 17; i++) PRINT("");
 document.addEventListener("click", () => commandInput.focus());
 commandInput.focus();
 /*
-//test input and locate 
+test input and locate 
 
 ECHOOFF();
 PRINT("ENTER NAME:");
@@ -364,34 +386,28 @@ PRINT("HELLO");
 LOCATE(5,5);
 PRINT("A");
 
-PRINT("ENTER NAME:");A =INPUT();PRINT("HELLO " + A);AGE = INPUT("AGE?");PRINT("YOU ARE " + AGE + " YEARS OLD");LOCATE(5,5);PRINT("HELLO");LOCATE(5,5);PRINT("A");
-
-this is the news on my C64 simulator , I added the INPUT command, fixed soime bugs too, including the one of LOCATE that you mentiones, please try it amjp.psy-k.org/JPLY_BBS/TerminalEmulator.html this is the sample program to test everything PRINT("ENTER NAME:");A =INPUT();PRINT("HELLO " + A);AGE = INPUT("AGE?");PRINT("YOU ARE " + AGE + " YEARS OLD");LOCATE(5,5);PRINT("HELLO");LOCATE(5,5);PRINT("A");
-(done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
-add a bit of syntax sugar so it can be used more like BASIC 
+test UTF8ART art
 
 ECHOOFF();
 COLOR(0,10);LOCATE(0,0);
-JPLYBBS = `
-⣟⣙⣿⡟⠛⠛⠛⠛⠻⠿⠟⠙⠚⠑⠏⢻⣙⣛⠊⠳⠛⠛⠛⢛⡑⠞⠿⠿⢛⡗⣋⣛⠿⠿⠻⠹⠚⡓⣋⣻
-⡿⡿⣹⠧⢸⠉⠉⠉⣷⡏⠉⠉⠉⠉⠉⠿⠭⠩⢸⠉⠉⠉⢹⣮⠇⣿⠉⠩⠧⡵⠇⣯⢸⠉⠉⢹⣏⢷⡟⣿
-⠧⠯⠥⠄⢸⠀⠀⠀⣿⡇⠀⠀⠀⣀⠀⠀⠀⠉⣾⠀⠀⠀⢸⣿⣷⣿⡀⠀⠀⠉⣶⣸⠉⠀⠀⢸⣿⣿⣭⠭
-⣚⣿⢻⡏⢸⠀⠀⠀⣿⡇⠀⠀⠀⠿⠒⠀⠀⠀⣿⠀⠀⠀⢸⣿⣿⣿⣧⢠⠀⠀⠉⠉⠀⢠⠀⣿⣿⣿⣿⣿
-⡊⣿⠛⠛⠚⠀⠀⠀⣿⡇⠀⠀⠀⣀⣀⣀⣤⣷⣿⠀⠀⠀⠘⠛⠛⠛⢻⣼⡶⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣧
-⡅⣿⡀⠀⠀⠀⠀⣤⣿⡇⠀⠀⢀⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⢸⣿⣧⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣿
-⠏⡋⢙⡇⠀⡇⣿⣿⣿⣧⣇⡇⢸⣿⣿⣿⡟⣿⢹⡀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡇⢸⢸⣿⣿⣿⠿⠿⠿⠟
-⡛⣽⣿⣷⡂⣓⣿⣿⡏⠉⠉⠁⠈⠉⠙⠿⡍⣿⠉⠉⠉⠉⠉⠙⠛⢿⣿⣿⡿⠉⠀⠀⠈⠉⠙⢯⢩⡍⣥⣭
-⢟⣙⢛⣛⣛⣛⣛⣛⡇⠀⠀⢠⣤⡄⠀⠀⠀⣿⠀⠀⠀⣤⣤⠀⠀⠀⢸⠀⠀⠀⣤⣶⣤⡀⣶⣿⣿⣖⣧⣿
-⣭⣿⣿⣿⣷⣷⢿⣿⡇⠀⠀⠈⠉⠁⠀⣤⣿⣿⠀⠀⠀⠉⠉⠀⢠⣾⣿⠀⠀⠀⠈⠉⠉⠿⢿⣿⣿⣿⣿⣿
-⣿⢿⣿⣿⣏⣿⣿⢿⡇⠀⠀⢰⣶⡆⠀⠀⠉⣿⠀⠀⠀⣶⣶⠀⠀⠀⢹⣶⡇⣄⣀⣀⡀⠀⠀⢸⣿⣻⣿⣿
-⣼⣶⣚⣻⣿⣷⣯⣶⡇⠀⠀⠈⠉⠁⠀⠀⣠⣿⠀⠀⠀⠉⠉⠀⠀⢀⣸⣿⠛⠉⠛⠛⠃⠀⠀⣸⣿⣿⣟⣛
-⠭⣶⣶⣖⡶⠶⡖⣲⡇⣤⠀⣤⣤⣤⣴⣿⣿⣿⠀⣤⠀⣤⣤⣤⣼⣿⣿⣁⡄⠀⡀⢀⡀⣄⣿⣿⣿⣿⣿⣿
-⣿⢩⣭⠽⡿⠿⠿⣿⡇⠸⠀⣿⣿⣿⣿⣿⣿⣿⠶⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⠃⢸⣷⣿⣿⣿⣿⡿⣏⣿
-⣿⣿⣿⣧⣿⣷⣷⣿⣽⠍⠀⣯⣿⣿⣯⢿⠿⡿⣾⠍⠀⢽⣿⢿⠿⢽⣿⣿⠿⠿⠇⢸⣿⣿⣿⣿⣿⣿⡿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿⣾⡿⣿⣿⢿⠀⣿⣿⣿⣿⣿⣿⣿⢿⣿⡇⢸⣿⣾⣿⣿⣿⣿⣿⣿
-⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣯⣿⣷⣶⣶⣿⣿⣾⣾⣿⣿⣿⣿⣶⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿
-`;
-JPLYBBS = JPLYBBS.trim().replace(/(\r\n|\n|\r)/gm, '');
+JPLYBBS =  '';
+JPLYBBS += '⣟⣙⣿⡟⠛⠛⠛⠛⠻⠿⠟⠙⠚⠑⠏⢻⣙⣛⠊⠳⠛⠛⠛⢛⡑⠞⠿⠿⢛⡗⣋⣛⠿⠿⠻⠹⠚⡓⣋⣻';
+JPLYBBS += '⡿⡿⣹⠧⢸⠉⠉⠉⣷⡏⠉⠉⠉⠉⠉⠿⠭⠩⢸⠉⠉⠉⢹⣮⠇⣿⠉⠩⠧⡵⠇⣯⢸⠉⠉⢹⣏⢷⡟⣿';
+JPLYBBS += '⠧⠯⠥⠄⢸⠀⠀⠀⣿⡇⠀⠀⠀⣀⠀⠀⠀⠉⣾⠀⠀⠀⢸⣿⣷⣿⡀⠀⠀⠉⣶⣸⠉⠀⠀⢸⣿⣿⣭⠭';
+JPLYBBS += '⣚⣿⢻⡏⢸⠀⠀⠀⣿⡇⠀⠀⠀⠿⠒⠀⠀⠀⣿⠀⠀⠀⢸⣿⣿⣿⣧⢠⠀⠀⠉⠉⠀⢠⠀⣿⣿⣿⣿⣿';
+JPLYBBS += '⡊⣿⠛⠛⠚⠀⠀⠀⣿⡇⠀⠀⠀⣀⣀⣀⣤⣷⣿⠀⠀⠀⠘⠛⠛⠛⢻⣼⡶⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣧';
+JPLYBBS += '⡅⣿⡀⠀⠀⠀⠀⣤⣿⡇⠀⠀⢀⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⢸⣿⣧⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣿';
+JPLYBBS += '⠏⡋⢙⡇⠀⡇⣿⣿⣿⣧⣇⡇⢸⣿⣿⣿⡟⣿⢹⡀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡇⢸⢸⣿⣿⣿⠿⠿⠿⠟';
+JPLYBBS += '⡛⣽⣿⣷⡂⣓⣿⣿⡏⠉⠉⠁⠈⠉⠙⠿⡍⣿⠉⠉⠉⠉⠉⠙⠛⢿⣿⣿⡿⠉⠀⠀⠈⠉⠙⢯⢩⡍⣥⣭';
+JPLYBBS += '⢟⣙⢛⣛⣛⣛⣛⣛⡇⠀⠀⢠⣤⡄⠀⠀⠀⣿⠀⠀⠀⣤⣤⠀⠀⠀⢸⠀⠀⠀⣤⣶⣤⡀⣶⣿⣿⣖⣧⣿';
+JPLYBBS += '⣭⣿⣿⣿⣷⣷⢿⣿⡇⠀⠀⠈⠉⠁⠀⣤⣿⣿⠀⠀⠀⠉⠉⠀⢠⣾⣿⠀⠀⠀⠈⠉⠉⠿⢿⣿⣿⣿⣿⣿';
+JPLYBBS += '⣿⢿⣿⣿⣏⣿⣿⢿⡇⠀⠀⢰⣶⡆⠀⠀⠉⣿⠀⠀⠀⣶⣶⠀⠀⠀⢹⣶⡇⣄⣀⣀⡀⠀⠀⢸⣿⣻⣿⣿';
+JPLYBBS += '⣼⣶⣚⣻⣿⣷⣯⣶⡇⠀⠀⠈⠉⠁⠀⠀⣠⣿⠀⠀⠀⠉⠉⠀⠀⢀⣸⣿⠛⠉⠛⠛⠃⠀⠀⣸⣿⣿⣟⣛';
+JPLYBBS += '⠭⣶⣶⣖⡶⠶⡖⣲⡇⣤⠀⣤⣤⣤⣴⣿⣿⣿⠀⣤⠀⣤⣤⣤⣼⣿⣿⣁⡄⠀⡀⢀⡀⣄⣿⣿⣿⣿⣿⣿';
+JPLYBBS += '⣿⢩⣭⠽⡿⠿⠿⣿⡇⠸⠀⣿⣿⣿⣿⣿⣿⣿⠶⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⠃⢸⣷⣿⣿⣿⣿⡿⣏⣿';
+JPLYBBS += '⣿⣿⣿⣧⣿⣷⣷⣿⣽⠍⠀⣯⣿⣿⣯⢿⠿⡿⣾⠍⠀⢽⣿⢿⠿⢽⣿⣿⠿⠿⠇⢸⣿⣿⣿⣿⣿⣿⡿⣿';
+JPLYBBS += '⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿⣾⡿⣿⣿⢿⠀⣿⣿⣿⣿⣿⣿⣿⢿⣿⡇⢸⣿⣾⣿⣿⣿⣿⣿⣿';
+JPLYBBS += '⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣯⣿⣷⣶⣶⣿⣿⣾⣾⣿⣿⣿⣿⣶⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿';
 PRINT(JPLYBBS);
 
 ECHOOFF();
@@ -407,10 +423,18 @@ PRINT("WHITE ON DARK GRAY");
 COLOR(14,1);
 PRINT("BLUE ON WHITE");
 
+test Japanese
 
 PRINT("日本語");
+
+test 40 col
+
 PRINT("012345678901234567890123456789012345678901")
+
+todo list
 //(fixed)bug seems it is not creating a newline when it reacher the end of hte width of the screen.
+(done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
+add a bit of syntax sugar so it can be used more like BASIC 
 */
 </script>
 </body>
