@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <title>C64 Full Screen Simulator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <style>
-    /* Real C64 colors */
     :root {
         --c64-blue: #352879;
         --c64-lightblue: #706deb;
@@ -47,13 +47,11 @@
         display: grid;
         grid-template-rows: repeat(25, 1fr);
         grid-template-columns: repeat(40, 1fr);
-        gap: 0;
         background: var(--c64-blue);
         color: var(--c64-cyan);
         font-family: 'C64', monospace;
         font-size: clamp(12px, 2.2vh, 36px);
         line-height: 1;
-        overflow: auto;
         padding: 1vh 1vw;
         box-sizing: border-box;
     }
@@ -68,16 +66,15 @@
         display: inline-block;
         transform: scaleX(2);
         transform-origin: left center;
-        letter-spacing: -0.05em;
     }
+
+    .prompt { margin-right: 0.5ch; }
 
     #input-line {
         display: flex;
         align-items: center;
         color: var(--c64-cyan);
     }
-
-    #prompt { margin-right: 0.5ch; }
 
     #command-input {
         background: transparent;
@@ -99,223 +96,270 @@
 
     @keyframes blink { to { visibility: hidden; } }
 
-    /* font omitted for brevity in CSS block */
     @font-face {
         font-family: 'C64';
-        src: url(data:font/ttf;base64,AAEAAAALAIAAAwAwT1MvMg8SPh0AAAC8AAAAYGNtYXAYVB9VAAABHAAAAFRnYXNwAAAAEAAAA+gAAAAIZ2x5ZlQ1T7AAABAkAAAEKGhlYWQHpD4bAAAANAAAADZoaGVhBnQC8AAAAzgAAAAkaG10eC7q9gAAAEAAAAAUbG9jYQA4AFAAAABsAAAAGm1heHAApgm8AAAA5AAAAAdubWRhBsT+3gAAAOwAAAABAAAAAgAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAQAABdoAAAABAAAAAAAQAAAQAAAAAAAgAABAAAAAAA6AAAAAgABAAAAAAACAAcAAQAAAAAAAwAA ... ) format('truetype');
-        font-weight: normal;
-        font-style: normal;
+        src: url(data:font/ttf;base64,AAEAAAALAIAAAwAwT1MvMg8SPh0AAAC8AAAAYGNtYXAYVB9VAAABHAAAAFRnYXNwAAAAEAAAA+gAAAAIZ2x5ZlQ1T7AAABAkAAAEKGhlYWQHpD4bAAAANAAAADZoaGVhBnQC8AAAAzgAAAAkaG10eC7q9gAAAEAAAAAUbG9jYQA4AFAAAABsAAAAGm1heHAApgm8AAAA5AAAAAdubWRhBsT+3gAAAOwAAAABAAAAAgAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAQAABdoAAAABAAAAAAAQAAAQAAAAAAAgAABAAAAAAA6AAAAAgABAAAAAAACAAcAAQAAAAAAAwAA ...) format('truetype');
     }
 </style>
 </head>
+
 <body>
 <div class="tv">
     <div id="screen"></div>
 </div>
 
 <script>
-    // Cursor state (column,row). row 0..23 are printable rows, row 24 is input line.
-    let cursorX = 0;
-    let cursorY = 0; // default to top for boot printing
+/* -------------------------------------------------
+   GLOBAL CURSOR & SCREEN SETUP
+-------------------------------------------------- */
+let cursorX = 0;
+let cursorY = 0;
 
-    const screen = document.getElementById('screen');
-    const lines = []; // will hold 25 DOM nodes: rows 0..23 + inputLine at index 24
+// INPUT mode flag: null = command mode, otherwise = resolver function
+let inputMode = null;
 
-    // Helper: create a blank printable row element
-    function makeRow() {
-        const d = document.createElement('div');
-        d.className = 'line';
-        return d;
+let echo = true;
+
+const screen = document.getElementById('screen');
+const lines = [];
+
+function ECHOOFF(){
+    echo = false;
+}
+function ECHOON(){
+    echo = true;
+}
+
+function makeRow() {
+    const d = document.createElement('div');
+    d.className = 'line';
+    return d;
+}
+
+// 24 printable rows
+for (let i = 0; i < 24; i++) {
+    const row = makeRow();
+    screen.appendChild(row);
+    lines.push(row);
+}
+
+// Input line
+const inputLine = makeRow();
+inputLine.id = 'input-line';
+inputLine.innerHTML =
+    `<span class="double-wide prompt">></span>
+     <span id="input-text"></span>
+     <span class="cursor"> </span>`;
+screen.appendChild(inputLine);
+lines.push(inputLine);
+
+const inputText = document.getElementById('input-text');
+
+// hidden input handler
+const commandInput = document.createElement('input');
+commandInput.type = 'text';
+commandInput.id = 'command-input';
+document.body.appendChild(commandInput);
+
+function wide(text) {
+    const span = document.createElement('span');
+    span.className = 'double-wide';
+    span.textContent = text;
+    return span;
+}
+
+function nextLine() {
+    cursorX = 0;
+    cursorY++;
+    if (cursorY > 23) {
+        const removed = lines.shift();
+        if (removed !== inputLine) screen.removeChild(removed);
+        const newRow = makeRow();
+        screen.insertBefore(newRow, inputLine);
+        lines.splice(23, 0, newRow);
+        cursorY = 23;
     }
+}
 
-    // Build 24 rows
-    for (let i = 0; i < 24; i++) {
-        const row = makeRow();
-        screen.appendChild(row);
-        lines.push(row);
-    }
+function LOCATE(x, y) {
+    cursorX = Math.max(0, Math.min(39, parseInt(x)));
+    cursorY = Math.max(0, Math.min(23, parseInt(y)));
+}
 
-    // Input (bottom) line
-    const inputLine = makeRow();
-    inputLine.id = 'input-line';
-    inputLine.innerHTML = `<span id="prompt" class="double-wide">></span><span id="input-text"></span><span class="cursor"> </span>`;
-    screen.appendChild(inputLine);
-    lines.push(inputLine); // now lines.length === 25
+function PRINT(text = "") {
+    text = String(text);
 
-    const inputText = document.getElementById('input-text');
+    let idx = 0;
 
-    // Hidden input to capture user typing
-    const commandInput = document.createElement('input');
-    commandInput.type = 'text';
-    commandInput.id = 'command-input';
-    document.body.appendChild(commandInput);
+    while (idx < text.length) {
 
-    function wide(text) {
-        const span = document.createElement('span');
-        span.className = 'double-wide';
-        span.textContent = text;
-        return span;
-    }
+        const row = lines[cursorY];
 
-    // nextLine is now the single place that advances the cursor and scrolls when necessary.
-    function nextLine() {
-        // Move to column 0 of next row
-        cursorX = 0;
-        cursorY++;
+        // Get current row text padded to 40 chars
+        let current = row.textContent || "";
+        current = current.padEnd(40, " ");
+        let arr = current.split("");
 
-        // If we passed the last printable row, scroll up
-        if (cursorY > 23) {
-            // remove top row element
-            const removed = lines.shift(); // removes lines[0]
-            if (removed && removed !== inputLine) {
-                screen.removeChild(removed);
-            }
-            // create a fresh blank row and insert before inputLine
-            const newRow = makeRow();
-            screen.insertBefore(newRow, inputLine);
-            lines.splice(lines.length - 1, 0, newRow); // insert as last printable row
-            // keep cursor at bottom printable row
-            cursorY = 23;
+        // How many characters fit?
+        let space = 40 - cursorX;
+        let chunk = text.substring(idx, idx + space);
+
+        // Write chunk
+        for (let i = 0; i < chunk.length; i++) {
+            arr[cursorX + i] = chunk[i];
+        }
+
+        // Update row
+        row.innerHTML = "";
+        row.appendChild(wide(arr.join("")));
+
+        // Advance indices
+        cursorX += chunk.length;
+        idx += chunk.length;
+
+        // If row is full, wrap
+        if (cursorX >= 40) {
+            nextLine();
         }
     }
 
-    function LOCATE(x, y) {
-        // Accept either numbers or strings
-        const nx = parseInt(x, 10);
-        const ny = parseInt(y, 10);
-        cursorX = Number.isNaN(nx) ? 0 : Math.max(0, Math.min(39, nx));
-        cursorY = Number.isNaN(ny) ? 0 : Math.max(0, Math.min(23, ny));
-    }
+    // After printing entire text, always go to next line
+    nextLine();
+}
 
-    function isPureText(s) {
-        return /[^\x00-\x7F]/.test(s) || /^".*"$/.test(s) || /^'.*'$/.test(s);
-    }
+function echoCommand(cmd) {
+    const row = lines[cursorY];
+    row.innerHTML = "";
+    const p = document.createElement('span');
+    p.className = 'double-wide prompt';
+    p.textContent = ">";
+    row.appendChild(p);
+    row.appendChild(wide(cmd));
+    nextLine();
+}
 
-    // PRINT appends text at current cursor position on the current cursorY row,
-    // then advances the cursor via nextLine() (so all newline logic funnels through nextLine()).
-    function PRINT(text = '') {
-        if (text === null || text === undefined) text = "";
-        if (typeof text === 'object') {
-            try { text = JSON.stringify(text); }
-            catch (e) { text = String(text); }
-        } else {
-            text = String(text);
-        }
+commandInput.addEventListener('input', ()=>{
+    inputText.textContent = commandInput.value;
+});
 
-        // Find the target row DOM element (cursorY 0..23)
-        const targetRow = lines[cursorY];
-        if (!targetRow) return;
+/* -------------------------------------------------
+   REAL WORKING INPUT() USING REAL INPUT LINE
+-------------------------------------------------- */
+function INPUT(promptText = "") {
+    return new Promise(resolve => {
 
-        // Create span, position it by padding-left (columns)
-        const span = wide(text);
-        span.style.paddingLeft = `${cursorX}ch`;
-        targetRow.appendChild(span);
+        if (promptText)
+            PRINT(promptText);
 
-        // All newlines advance via nextLine()
-        nextLine();
-    }
+        commandInput.value = "";
+        inputText.textContent = "";
 
-    // Keep screen scrolled to bottom visually (optional)
-    function scrollToBottom() {
-        screen.scrollTop = screen.scrollHeight;
-    }
+        // Enter INPUT mode (handled inside keydown)
+        inputMode = resolve;
 
-    // Boot messages
-    LOCATE(0, 0);
-    PRINT("**** JPLY 64 JS_BASIC V1 ****");
-    PRINT("");
-    PRINT("64K RAM SYSTEM  38911 BASIC BYTES FREE");
-    PRINT("");
-    PRINT("READY.");
-    // Fill to bottom (optional)
-    for (let i = 0; i < 17; i++) PRINT("");
-
-    // Input bindings
-    commandInput.addEventListener('input', () => {
-        inputText.textContent = commandInput.value;
+        commandInput.focus();
     });
+}
 
-    commandInput.addEventListener('keydown', (e) => {
-        if (e.key !== 'Enter') return;
-        const raw = commandInput.value.trim();
-        const cmd = raw;
-        const upper = cmd.toUpperCase();
+/* -------------------------------------------------
+   THE ONE TRUE KEYDOWN HANDLER (handles INPUT + commands)
+-------------------------------------------------- */
+commandInput.addEventListener('keydown', async (e) => {
 
-        // Echo the command on current cursor row (BASIC echoes on input area historically;
-        // here we append an echoed line above the input line)
-        const echoRow = makeRow();
-        echoRow.appendChild(wide('>' + cmd));
-        screen.insertBefore(echoRow, inputLine);
-        lines.splice(lines.length - 1, 0, echoRow);
-        // If we exceeded 25 lines, remove top
-        if (lines.length > 25) {
-            const removed = lines.shift();
-            if (removed && removed !== inputLine) screen.removeChild(removed);
+    if (e.key !== 'Enter') return;
+
+    const typed = commandInput.value.trim();
+
+    /* ------------------------------
+       INPUT MODE: RETURN TO USER
+    --------------------------------*/
+    if (inputMode) {
+        if(echo) {
+            echoCommand(typed);
         }
+        const resolver = inputMode;
+        inputMode = null;
 
-        // Handle commands
-        if (cmd) {
-            // LOCATE(...) or LOCATE x,y
-            if (upper.startsWith("LOCATE(") && cmd.endsWith(")")) {
-                const inner = cmd.slice(7, -1);
-                const parts = inner.split(",");
-                if (parts.length === 2) {
-                    LOCATE(parts[0], parts[1]);
-                    commandInput.value = '';
-                    inputText.textContent = '';
-                    commandInput.focus();
-                    scrollToBottom();
-                    return;
-                }
-            } else if (upper.startsWith("LOCATE ")) {
-                const inner = cmd.slice(7).trim();
-                const parts = inner.split(",");
-                if (parts.length === 2) {
-                    LOCATE(parts[0], parts[1]);
-                    commandInput.value = '';
-                    inputText.textContent = '';
-                    commandInput.focus();
-                    scrollToBottom();
-                    return;
-                }
-            }
+        commandInput.value = "";
+        inputText.textContent = "";
 
-            // PRINT("...")
-            if (upper.startsWith("PRINT(") && cmd.endsWith(")")) {
-                let inner = cmd.slice(6, -1).trim();
-                inner = inner.replace(/^["']|["']$/g, '');
-                PRINT(inner);
-            }
-            // PRINT ...
-            else if (upper.startsWith("PRINT ")) {
-                PRINT(cmd.slice(6).trim());
-            }
-            // Pure text (Japanese etc) -> print literal
-            else if (isPureText(cmd)) {
-                PRINT(cmd.replace(/^["']|["']$/g, ''));
-            }
-            // JS fallback
-            else {
-                try {
-                    const result = eval(cmd);
-                    if (result !== undefined) PRINT(result);
-                } catch (err) {
-                    PRINT('?SYNTAX  ERROR');
-                }
-            }
-        }
+        resolver(typed);
+        return;
+    }
 
-        // After handling, print READY. (READY. also advances via PRINT -> nextLine)
-        PRINT("READY.");
+    /* ---------------------------------
+       NORMAL COMMAND MODE
+    ---------------------------------- */
+    if (typed === '') {
         commandInput.value = '';
         inputText.textContent = '';
-        commandInput.focus();
-        scrollToBottom();
-    });
+        return;
+    }
+    if(echo) {
+        echoCommand(typed);
+    }
+    commandInput.value = '';
+    inputText.textContent = '';
+    
+    const originalCode = typed;
+    //replace INPUT with await INPUT
+    // Use a regular expression with the global flag (/g) to replace all occurrences.
+    //const updatedCode = originalCode.replace(/= INPUT\(/g, '= await INPUT(');
+    //modify this code so that it replaces anys paces between = and INPUT with await no matter how many spaces tere are: const updatedCode = originalCode.replace(/= INPUT\(/g, '= await INPUT(');
+    const updatedCode = originalCode.replace(/=\s*INPUT\(/g, '= await INPUT(');
+    //alert(updatedCode);
 
-    // Keep focus on hidden input
-    document.addEventListener('click', () => commandInput.focus());
+
+    try {
+        let result = await eval(`(async()=>{ ${updatedCode} })()`);
+        if (result !== undefined) PRINT(result);
+    } catch (err) {
+        PRINT("?SYNTAX  ERROR:"+err);
+    }
+
+    PRINT("READY.");
     commandInput.focus();
+});
+
+/* -------------------------------------------------
+   BOOT TEXT
+-------------------------------------------------- */
+LOCATE(0,0);
+PRINT("**** JPLY 64 JS_BASIC V1 ****");
+PRINT("");
+PRINT("64K RAM SYSTEM  38911 BASIC BYTES FREE");
+PRINT("");
+PRINT("READY.");
+for (let i=0;i<17;i++) PRINT("");
+
+document.addEventListener('click', ()=> commandInput.focus());
+commandInput.focus();
+/*
+//test input and locate 
+
+ECHOOFF();
+PRINT("ENTER NAME:");
+A =INPUT();
+PRINT("HELLO " + A);
+AGE = INPUT("AGE?");
+PRINT("YOU ARE " + AGE + " YEARS OLD");
+LOCATE(5,5);
+PRINT("HELLO");
+LOCATE(5,5);
+PRINT("A");
+
+PRINT("ENTER NAME:");A =INPUT();PRINT("HELLO " + A);AGE = INPUT("AGE?");PRINT("YOU ARE " + AGE + " YEARS OLD");LOCATE(5,5);PRINT("HELLO");LOCATE(5,5);PRINT("A");
+
+this is the news on my C64 simulator , I added the INPUT command, fixed soime bugs too, including the one of LOCATE that you mentiones, please try it amjp.psy-k.org/JPLY_BBS/TerminalEmulator.html this is the sample program to test everything PRINT("ENTER NAME:");A =INPUT();PRINT("HELLO " + A);AGE = INPUT("AGE?");PRINT("YOU ARE " + AGE + " YEARS OLD");LOCATE(5,5);PRINT("HELLO");LOCATE(5,5);PRINT("A");
+tomorrow I think I will add the COLOR command, and maybe a b it of syntax sugar so it can be used more like BASIC 
+// Define a variable using backticks (`)
+LOCATE(0,0);JPLYBBS = "⣟⣙⣿⡟⠛⠛⠛⠛⠻⠿⠟⠙⠚⠑⠏⢻⣙⣛⠊⠳⠛⠛⠛⢛⡑⠞⠿⠿⢛⡗⣋⣛⠿⠿⠻⠹⠚⡓⣋⣻⡿⡿⣹⠧⢸⠉⠉⠉⣷⡏⠉⠉⠉⠉⠉⠿⠭⠩⢸⠉⠉⠉⢹⣮⠇⣿⠉⠩⠧⡵⠇⣯⢸⠉⠉⢹⣏⢷⡟⣿⠧⠯⠥⠄⢸⠀⠀⠀⣿⡇⠀⠀⠀⣀⠀⠀⠀⠉⣾⠀⠀⠀⢸⣿⣷⣿⡀⠀⠀⠉⣶⣸⠉⠀⠀⢸⣿⣿⣭⠭⣚⣿⢻⡏⢸⠀⠀⠀⣿⡇⠀⠀⠀⠿⠒⠀⠀⠀⣿⠀⠀⠀⢸⣿⣿⣿⣧⢠⠀⠀⠉⠉⠀⢠⠀⣿⣿⣿⣿⣿⡊⣿⠛⠛⠚⠀⠀⠀⣿⡇⠀⠀⠀⣀⣀⣀⣤⣷⣿⠀⠀⠀⠘⠛⠛⠛⢻⣼⡶⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣧⡅⣿⡀⠀⠀⠀⠀⣤⣿⡇⠀⠀⢀⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⢸⣿⣧⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣿⠏⡋⢙⡇⠀⡇⣿⣿⣿⣧⣇⡇⢸⣿⣿⣿⡟⣿⢹⡀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡇⢸⢸⣿⣿⣿⠿⠿⠿⠟⡛⣽⣿⣷⡂⣓⣿⣿⡏⠉⠉⠁⠈⠉⠙⠿⡍⣿⠉⠉⠉⠉⠉⠙⠛⢿⣿⣿⡿⠉⠀⠀⠈⠉⠙⢯⢩⡍⣥⣭⢟⣙⢛⣛⣛⣛⣛⣛⡇⠀⠀⢠⣤⡄⠀⠀⠀⣿⠀⠀⠀⣤⣤⠀⠀⠀⢸⠀⠀⠀⣤⣶⣤⡀⣶⣿⣿⣖⣧⣿⣭⣿⣿⣿⣷⣷⢿⣿⡇⠀⠀⠈⠉⠁⠀⣤⣿⣿⠀⠀⠀⠉⠉⠀⢠⣾⣿⠀⠀⠀⠈⠉⠉⠿⢿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣏⣿⣿⢿⡇⠀⠀⢰⣶⡆⠀⠀⠉⣿⠀⠀⠀⣶⣶⠀⠀⠀⢹⣶⡇⣄⣀⣀⡀⠀⠀⢸⣿⣻⣿⣿⣼⣶⣚⣻⣿⣷⣯⣶⡇⠀⠀⠈⠉⠁⠀⠀⣠⣿⠀⠀⠀⠉⠉⠀⠀⢀⣸⣿⠛⠉⠛⠛⠃⠀⠀⣸⣿⣿⣟⣛⠭⣶⣶⣖⡶⠶⡖⣲⡇⣤⠀⣤⣤⣤⣴⣿⣿⣿⠀⣤⠀⣤⣤⣤⣼⣿⣿⣁⡄⠀⡀⢀⡀⣄⣿⣿⣿⣿⣿⣿⣿⢩⣭⠽⡿⠿⠿⣿⡇⠸⠀⣿⣿⣿⣿⣿⣿⣿⠶⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⠃⢸⣷⣿⣿⣿⣿⡿⣏⣿⣿⣿⣿⣧⣿⣷⣷⣿⣽⠍⠀⣯⣿⣿⣯⢿⠿⡿⣾⠍⠀⢽⣿⢿⠿⢽⣿⣿⠿⠿⠇⢸⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿⣾⡿⣿⣿⢿⠀⣿⣿⣿⣿⣿⣿⣿⢿⣿⡇⢸⣿⣾⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣯⣿⣷⣶⣶⣿⣿⣾⣾⣿⣿⣿⣿⣶⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿";PRINT(JPLYBBS);
+
+
+PRINT("日本語");
+PRINT("012345678901234567890123456789012345678901")
+//nug seems it is not creating a newline when it reacher the end of hte width of the screen.
+*/
 </script>
 </body>
 </html>
