@@ -129,6 +129,29 @@ function ECHOON(){
     echo = true;
 }
 
+//have not tested this yet
+function PLAY(url) {
+  return new Promise((resolve) => {
+    const audio = new Audio(url); // Create a new Audio element
+
+    // Set up the 'ended' event listener to resolve the Promise
+    audio.onended = () => {
+      resolve();
+    };
+
+    // Handle potential errors, though not strictly required for basic play
+    audio.onerror = (error) => {
+      console.error("Audio playback error:", error);
+      resolve(); // Resolve anyway so the rest of the script isn't stuck
+    };
+
+    audio.play().catch(error => {
+        // Autoplay policies might catch this. User interaction is typically needed to start audio.
+        console.error("Playback failed:", error);
+        resolve();
+    });
+  });
+}
 function ASCIIART(str) {
     // normalize newlines
     str = str.replace(/\r/g, "");
@@ -315,6 +338,13 @@ function INPUT(promptText = "") {
     });
 }
 
+function preprocess(code) {
+    return code.replace(
+        /=\s*INPUT\s*\(/g,
+        '= await INPUT('
+    );
+}
+
 /* ==================================================
    MAIN KEYDOWN HANDLER
 ================================================== */
@@ -347,9 +377,9 @@ commandInput.addEventListener("keydown", async (e) => {
 
     commandInput.value = "";
     inputText.textContent = "";
-
+    code=preprocess(typed);
     try {
-        let result = await eval(`(async()=>{ ${typed} })()`);
+        let result = await eval(`(async()=>{ ${code} })()`);
         if (result !== undefined) PRINT(result);
     } catch (err) {
         PRINT("?SYNTAX  ERROR:"+err);
@@ -373,11 +403,11 @@ for (let i = 0; i < 17; i++) PRINT("");
 document.addEventListener("click", () => commandInput.focus());
 commandInput.focus();
 /*
-//test input and locate 
+test input and locate 
 
 ECHOOFF();
 PRINT("ENTER NAME:");
-A =INPUT();
+A = await INPUT();
 PRINT("HELLO " + A);
 AGE = INPUT("AGE?");
 PRINT("YOU ARE " + AGE + " YEARS OLD");
@@ -386,11 +416,11 @@ PRINT("HELLO");
 LOCATE(5,5);
 PRINT("A");
 
-PRINT("ENTER NAME:");A =INPUT();PRINT("HELLO " + A);AGE = INPUT("AGE?");PRINT("YOU ARE " + AGE + " YEARS OLD");LOCATE(5,5);PRINT("HELLO");LOCATE(5,5);PRINT("A");
+oneliner
+ECHOOFF(); PRINT("ENTER NAME:"); A =INPUT(); PRINT("HELLO " + A); AGE = INPUT("AGE?"); PRINT("YOU ARE " + AGE + " YEARS OLD"); LOCATE(5,5); PRINT("HELLO"); LOCATE(5,5); PRINT("A");
 
-this is the news on my C64 simulator , I added the INPUT command, fixed soime bugs too, including the one of LOCATE that you mentiones, please try it amjp.psy-k.org/JPLY_BBS/TerminalEmulator.html this is the sample program to test everything PRINT("ENTER NAME:");A =INPUT();PRINT("HELLO " + A);AGE = INPUT("AGE?");PRINT("YOU ARE " + AGE + " YEARS OLD");LOCATE(5,5);PRINT("HELLO");LOCATE(5,5);PRINT("A");
-(done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
-add a bit of syntax sugar so it can be used more like BASIC 
+
+test UTF8ART art
 
 ECHOOFF();
 COLOR(0,10);LOCATE(0,0);
@@ -414,9 +444,9 @@ JPLYBBS += '⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿⣾⡿⣿⣿⢿⠀⣿�
 JPLYBBS += '⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣯⣿⣷⣶⣶⣿⣿⣾⣾⣿⣿⣿⣿⣶⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿';
 PRINT(JPLYBBS);
 
-ECHOOFF();
-COLOR(0,10);LOCATE(0,0);
-JPLYBBS = "⣟⣙⣿⡟⠛⠛⠛⠛⠻⠿⠟⠙⠚⠑⠏⢻⣙⣛⠊⠳⠛⠛⠛⢛⡑⠞⠿⠿⢛⡗⣋⣛⠿⠿⠻⠹⠚⡓⣋⣻⡿⡿⣹⠧⢸⠉⠉⠉⣷⡏⠉⠉⠉⠉⠉⠿⠭⠩⢸⠉⠉⠉⢹⣮⠇⣿⠉⠩⠧⡵⠇⣯⢸⠉⠉⢹⣏⢷⡟⣿⠧⠯⠥⠄⢸⠀⠀⠀⣿⡇⠀⠀⠀⣀⠀⠀⠀⠉⣾⠀⠀⠀⢸⣿⣷⣿⡀⠀⠀⠉⣶⣸⠉⠀⠀⢸⣿⣿⣭⠭⣚⣿⢻⡏⢸⠀⠀⠀⣿⡇⠀⠀⠀⠿⠒⠀⠀⠀⣿⠀⠀⠀⢸⣿⣿⣿⣧⢠⠀⠀⠉⠉⠀⢠⠀⣿⣿⣿⣿⣿⡊⣿⠛⠛⠚⠀⠀⠀⣿⡇⠀⠀⠀⣀⣀⣀⣤⣷⣿⠀⠀⠀⠘⠛⠛⠛⢻⣼⡶⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣧⡅⣿⡀⠀⠀⠀⠀⣤⣿⡇⠀⠀⢀⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⢸⣿⣧⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣿⠏⡋⢙⡇⠀⡇⣿⣿⣿⣧⣇⡇⢸⣿⣿⣿⡟⣿⢹⡀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡇⢸⢸⣿⣿⣿⠿⠿⠿⠟⡛⣽⣿⣷⡂⣓⣿⣿⡏⠉⠉⠁⠈⠉⠙⠿⡍⣿⠉⠉⠉⠉⠉⠙⠛⢿⣿⣿⡿⠉⠀⠀⠈⠉⠙⢯⢩⡍⣥⣭⢟⣙⢛⣛⣛⣛⣛⣛⡇⠀⠀⢠⣤⡄⠀⠀⠀⣿⠀⠀⠀⣤⣤⠀⠀⠀⢸⠀⠀⠀⣤⣶⣤⡀⣶⣿⣿⣖⣧⣿⣭⣿⣿⣿⣷⣷⢿⣿⡇⠀⠀⠈⠉⠁⠀⣤⣿⣿⠀⠀⠀⠉⠉⠀⢠⣾⣿⠀⠀⠀⠈⠉⠉⠿⢿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣏⣿⣿⢿⡇⠀⠀⢰⣶⡆⠀⠀⠉⣿⠀⠀⠀⣶⣶⠀⠀⠀⢹⣶⡇⣄⣀⣀⡀⠀⠀⢸⣿⣻⣿⣿⣼⣶⣚⣻⣿⣷⣯⣶⡇⠀⠀⠈⠉⠁⠀⠀⣠⣿⠀⠀⠀⠉⠉⠀⠀⢀⣸⣿⠛⠉⠛⠛⠃⠀⠀⣸⣿⣿⣟⣛⠭⣶⣶⣖⡶⠶⡖⣲⡇⣤⠀⣤⣤⣤⣴⣿⣿⣿⠀⣤⠀⣤⣤⣤⣼⣿⣿⣁⡄⠀⡀⢀⡀⣄⣿⣿⣿⣿⣿⣿⣿⢩⣭⠽⡿⠿⠿⣿⡇⠸⠀⣿⣿⣿⣿⣿⣿⣿⠶⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⠃⢸⣷⣿⣿⣿⣿⡿⣏⣿⣿⣿⣿⣧⣿⣷⣷⣿⣽⠍⠀⣯⣿⣿⣯⢿⠿⡿⣾⠍⠀⢽⣿⢿⠿⢽⣿⣿⠿⠿⠇⢸⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿⣾⡿⣿⣿⢿⠀⣿⣿⣿⣿⣿⣿⣿⢿⣿⡇⢸⣿⣾⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣯⣿⣷⣶⣶⣿⣿⣾⣾⣿⣿⣿⣿⣶⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿";PRINT(JPLYBBS);
+
+onelienr
+ECHOOFF();COLOR(0,10);LOCATE(0,0);JPLYBBS =  '';JPLYBBS += '⣟⣙⣿⡟⠛⠛⠛⠛⠻⠿⠟⠙⠚⠑⠏⢻⣙⣛⠊⠳⠛⠛⠛⢛⡑⠞⠿⠿⢛⡗⣋⣛⠿⠿⠻⠹⠚⡓⣋⣻';JPLYBBS += '⡿⡿⣹⠧⢸⠉⠉⠉⣷⡏⠉⠉⠉⠉⠉⠿⠭⠩⢸⠉⠉⠉⢹⣮⠇⣿⠉⠩⠧⡵⠇⣯⢸⠉⠉⢹⣏⢷⡟⣿';JPLYBBS += '⠧⠯⠥⠄⢸⠀⠀⠀⣿⡇⠀⠀⠀⣀⠀⠀⠀⠉⣾⠀⠀⠀⢸⣿⣷⣿⡀⠀⠀⠉⣶⣸⠉⠀⠀⢸⣿⣿⣭⠭';JPLYBBS += '⣚⣿⢻⡏⢸⠀⠀⠀⣿⡇⠀⠀⠀⠿⠒⠀⠀⠀⣿⠀⠀⠀⢸⣿⣿⣿⣧⢠⠀⠀⠉⠉⠀⢠⠀⣿⣿⣿⣿⣿';JPLYBBS += '⡊⣿⠛⠛⠚⠀⠀⠀⣿⡇⠀⠀⠀⣀⣀⣀⣤⣷⣿⠀⠀⠀⠘⠛⠛⠛⢻⣼⡶⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣧';JPLYBBS += '⡅⣿⡀⠀⠀⠀⠀⣤⣿⡇⠀⠀⢀⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⢸⣿⣧⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣿';JPLYBBS += '⠏⡋⢙⡇⠀⡇⣿⣿⣿⣧⣇⡇⢸⣿⣿⣿⡟⣿⢹⡀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡇⢸⢸⣿⣿⣿⠿⠿⠿⠟';JPLYBBS += '⡛⣽⣿⣷⡂⣓⣿⣿⡏⠉⠉⠁⠈⠉⠙⠿⡍⣿⠉⠉⠉⠉⠉⠙⠛⢿⣿⣿⡿⠉⠀⠀⠈⠉⠙⢯⢩⡍⣥⣭';JPLYBBS += '⢟⣙⢛⣛⣛⣛⣛⣛⡇⠀⠀⢠⣤⡄⠀⠀⠀⣿⠀⠀⠀⣤⣤⠀⠀⠀⢸⠀⠀⠀⣤⣶⣤⡀⣶⣿⣿⣖⣧⣿';JPLYBBS += '⣭⣿⣿⣿⣷⣷⢿⣿⡇⠀⠀⠈⠉⠁⠀⣤⣿⣿⠀⠀⠀⠉⠉⠀⢠⣾⣿⠀⠀⠀⠈⠉⠉⠿⢿⣿⣿⣿⣿⣿';JPLYBBS += '⣿⢿⣿⣿⣏⣿⣿⢿⡇⠀⠀⢰⣶⡆⠀⠀⠉⣿⠀⠀⠀⣶⣶⠀⠀⠀⢹⣶⡇⣄⣀⣀⡀⠀⠀⢸⣿⣻⣿⣿';JPLYBBS += '⣼⣶⣚⣻⣿⣷⣯⣶⡇⠀⠀⠈⠉⠁⠀⠀⣠⣿⠀⠀⠀⠉⠉⠀⠀⢀⣸⣿⠛⠉⠛⠛⠃⠀⠀⣸⣿⣿⣟⣛';JPLYBBS += '⠭⣶⣶⣖⡶⠶⡖⣲⡇⣤⠀⣤⣤⣤⣴⣿⣿⣿⠀⣤⠀⣤⣤⣤⣼⣿⣿⣁⡄⠀⡀⢀⡀⣄⣿⣿⣿⣿⣿⣿';JPLYBBS += '⣿⢩⣭⠽⡿⠿⠿⣿⡇⠸⠀⣿⣿⣿⣿⣿⣿⣿⠶⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⠃⢸⣷⣿⣿⣿⣿⡿⣏⣿';JPLYBBS += '⣿⣿⣿⣧⣿⣷⣷⣿⣽⠍⠀⣯⣿⣿⣯⢿⠿⡿⣾⠍⠀⢽⣿⢿⠿⢽⣿⣿⠿⠿⠇⢸⣿⣿⣿⣿⣿⣿⡿⣿';JPLYBBS += '⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿⣾⡿⣿⣿⢿⠀⣿⣿⣿⣿⣿⣿⣿⢿⣿⡇⢸⣿⣾⣿⣿⣿⣿⣿⣿';JPLYBBS += '⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣯⣿⣷⣶⣶⣿⣿⣾⣾⣿⣿⣿⣿⣶⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿';PRINT(JPLYBBS);
 
 //test colors
 
@@ -427,10 +457,36 @@ PRINT("WHITE ON DARK GRAY");
 COLOR(14,1);
 PRINT("BLUE ON WHITE");
 
+oneliner
+COLOR(10,0);PRINT("RED ON BLACK");COLOR(1,4);PRINT("WHITE ON DARK GRAY");COLOR(14,1);PRINT("BLUE ON WHITE");
+
+test Japanese
 
 PRINT("日本語");
+
+test 40 col
+
 PRINT("012345678901234567890123456789012345678901")
+
+
+test PLAY
+
+PRINT("now playing");
+PLAY("audio/modem.mp3");
+PRINT("Ended playing");
+
+todo list
 //(fixed)bug seems it is not creating a newline when it reacher the end of hte width of the screen.
+(done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
+add a bit of syntax sugar so it can be used more like BASIC 
+
+add:
+TYPE HELP() FOR HELP THEN PRESS [ENTER]
+TYPE HELPJP()を打ってそして[ENTER]を押して、日本語のヘルプを表示します
+ESCRIBA HELPES() Y PRECIONE [ENTER} PARA AYUDA EN ESPAÑOL
+TYPE ATDT+15593278 TO CONNECT TO ENGLISH JPLY BBS
+ATDT+815593278を打ったら。JPLY BSSの日本版に入ります
+ESCRIBA ATDT+525593278 PARA CONNECTARSE A JPLY BBS EN ESPAÑOL
 */
 </script>
 </body>
