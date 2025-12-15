@@ -258,7 +258,7 @@ function getColor(n) {
         0:"#000000", 1:"#ffffff", 2:"#808080", 3:"#b0c4de",
         4:"#a9a9a9", 7:"#c0c0c0", 8:"#dda0dd", 9:"#ee82ee",
         10:"#ff0000", 11:"#ffa500", 12:"#ffff00", 13:"#008000",
-        14:"#0000ff", 15:"#4b0082", 16:"#ee82ee"
+        14:"#0000ff", 15:"#4b0082", 16:"#ee82ee", 17:"#aa00ff"
     };
     return table[n] || "#ffffff";
 }
@@ -567,6 +567,7 @@ SLOWPRINT(JPLYBBS,30);
 todo list
 //(fixed)bug seems it is not creating a newline when it reacher the end of hte width of the screen.
 (done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
+add escape sequences to PRINT and SLOWPRINT, so that when something like [C0,1] it will change the color of the following text being printed to color black and white, let it call hte COLOR(1,0) when it appears, and don't print the escape code itself. 
 add a bit of syntax sugar so it can be used more like BASIC 
 
 add:
