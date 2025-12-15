@@ -26,6 +26,14 @@
         image-rendering: pixelated;
     }
 
+    .cell {
+        display: inline-block;
+        width: 1ch;
+        height: 1em;
+        overflow: hidden;
+    }
+
+
     .tv {
         width: 96vw;
         height: 96vh;
@@ -129,6 +137,29 @@ function ECHOON(){
     echo = true;
 }
 
+//have not tested this yet
+function PLAY(url) {
+  return new Promise((resolve) => {
+    const audio = new Audio(url); // Create a new Audio element
+
+    // Set up the 'ended' event listener to resolve the Promise
+    audio.onended = () => {
+      resolve();
+    };
+
+    // Handle potential errors, though not strictly required for basic play
+    audio.onerror = (error) => {
+      console.error("Audio playback error:", error);
+      resolve(); // Resolve anyway so the rest of the script isn't stuck
+    };
+
+    audio.play().catch(error => {
+        // Autoplay policies might catch this. User interaction is typically needed to start audio.
+        console.error("Playback failed:", error);
+        resolve();
+    });
+  });
+}
 function ASCIIART(str) {
     // normalize newlines
     str = str.replace(/\r/g, "");
@@ -157,6 +188,18 @@ function ASCIIART(str) {
 function makeRow() {
     const d = document.createElement("div");
     d.className = "line";
+
+    const wrap = document.createElement("span");
+    wrap.className = "double-wide";
+
+    for (let i = 0; i < 40; i++) {
+        const cell = document.createElement("span");
+        cell.className = "cell";
+        cell.textContent = " ";
+        wrap.appendChild(cell);
+    }
+
+    d.appendChild(wrap);
     return d;
 }
 
@@ -243,54 +286,66 @@ function echoCommand(cmd) {
     nextLine();
 }
 
+function ensureRow(row) {
+    if (row.firstChild && row.firstChild.classList.contains("double-wide")) {
+        return row.firstChild;
+    }
+
+    const wrap = document.createElement("span");
+    wrap.className = "double-wide";
+
+    for (let i = 0; i < 40; i++) {
+        const cell = document.createElement("span");
+        cell.textContent = " ";
+        wrap.appendChild(cell);
+    }
+
+    row.innerHTML = "";
+    row.appendChild(wrap);
+    return wrap;
+}
+
+function PUTCHAR(ch) {
+    const row = lines[cursorY];
+    const cell = row.firstChild.children[cursorX];
+
+    cell.textContent = ch;
+    cell.style.color = currentFG;
+    cell.style.backgroundColor = currentBG;
+
+    cursorX++;
+    if (cursorX >= 40) nextLine();
+}
+
 /* ==================================================
    PRINT WITH WRAPPING + COLORS + ONE DOUBLE-WIDE WRAPPER
 ================================================== */
 function PRINT(text = "") {
     text = String(text);
-    let idx = 0;
 
-    while (idx < text.length) {
-
-        const row = lines[cursorY];
-
-        let current = row.textContent || "";
-        current = current.padEnd(40, " ");
-        let arr = current.split("");
-
-        let space = 40 - cursorX;
-        let chunk = text.substring(idx, idx + space);
-
-        let cellSpans = [];
-
-        for (let ch of arr) {
-            const inner = document.createElement("span");
-            inner.textContent = ch;
-            cellSpans.push(inner);
-        }
-
-        for (let i = 0; i < chunk.length; i++) {
-            const inner = document.createElement("span");
-            inner.textContent = chunk[i];
-            inner.style.color = currentFG;
-            inner.style.backgroundColor = currentBG;
-            cellSpans[cursorX + i] = inner;
-        }
-
-        row.innerHTML = "";
-        const wrap = document.createElement("span");
-        wrap.className = "double-wide";
-
-        cellSpans.forEach(s => wrap.appendChild(s));
-        row.appendChild(wrap);
-
-        cursorX += chunk.length;
-        idx += chunk.length;
-
-        if (cursorX >= 40) nextLine();
+    for (let i = 0; i < text.length; i++) {
+        PUTCHAR(text[i]);
     }
 
     nextLine();
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function SLOWPRINT(text = "", time_ms = 50) {
+    text = String(text);
+
+    for (let i = 0; i < text.length; i++) {
+        PUTCHAR(text[i]);
+        await sleep(time_ms);
+    }
+}
+
+function GOTO_INPUT_LINE() {
+    cursorX = 0;
+    cursorY = lines.length - 2;
 }
 
 /* ==================================================
@@ -313,6 +368,13 @@ function INPUT(promptText = "") {
 
         commandInput.focus();
     });
+}
+
+function preprocess(code) {
+    return code.replace(
+        /=\s*INPUT\s*\(/g,
+        '= await INPUT('
+    );
 }
 
 /* ==================================================
@@ -347,14 +409,15 @@ commandInput.addEventListener("keydown", async (e) => {
 
     commandInput.value = "";
     inputText.textContent = "";
-
+    code=preprocess(typed);
     try {
-        let result = await eval(`(async()=>{ ${typed} })()`);
+        let result = await eval(`(async()=>{ ${code} })()`);
         if (result !== undefined) PRINT(result);
     } catch (err) {
         PRINT("?SYNTAX  ERROR:"+err);
     }
 
+    GOTO_INPUT_LINE()
     PRINT("READY.");
     commandInput.focus();
 });
@@ -377,7 +440,7 @@ test input and locate
 
 ECHOOFF();
 PRINT("ENTER NAME:");
-A =INPUT();
+A = await INPUT();
 PRINT("HELLO " + A);
 AGE = INPUT("AGE?");
 PRINT("YOU ARE " + AGE + " YEARS OLD");
@@ -385,6 +448,10 @@ LOCATE(5,5);
 PRINT("HELLO");
 LOCATE(5,5);
 PRINT("A");
+
+oneliner
+ECHOOFF(); PRINT("ENTER NAME:"); A =INPUT(); PRINT("HELLO " + A); AGE = INPUT("AGE?"); PRINT("YOU ARE " + AGE + " YEARS OLD"); LOCATE(5,5); PRINT("HELLO"); LOCATE(5,5); PRINT("A");
+
 
 test UTF8ART art
 
@@ -410,9 +477,9 @@ JPLYBBS += '⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿⣾⡿⣿⣿⢿⠀⣿�
 JPLYBBS += '⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣯⣿⣷⣶⣶⣿⣿⣾⣾⣿⣿⣿⣿⣶⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿';
 PRINT(JPLYBBS);
 
-ECHOOFF();
-COLOR(0,10);LOCATE(0,0);
-JPLYBBS = "⣟⣙⣿⡟⠛⠛⠛⠛⠻⠿⠟⠙⠚⠑⠏⢻⣙⣛⠊⠳⠛⠛⠛⢛⡑⠞⠿⠿⢛⡗⣋⣛⠿⠿⠻⠹⠚⡓⣋⣻⡿⡿⣹⠧⢸⠉⠉⠉⣷⡏⠉⠉⠉⠉⠉⠿⠭⠩⢸⠉⠉⠉⢹⣮⠇⣿⠉⠩⠧⡵⠇⣯⢸⠉⠉⢹⣏⢷⡟⣿⠧⠯⠥⠄⢸⠀⠀⠀⣿⡇⠀⠀⠀⣀⠀⠀⠀⠉⣾⠀⠀⠀⢸⣿⣷⣿⡀⠀⠀⠉⣶⣸⠉⠀⠀⢸⣿⣿⣭⠭⣚⣿⢻⡏⢸⠀⠀⠀⣿⡇⠀⠀⠀⠿⠒⠀⠀⠀⣿⠀⠀⠀⢸⣿⣿⣿⣧⢠⠀⠀⠉⠉⠀⢠⠀⣿⣿⣿⣿⣿⡊⣿⠛⠛⠚⠀⠀⠀⣿⡇⠀⠀⠀⣀⣀⣀⣤⣷⣿⠀⠀⠀⠘⠛⠛⠛⢻⣼⡶⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣧⡅⣿⡀⠀⠀⠀⠀⣤⣿⡇⠀⠀⢀⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⢸⣿⣧⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣿⠏⡋⢙⡇⠀⡇⣿⣿⣿⣧⣇⡇⢸⣿⣿⣿⡟⣿⢹⡀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡇⢸⢸⣿⣿⣿⠿⠿⠿⠟⡛⣽⣿⣷⡂⣓⣿⣿⡏⠉⠉⠁⠈⠉⠙⠿⡍⣿⠉⠉⠉⠉⠉⠙⠛⢿⣿⣿⡿⠉⠀⠀⠈⠉⠙⢯⢩⡍⣥⣭⢟⣙⢛⣛⣛⣛⣛⣛⡇⠀⠀⢠⣤⡄⠀⠀⠀⣿⠀⠀⠀⣤⣤⠀⠀⠀⢸⠀⠀⠀⣤⣶⣤⡀⣶⣿⣿⣖⣧⣿⣭⣿⣿⣿⣷⣷⢿⣿⡇⠀⠀⠈⠉⠁⠀⣤⣿⣿⠀⠀⠀⠉⠉⠀⢠⣾⣿⠀⠀⠀⠈⠉⠉⠿⢿⣿⣿⣿⣿⣿⣿⢿⣿⣿⣏⣿⣿⢿⡇⠀⠀⢰⣶⡆⠀⠀⠉⣿⠀⠀⠀⣶⣶⠀⠀⠀⢹⣶⡇⣄⣀⣀⡀⠀⠀⢸⣿⣻⣿⣿⣼⣶⣚⣻⣿⣷⣯⣶⡇⠀⠀⠈⠉⠁⠀⠀⣠⣿⠀⠀⠀⠉⠉⠀⠀⢀⣸⣿⠛⠉⠛⠛⠃⠀⠀⣸⣿⣿⣟⣛⠭⣶⣶⣖⡶⠶⡖⣲⡇⣤⠀⣤⣤⣤⣴⣿⣿⣿⠀⣤⠀⣤⣤⣤⣼⣿⣿⣁⡄⠀⡀⢀⡀⣄⣿⣿⣿⣿⣿⣿⣿⢩⣭⠽⡿⠿⠿⣿⡇⠸⠀⣿⣿⣿⣿⣿⣿⣿⠶⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⠃⢸⣷⣿⣿⣿⣿⡿⣏⣿⣿⣿⣿⣧⣿⣷⣷⣿⣽⠍⠀⣯⣿⣿⣯⢿⠿⡿⣾⠍⠀⢽⣿⢿⠿⢽⣿⣿⠿⠿⠇⢸⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿⣾⡿⣿⣿⢿⠀⣿⣿⣿⣿⣿⣿⣿⢿⣿⡇⢸⣿⣾⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣯⣿⣷⣶⣶⣿⣿⣾⣾⣿⣿⣿⣿⣶⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿";PRINT(JPLYBBS);
+
+onelienr
+ECHOOFF();COLOR(0,10);LOCATE(0,0);JPLYBBS =  '';JPLYBBS += '⣟⣙⣿⡟⠛⠛⠛⠛⠻⠿⠟⠙⠚⠑⠏⢻⣙⣛⠊⠳⠛⠛⠛⢛⡑⠞⠿⠿⢛⡗⣋⣛⠿⠿⠻⠹⠚⡓⣋⣻';JPLYBBS += '⡿⡿⣹⠧⢸⠉⠉⠉⣷⡏⠉⠉⠉⠉⠉⠿⠭⠩⢸⠉⠉⠉⢹⣮⠇⣿⠉⠩⠧⡵⠇⣯⢸⠉⠉⢹⣏⢷⡟⣿';JPLYBBS += '⠧⠯⠥⠄⢸⠀⠀⠀⣿⡇⠀⠀⠀⣀⠀⠀⠀⠉⣾⠀⠀⠀⢸⣿⣷⣿⡀⠀⠀⠉⣶⣸⠉⠀⠀⢸⣿⣿⣭⠭';JPLYBBS += '⣚⣿⢻⡏⢸⠀⠀⠀⣿⡇⠀⠀⠀⠿⠒⠀⠀⠀⣿⠀⠀⠀⢸⣿⣿⣿⣧⢠⠀⠀⠉⠉⠀⢠⠀⣿⣿⣿⣿⣿';JPLYBBS += '⡊⣿⠛⠛⠚⠀⠀⠀⣿⡇⠀⠀⠀⣀⣀⣀⣤⣷⣿⠀⠀⠀⠘⠛⠛⠛⢻⣼⡶⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣧';JPLYBBS += '⡅⣿⡀⠀⠀⠀⠀⣤⣿⡇⠀⠀⢀⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⢸⣿⣧⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣿';JPLYBBS += '⠏⡋⢙⡇⠀⡇⣿⣿⣿⣧⣇⡇⢸⣿⣿⣿⡟⣿⢹⡀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡇⢸⢸⣿⣿⣿⠿⠿⠿⠟';JPLYBBS += '⡛⣽⣿⣷⡂⣓⣿⣿⡏⠉⠉⠁⠈⠉⠙⠿⡍⣿⠉⠉⠉⠉⠉⠙⠛⢿⣿⣿⡿⠉⠀⠀⠈⠉⠙⢯⢩⡍⣥⣭';JPLYBBS += '⢟⣙⢛⣛⣛⣛⣛⣛⡇⠀⠀⢠⣤⡄⠀⠀⠀⣿⠀⠀⠀⣤⣤⠀⠀⠀⢸⠀⠀⠀⣤⣶⣤⡀⣶⣿⣿⣖⣧⣿';JPLYBBS += '⣭⣿⣿⣿⣷⣷⢿⣿⡇⠀⠀⠈⠉⠁⠀⣤⣿⣿⠀⠀⠀⠉⠉⠀⢠⣾⣿⠀⠀⠀⠈⠉⠉⠿⢿⣿⣿⣿⣿⣿';JPLYBBS += '⣿⢿⣿⣿⣏⣿⣿⢿⡇⠀⠀⢰⣶⡆⠀⠀⠉⣿⠀⠀⠀⣶⣶⠀⠀⠀⢹⣶⡇⣄⣀⣀⡀⠀⠀⢸⣿⣻⣿⣿';JPLYBBS += '⣼⣶⣚⣻⣿⣷⣯⣶⡇⠀⠀⠈⠉⠁⠀⠀⣠⣿⠀⠀⠀⠉⠉⠀⠀⢀⣸⣿⠛⠉⠛⠛⠃⠀⠀⣸⣿⣿⣟⣛';JPLYBBS += '⠭⣶⣶⣖⡶⠶⡖⣲⡇⣤⠀⣤⣤⣤⣴⣿⣿⣿⠀⣤⠀⣤⣤⣤⣼⣿⣿⣁⡄⠀⡀⢀⡀⣄⣿⣿⣿⣿⣿⣿';JPLYBBS += '⣿⢩⣭⠽⡿⠿⠿⣿⡇⠸⠀⣿⣿⣿⣿⣿⣿⣿⠶⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⠃⢸⣷⣿⣿⣿⣿⡿⣏⣿';JPLYBBS += '⣿⣿⣿⣧⣿⣷⣷⣿⣽⠍⠀⣯⣿⣿⣯⢿⠿⡿⣾⠍⠀⢽⣿⢿⠿⢽⣿⣿⠿⠿⠇⢸⣿⣿⣿⣿⣿⣿⡿⣿';JPLYBBS += '⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿⣾⡿⣿⣿⢿⠀⣿⣿⣿⣿⣿⣿⣿⢿⣿⡇⢸⣿⣾⣿⣿⣿⣿⣿⣿';JPLYBBS += '⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣯⣿⣷⣶⣶⣿⣿⣾⣾⣿⣿⣿⣿⣶⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿';PRINT(JPLYBBS);
 
 //test colors
 
@@ -423,6 +490,9 @@ PRINT("WHITE ON DARK GRAY");
 COLOR(14,1);
 PRINT("BLUE ON WHITE");
 
+oneliner
+COLOR(10,0);PRINT("RED ON BLACK");COLOR(1,4);PRINT("WHITE ON DARK GRAY");COLOR(14,1);PRINT("BLUE ON WHITE");
+
 test Japanese
 
 PRINT("日本語");
@@ -431,10 +501,162 @@ test 40 col
 
 PRINT("012345678901234567890123456789012345678901")
 
+
+test PLAY
+
+PRINT("now playing");
+PLAY("audio/modem.mp3");
+PRINT("Ended playing");
+
+test slowprint progra
+
+ECHOOFF();
+JPLYBBS =  '';
+JPLYBBS += '⣟⣙⣿⡟⠛⠛⠛⠛⠻⠿⠟⠙⠚⠑⠏⢻⣙⣛⠊⠳⠛⠛⠛⢛⡑⠞⠿⠿⢛⡗⣋⣛⠿⠿⠻⠹⠚⡓⣋⣻';
+JPLYBBS += '⡿⡿⣹⠧⢸⠉⠉⠉⣷⡏⠉⠉⠉⠉⠉⠿⠭⠩⢸⠉⠉⠉⢹⣮⠇⣿⠉⠩⠧⡵⠇⣯⢸⠉⠉⢹⣏⢷⡟⣿';
+JPLYBBS += '⠧⠯⠥⠄⢸⠀⠀⠀⣿⡇⠀⠀⠀⣀⠀⠀⠀⠉⣾⠀⠀⠀⢸⣿⣷⣿⡀⠀⠀⠉⣶⣸⠉⠀⠀⢸⣿⣿⣭⠭';
+JPLYBBS += '⣚⣿⢻⡏⢸⠀⠀⠀⣿⡇⠀⠀⠀⠿⠒⠀⠀⠀⣿⠀⠀⠀⢸⣿⣿⣿⣧⢠⠀⠀⠉⠉⠀⢠⠀⣿⣿⣿⣿⣿';
+JPLYBBS += '⡊⣿⠛⠛⠚⠀⠀⠀⣿⡇⠀⠀⠀⣀⣀⣀⣤⣷⣿⠀⠀⠀⠘⠛⠛⠛⢻⣼⡶⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣧';
+JPLYBBS += '⡅⣿⡀⠀⠀⠀⠀⣤⣿⡇⠀⠀⢀⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⢸⣿⣧⠀⠀⠀⢸⢸⣿⣿⣿⣿⣿⣿';
+JPLYBBS += '⠏⡋⢙⡇⠀⡇⣿⣿⣿⣧⣇⡇⢸⣿⣿⣿⡟⣿⢹⡀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡇⢸⢸⣿⣿⣿⠿⠿⠿⠟';
+JPLYBBS += '⡛⣽⣿⣷⡂⣓⣿⣿⡏⠉⠉⠁⠈⠉⠙⠿⡍⣿⠉⠉⠉⠉⠉⠙⠛⢿⣿⣿⡿⠉⠀⠀⠈⠉⠙⢯⢩⡍⣥⣭';
+JPLYBBS += '⢟⣙⢛⣛⣛⣛⣛⣛⡇⠀⠀⢠⣤⡄⠀⠀⠀⣿⠀⠀⠀⣤⣤⠀⠀⠀⢸⠀⠀⠀⣤⣶⣤⡀⣶⣿⣿⣖⣧⣿';
+JPLYBBS += '⣭⣿⣿⣿⣷⣷⢿⣿⡇⠀⠀⠈⠉⠁⠀⣤⣿⣿⠀⠀⠀⠉⠉⠀⢠⣾⣿⠀⠀⠀⠈⠉⠉⠿⢿⣿⣿⣿⣿⣿';
+JPLYBBS += '⣿⢿⣿⣿⣏⣿⣿⢿⡇⠀⠀⢰⣶⡆⠀⠀⠉⣿⠀⠀⠀⣶⣶⠀⠀⠀⢹⣶⡇⣄⣀⣀⡀⠀⠀⢸⣿⣻⣿⣿';
+JPLYBBS += '⣼⣶⣚⣻⣿⣷⣯⣶⡇⠀⠀⠈⠉⠁⠀⠀⣠⣿⠀⠀⠀⠉⠉⠀⠀⢀⣸⣿⠛⠉⠛⠛⠃⠀⠀⣸⣿⣿⣟⣛';
+JPLYBBS += '⠭⣶⣶⣖⡶⠶⡖⣲⡇⣤⠀⣤⣤⣤⣴⣿⣿⣿⠀⣤⠀⣤⣤⣤⣼⣿⣿⣁⡄⠀⡀⢀⡀⣄⣿⣿⣿⣿⣿⣿';
+JPLYBBS += '⣿⢩⣭⠽⡿⠿⠿⣿⡇⠸⠀⣿⣿⣿⣿⣿⣿⣿⠶⣿⠀⣿⣿⣿⣿⣿⣿⣿⣿⠀⠃⢸⣷⣿⣿⣿⣿⡿⣏⣿';
+JPLYBBS += '⣿⣿⣿⣧⣿⣷⣷⣿⣽⠍⠀⣯⣿⣿⣯⢿⠿⡿⣾⠍⠀⢽⣿⢿⠿⢽⣿⣿⠿⠿⠇⢸⣿⣿⣿⣿⣿⣿⡿⣿';
+JPLYBBS += '⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢀⣿⣿⣿⣿⣾⡿⣿⣿⢿⠀⣿⣿⣿⣿⣿⣿⣿⢿⣿⡇⢸⣿⣾⣿⣿⣿⣿⣿⣿';
+JPLYBBS += '⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣿⣿⣯⣿⣷⣶⣶⣿⣿⣾⣾⣿⣿⣿⣿⣶⣿⣷⣾⣿⣿⣿⣿⣿⣿⣿⣿';
+
+COLOR(0,10);LOCATE(0,0);
+await SLOWPRINT("2400    bps     4.17ms  1984",4.17);
+PRINT("");
+await SLOWPRINT(JPLYBBS,4.17);
+
+COLOR(0,9);LOCATE(0,0);
+await SLOWPRINT("14.4    kbps    2ms     1991",2);
+PRINT("");
+await SLOWPRINT(JPLYBBS,2);
+
+COLOR(0,8);LOCATE(0,0);
+await SLOWPRINT("56      kbps    0.69ms  1998",0.69);
+PRINT("");
+await SLOWPRINT(JPLYBBS,0.69);
+
+COLOR(0,7);LOCATE(0,0);
+await SLOWPRINT("110     bps     90.9ms  1950",90.9);
+PRINT("");
+await SLOWPRINT(JPLYBBS,90.9);
+
+
+modem speeds
+110     bps     90.9ms  1950
+2400    bps     4.17ms  1984
+14.4    kbps    2ms     1991
+56      kbps    0.69ms  1998
+
+ECHOOFF();
+COLOR(0,10);LOCATE(0,0);
+JPLYBBS =  '';
+JPLYBBS += '⣟⣙⣿⡟⠛⠛⠛⠛⠻⠿⠟⠙⠚⠑⠏⢻⣙⣛⠊⠳⠛⠛⠛⢛⡑⠞⠿⠿⢛⡗⣋⣛⠿⠿⠻⠹⠚⡓⣋⣻';
+JPLYBBS += '⣟⣙⣿⡟⠛';
+SLOWPRINT(JPLYBBS,30);
+
 todo list
 //(fixed)bug seems it is not creating a newline when it reacher the end of hte width of the screen.
 (done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
 add a bit of syntax sugar so it can be used more like BASIC 
+
+add:
+TYPE HELP() FOR HELP THEN PRESS [ENTER]
+TYPE HELPJP()を打ってそして[ENTER]を押して、日本語のヘルプを表示します
+ESCRIBA HELPES() Y PRECIONE [ENTER} PARA AYUDA EN ESPAÑOL
+
+TYPE ATDT+15593278 TO CONNECT TO ENGLISH JPLY BBS
+ATDT+815593278を打ったら。JPLY BSSの日本版に入ります
+ESCRIBA ATDT+525593278 PARA CONNECTARSE A JPLY BBS EN ESPAÑOL
+
+
+HELP IN ENGLISH
+ECHOOFF();
+TURNS COMMAND ECHO OFF
+ECHON();
+TURNS COMMAND ECHO ON
+PRINT("HELLO WORLD!:");
+PRINTS HELLO WORLD!
+VARNAME = INPUT()
+AWAITS FOR USER TO INPUT AND PRESS ENTER, THEN STORES VALUE IN VARIABLE VARNAME
+COLOR(0-15,0-15);
+CHANGES THE COLOR OF THE FOREGROUND AND BACKGROUD
+LOCATE(X, X)
+CHANGES THE POSITION OF THE NEXT PRINT STATEMENT TO X AND Y COORDINATES
+PLAY(URL);
+PLAYS THE SOUND LOCATED AT STRING IN URL VARIABLE
+HELP()
+DISPLAYS THIS HELP SCREEN
+
+TYPE ATDT+15593278 TO CONNECT TO ENGLISH JPLY BBS
+ATDT+815593278を打ったら。JPLY BSSの日本版に入ります
+ESCRIBA ATDT+525593278 PARA CONNECTARSE A JPLY BBS EN ESPAÑOL
+
+
+amigojapan> Emmanuel_Chanel: こんにちは
+3:19 PM <amigojapan> Emmanuel_Chanel: BBSって知ってますか？
+3:19 PM <Emmanuel_Chanel> ウェブ上の掲示板を日本ではそう呼びますね。
+3:20 PM <Emmanuel_Chanel> Bullet-in Board System だかの略で。
+3:21 PM <amigojapan> Emmanuel_Chanel: アメリカには1978年からありました、インターネット上じゃなくて、８ビットパソコンで使った
+3:21 PM <amigojapan> はい
+3:21 PM <Emmanuel_Chanel> 確かに、ウェブ上の掲示板とは別にそんなシステムがあるというのは、私も大学で習いました。
+3:21 PM <amigojapan> 今古いBBSシミュレーターを作ってます
+3:22 PM <amigojapan> へー
+3:23 PM <amigojapan> Emmanuel_Chanel: WEBは1989年で始まりました
+    amigojapan> １１年間WEBの前のBBSありました
+
+
+JPLY BBS rules:
+do not post inappropriate material, sware-words or attack other users.
+
+where to get all the ascii charaters for making boarders liike in Vistual BBS
+https://www.ascii.ca/cp437.htm
+
+add some upper art?
+Main Menu
+
+--Page Sysop
+--Door Games(BASIC interpreter, American football, darts)
+--Warez(what to put here? maybe link t JPLY games? self ad or actual ---way to download JPLY games)
+--Bulletin Board(threads, posts)
+--Mail
+--who(list all users)
+--Finger(list onlie users)
+--Chat(as if it were a multi-line BBS)?
+--Abour JPLY BBS
+--Quit
+Comment
+
+
+
+submenues
+
+Mail
+---list
+---read
+---write
+
+Bout
+---revival of Mexico city BBS called Night NAK form late 80s
+by same SysOp, same phone number displayed. English, Japanese
+and Spanish supported.
+now published as JPLY becuase that is the company I am
+wokring at.
+The idea is to give a taste of what BBS were like in the past
+to the people who never had a chance to try the,
+and also inspire the nostalgia in those who lived through
+that era.
+
+SeeRaaMuulator - is a word I just coined, which , means a software that just simulates the look and feel of something, not the actual function of the thing being simulated. SailorMulator maybe  better in English I guess?
 */
 </script>
 </body>
