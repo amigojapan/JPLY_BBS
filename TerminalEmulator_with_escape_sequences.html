@@ -313,8 +313,6 @@ function PUTCHAR(ch) {
     cell.style.color = currentFG;
     cell.style.backgroundColor = currentBG;
 
-    //cursorX++;
-    //if (cursorX >= 40) nextLine();
     cursorX++;
     if (cursorX >= 40) nextLine();
 }
@@ -349,13 +347,8 @@ function parseAndPrint(text, slow = false, delay = 0) {
 function PRINT(text = "") {
     text = String(text);
     parseAndPrint(text);
-
-    // only add newline if text does not already end with one
-    if (!text.endsWith("\n")) {
-        nextLine();
-    }
+    nextLine();
 }
-
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -391,34 +384,6 @@ function INPUT(promptText = "") {
 
         commandInput.focus();
     });
-}
-/**
- * Retrieves a text file from a URL.
- * @param {string} url The URL of the text file.
- * @returns {Promise<string>} A promise that resolves to the text content of the file.
- */
- async function CURL(url) {
-  try {
-    // Fetch the resource from the network.
-    const response = await fetch(url);
-
-    // Check if the request was successful. The fetch() function does not
-    // throw an error for HTTP error statuses (like 404), so we check manually.
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    // Read the response body as plain text and return the string.
-    const textData = await response.text();
-    return textData;
-
-  } catch (error) {
-    // Handle any errors that occurred during the fetch operation or in the processing.
-    console.error("Error fetching the text file:", error);
-    // You might want to return an empty string or re-throw the error,
-    // depending on how you want to handle failures in your application.
-    throw error;
-  }
 }
 
 function preprocess(code) {
@@ -615,20 +580,6 @@ JPLYBBS += '⣟⣙⣿⡟⠛⠛⠛⠛⠻⠿⠟⠙⠚⠑⠏⢻⣙⣛⠊⠳⠛⠛�
 JPLYBBS += '⣟⣙⣿⡟⠛';
 SLOWPRINT(JPLYBBS,30);
 
-
-test CURL program
-
-ECHOOFF();
-A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_LOGIN_SCREEN1BW.txt");
-PRINT(A);
-
-test with color
-
-ECHOOFF();
-A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_LOGIN_SCREEN1COLOR.txt");
-A = A.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-PRINT(A);
-
 todo list
 //(fixed)bug seems it is not creating a newline when it reacher the end of hte width of the screen.
 (done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
@@ -722,8 +673,6 @@ and also inspire the nostalgia in those who lived through
 that era.
 
 SeeRaaMuulator - is a word I just coined, which , means a software that just simulates the look and feel of something, not the actual function of the thing being simulated. SailorMulator maybe  better in English I guess? synonym: skeumorphism
-SeeRaaMuulator: es una palabra que acabo de acuñar y que significa un software que simplemente simula la apariencia de algo, no la función real de lo que se está simulando. Supongo que SailorMulator tal vez sea mejor en inglés. Sinónimo: esqueumorfismo
-セーラームーレーター - これは私が作った言葉で、シミュレートされるものの実際の機能ではなく、何かの外観と感触をシミュレートするだけのソフトウェアを意味します。 SailorMulator はおそらく英語の方が得意だと思います。同義語: skeumorphism
 */
 </script>
 </body>

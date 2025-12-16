@@ -1,0 +1,5 @@
+# Force UTF-8 for all text files
+AddDefaultCharset UTF-8
+
+# Explicitly set UTF-8 for .txt files
+AddType text/plain; charset=UTF-8 .txt
