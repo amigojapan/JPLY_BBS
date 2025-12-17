@@ -21,6 +21,7 @@ settings =
 		usesPermissions =
 		{
 			"android.permission.INTERNET",
+			"android.permission.MODIFY_AUDIO_SETTINGS".
 		},
 	},
 
