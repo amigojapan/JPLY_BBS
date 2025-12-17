@@ -313,6 +313,8 @@ function PUTCHAR(ch) {
     cell.style.color = currentFG;
     cell.style.backgroundColor = currentBG;
 
+    //cursorX++;
+    //if (cursorX >= 40) nextLine();
     cursorX++;
     if (cursorX >= 40) nextLine();
 }
@@ -347,8 +349,13 @@ function parseAndPrint(text, slow = false, delay = 0) {
 function PRINT(text = "") {
     text = String(text);
     parseAndPrint(text);
-    nextLine();
+
+    // only add newline if text does not already end with one
+    if (!text.endsWith("\n")) {
+        nextLine();
+    }
 }
+
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -469,13 +476,22 @@ commandInput.addEventListener("keydown", async (e) => {
 /* ==================================================
    BOOT SCREEN
 ================================================== */
-LOCATE(0,0);
-PRINT("**** JPLY 64 JS_BASIC V1 ****");
+//LOCATE(0,0);
+PRINT("**** JPLY C64 SailorMuulator JS_BASIC V-A.01 ****");
 PRINT("");
 PRINT("64K RAM SYSTEM  38911 BASIC BYTES FREE");
 PRINT("");
+PRINT("--------------------------------------------------");
+PRINT("TYPE HELP() THEN PRESS [ENTER]");
+PRINT("HELPJP()を打って、[ENTER]を押して");
+PRINT("ESCRIBA HELPES() Y PRECIONE [ENTER}");
+PRINT("");
+PRINT("ATDT+15593278 TO CONNECT TO JPLY BBS");
+PRINT("ATDT+815593278　JPLY BSSへ");
+PRINT("ATDT+525593278 PARA JPLY BBS");
+PRINT("");
 PRINT("READY.");
-for (let i = 0; i < 17; i++) PRINT("");
+//for (let i = 0; i < 17; i++) PRINT("");
 
 document.addEventListener("click", () => commandInput.focus());
 commandInput.focus();
@@ -619,6 +635,7 @@ test with color
 
 ECHOOFF();
 A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_LOGIN_SCREEN1COLOR.txt");
+A = A.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 PRINT(A);
 
 todo list
@@ -674,6 +691,7 @@ amigojapan> Emmanuel_Chanel: こんにちは
 
 JPLY BBS rules:
 do not post inappropriate material, sware-words or attack other users.
+be friendly with other users.
 
 where to get all the ascii charaters for making boarders liike in Vistual BBS
 https://www.ascii.ca/cp437.htm
@@ -714,6 +732,8 @@ and also inspire the nostalgia in those who lived through
 that era.
 
 SeeRaaMuulator - is a word I just coined, which , means a software that just simulates the look and feel of something, not the actual function of the thing being simulated. SailorMulator maybe  better in English I guess? synonym: skeumorphism
+SeeRaaMuulator: es una palabra que acabo de acuñar y que significa un software que simplemente simula la apariencia de algo, no la función real de lo que se está simulando. Supongo que SailorMulator tal vez sea mejor en inglés. Sinónimo: esqueumorfismo
+セーラームーレーター - これは私が作った言葉で、シミュレートされるものの実際の機能ではなく、何かの外観と感触をシミュレートするだけのソフトウェアを意味します。 SailorMulator はおそらく英語の方が得意だと思います。同義語: skeumorphism
 */
 </script>
 </body>
