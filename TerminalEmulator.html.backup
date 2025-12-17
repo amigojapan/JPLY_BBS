@@ -28,9 +28,7 @@
 
     .cell {
         display: inline-block;
-        width: 1ch;
-        height: 1em;
-        overflow: hidden;
+        min-height: 1em;
     }
 
 
@@ -57,8 +55,9 @@
         grid-template-columns: repeat(40, 1fr);
         background: var(--c64-blue);
         color: var(--c64-cyan);
-        font-family: 'C64', monospace;
-        font-size: clamp(12px, 2.2vh, 36px);
+        font-family: 'C64', 'Noto Sans JP', 'MS Gothic', monospace;
+        font-size: var(--dynamic-font-size, clamp(12px, 1.5vh, 36px));
+        /*change middle value to change font size*/
         line-height: 1;
         padding: 1vh 1vw;
         box-sizing: border-box;
@@ -70,11 +69,11 @@
         overflow: hidden;
     }
 
-    .double-wide {
+    /*.double-wide {
         display: inline-block;
         transform: scaleX(2);
         transform-origin: left center;
-    }
+    }*/
 
     .prompt { margin-right: 0.5ch; }
 
@@ -130,6 +129,31 @@ let currentBG = "#352879";     // default C64 blue background
 const screen = document.getElementById("screen");
 const lines = [];
 
+function isMobileDevice() {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    // Check for common mobile keywords
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
+        return true;
+    }
+    return false;
+}
+
+if (isMobileDevice()) {
+    console.log("Running on a mobile device.");
+} else {
+    console.log("Running on a desktop or non-mobile device.");
+}
+
+// Check if user agent contains mobile-specific keywords
+const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+// Select the element (e.g., the root or a specific class)
+const root = document.documentElement;
+
+if (!isMobile) {
+    document.documentElement.style
+        .setProperty('--dynamic-font-size', 'calc(clamp(12px, 1.5vh, 36px) * 2)');
+}
 function ECHOOFF(){
     echo = false;
 }
@@ -190,7 +214,7 @@ function makeRow() {
     d.className = "line";
 
     const wrap = document.createElement("span");
-    wrap.className = "double-wide";
+    //wrap.className = "double-wide";
 
     for (let i = 0; i < 40; i++) {
         const cell = document.createElement("span");
@@ -468,7 +492,34 @@ function preprocess(code) {
         '= await INPUT('
     );
 }
+//LOAD("alert('test');");
 
+async function LOAD(program) {
+    code=preprocess(program);
+    try {
+        let result = await eval(`(async()=>{ ${code} })()`);
+        if (result !== undefined) PRINT(result);
+    } catch (err) {
+        PRINT("?SYNTAX  ERROR:"+err.message);
+    }
+
+    GOTO_INPUT_LINE()
+    PRINT("READY.");
+    commandInput.focus();
+}
+
+//LOADCONFIRM("alert('test');");
+function LOADCONFIRM(program) {
+    pre=""
+    pre+="PRINT('*YOU ARE ABOUT TO LOAD A PROGRAM!*,\\n');"
+    pre+="PRINT('ARE YOU SURE YOU WANT TO CONTINUE? Y/N\\n');"
+    pre+="response = INPUT();"
+    pre+="response = response.toUpperCase();"
+    pre+="if(response=='Y') {"
+    pre+=program
+    pre+="}"    
+    LOAD(pre);
+}
 /* ==================================================
    MAIN KEYDOWN HANDLER
 ================================================== */
@@ -506,7 +557,7 @@ commandInput.addEventListener("keydown", async (e) => {
         let result = await eval(`(async()=>{ ${code} })()`);
         if (result !== undefined) PRINT(result);
     } catch (err) {
-        PRINT("?SYNTAX  ERROR:"+err);
+        PRINT("?SYNTAX  ERROR:"+err.message);
     }
 
     GOTO_INPUT_LINE()
@@ -518,18 +569,18 @@ commandInput.addEventListener("keydown", async (e) => {
    BOOT SCREEN
 ================================================== */
 LOCATE(0,0);
-PRINT("**** JPLY C64 SailorMuulator JS_BASIC V-A.01 ****\n");
+PRINT("**** JPLY C64 SailorMuulator ****\n");
+PRINT("**** JS_BASIC V-A.01         ****\n");
 PRINT("\n");
-PRINT("64K RAM SYSTEM  38911 BASIC BYTES FREE\n");
-PRINT("\n");
-PRINT("--------------------------------------------------\n");
+PRINT("---------------------------------\n");
 PRINT("TYPE HELP() THEN PRESS [ENTER]\n");
 PRINT("HELPJP()を打って、[ENTER]を押して\n");
-PRINT("ESCRIBA HELPES() Y PRECIONE [ENTER}\n");
+PRINT("ESCRIBA HELPES() Y PRECIONE [ENTER]\n");
 PRINT("\n");
-PRINT("ATDT+15593278 TO CONNECT TO JPLY BBS\n");
-PRINT("ATDT+815593278　JPLY BSSへ\n");
-PRINT("ATDT+525593278 PARA JPLY BBS\n");
+PRINT("ATM0 - MUTE ミュート SILENCIAR\n");
+PRINT("ATDT+15593278  - ENGLISH JPLY BBS\n");
+PRINT("ATDT+815593278 - JPLY BSS日本語\n");
+PRINT("ATDT+525593278 - JPLY BBS ESPAÑOL\n");
 PRINT("\n");
 PRINT("READY.\n");
 //for (let i = 0; i < 17; i++) PRINT("");
@@ -674,6 +725,7 @@ PRINT(A);
 
 test with color
 (fixed, actually the font size on vscode is not very accurate eventho it is set to monospace)bug, stll a few characters seem to be off at the end of the print
+remember, you need to test it with the version on hte server, otherwise you will get an error of failed to fetch
 
 ECHOOFF();
 A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_LOGIN_SCREEN1COLOR.txt");
@@ -684,7 +736,10 @@ PRINT(A);
 todo list
 //(fixed)bug seems it is not creating a newline when it reacher the end of hte width of the screen.
 (done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
-　
+(done)LOAD()
+bug LOADCONFIRM() prints ready before the program execution ends
+FIX cursor problem with non moving cursor
+try changing all text to double width characters, like i did with the english in otherworld frontier　
 TYPE REGISTER OR ENTER USERNAME:
 「ユーザ登録」もしくはハンドルを入力：
 ESCRIBA REGISTRAT O PONGA SU NOMBRE DE USUARIO]:

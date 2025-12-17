@@ -492,7 +492,34 @@ function preprocess(code) {
         '= await INPUT('
     );
 }
+//LOAD("alert('test');");
 
+async function LOAD(program) {
+    code=preprocess(program);
+    try {
+        let result = await eval(`(async()=>{ ${code} })()`);
+        if (result !== undefined) PRINT(result);
+    } catch (err) {
+        PRINT("?SYNTAX  ERROR:"+err.message);
+    }
+
+    GOTO_INPUT_LINE()
+    PRINT("READY.");
+    commandInput.focus();
+}
+
+//LOADCONFIRM("alert('test');");
+function LOADCONFIRM(program) {
+    pre=""
+    pre+="PRINT('*YOU ARE ABOUT TO LOAD A PROGRAM!*,\\n');"
+    pre+="PRINT('ARE YOU SURE YOU WANT TO CONTINUE? Y/N\\n');"
+    pre+="response = INPUT();"
+    pre+="response = response.toUpperCase();"
+    pre+="if(response=='Y') {"
+    pre+=program
+    pre+="}"    
+    LOAD(pre);
+}
 /* ==================================================
    MAIN KEYDOWN HANDLER
 ================================================== */
@@ -548,11 +575,14 @@ PRINT("\n");
 PRINT("---------------------------------\n");
 PRINT("TYPE HELP() THEN PRESS [ENTER]\n");
 PRINT("HELPJP()を打って、[ENTER]を押して\n");
-PRINT("ESCRIBA HELPES() Y PRECIONE [ENTER}\n");
+PRINT("ESCRIBA HELPES() Y PRECIONE [ENTER]\n");
 PRINT("\n");
-PRINT("ATDT+15593278 TO CONNECT TO JPLY BBS\n");
-PRINT("ATDT+815593278　JPLY BSSへ\n");
-PRINT("ATDT+525593278 PARA JPLY BBS\n");
+PRINT("ATM0 - MUTE ミュート SILENCIAR\n");
+PRINT("ATDT+15593278  - ENGLISH JPLY BBS\n");
+PRINT("ATDT+815593278 - JPLY BSS日本語\n");
+PRINT("ATDT+525593278 - JPLY BBS ESPAÑOL\n");
+PRINT("PLEASE USE ALLCAPS FOR COMMANDS,\n");
+PRINT("PRESS ENTER WHEN DONE.\n");
 PRINT("\n");
 PRINT("READY.\n");
 //for (let i = 0; i < 17; i++) PRINT("");
@@ -703,12 +733,24 @@ ECHOOFF();
 A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_LOGIN_SCREEN1COLOR.txt");
 PRINT(A);
 
+test scriptloading
+
+ECHOOFF();
+A = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.JS_BASIC");
+PRINT(A);
+
 //did not need this line at all//A = A.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
 todo list
 //(fixed)bug seems it is not creating a newline when it reacher the end of hte width of the screen.
 (done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
-　
+(done)LOAD()
+bug LOADCONFIRM() prints ready before the program execution ends
+FIX cursor problem with non moving cursor
+try changing all text to double width characters, like i did with the english in otherworld frontier　
+maybe try inverting the behavious of capslock? KeyboardEvent.getModifierState('CapsLock')//return ture if capslock is on
+maybe add *optional* CRT effect with something like this https://github.com/D3nn7/crt-css?tab=readme-ov-file
+
 TYPE REGISTER OR ENTER USERNAME:
 「ユーザ登録」もしくはハンドルを入力：
 ESCRIBA REGISTRAT O PONGA SU NOMBRE DE USUARIO]:
