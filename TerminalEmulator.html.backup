@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>C64 Full Screen Simulator</title>
+<title>C64 SailorMuulator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <style>
@@ -255,10 +255,21 @@ function LOCATE(x, y) {
 
 function getColor(n) {
     const table = {
-        0:"#000000", 1:"#ffffff", 2:"#808080", 3:"#b0c4de",
-        4:"#a9a9a9", 7:"#c0c0c0", 8:"#dda0dd", 9:"#ee82ee",
-        10:"#ff0000", 11:"#ffa500", 12:"#ffff00", 13:"#008000",
-        14:"#0000ff", 15:"#4b0082", 16:"#ee82ee"
+        0:"#000000", // black
+        1:"#ffffff", // white
+        2:"#808080", // gray
+        3:"#b0c4de", // light steel blue
+        4:"#a9a9a9", // dark gray
+        7:"#c0c0c0", // silver
+        8:"#dda0dd", // plum
+        9:"#ee82ee", // violet
+        10:"#ff0000", // red
+        11:"#ffa500", // orange
+        12:"#ffff00", // yellow
+        13:"#008000", // green
+        14:"#0000ff", // blue
+        15:"#4b0082", // indigo
+        16:"#800080"  // purple
     };
     return table[n] || "#ffffff";
 }
@@ -305,52 +316,82 @@ function ensureRow(row) {
     return wrap;
 }
 
-function PUTCHAR(ch) {
-    const row = lines[cursorY];
-    const cell = row.firstChild.children[cursorX];
+let justWrapped = false;
 
+function PUTCHAR(ch) {
+    const cell = lines[cursorY].firstChild.children[cursorX];
     cell.textContent = ch;
     cell.style.color = currentFG;
     cell.style.backgroundColor = currentBG;
 
-    //cursorX++;
-    //if (cursorX >= 40) nextLine();
     cursorX++;
-    if (cursorX >= 40) nextLine();
+    if (cursorX >= 40) {
+        nextLine();
+        justWrapped = true;   // ← IMPORTANT
+    } else {
+        justWrapped = false;
+    }
 }
 
 /* ==================================================
    PRINT WITH WRAPPING + COLORS + ONE DOUBLE-WIDE WRAPPER
 ================================================== */
+function softNewLine() {
+    cursorX = 0;
+    cursorY++;
+    if (cursorY > 23) {
+        screen.removeChild(lines.shift());
+        const r = makeRow();
+        screen.insertBefore(r, inputLine);
+        lines.splice(23, 0, r);
+        cursorY = 23;
+    }
+}
 
-function parseAndPrint(text, slow = false, delay = 0) {
+async function parseAndPrint(text, slow = false, delay = 0) {
     let i = 0;
     const colorRegex = /^\[C\s*(\d+)\s*,\s*(\d+)\s*\]/;
 
-    return (async () => {
-        while (i < text.length) {
-            if (text[i] === "[") {
-                const match = text.slice(i).match(colorRegex);
-                if (match) {
-                    COLOR(parseInt(match[1]), parseInt(match[2]));
-                    i += match[0].length;
-                    continue;
-                }
-            }
+    while (i < text.length) {
 
-            PUTCHAR(text[i]);
+        if (text[i] === "\r") {
             i++;
-
-            if (slow) await sleep(delay);
+            continue;
         }
-    })();
+
+        if (text[i] === "\n") {
+            // 🔴 KEY FIX:
+            // If we JUST wrapped, this newline is redundant
+            if (!justWrapped) {
+                nextLine();
+            }
+            justWrapped = false;
+            i++;
+            continue;
+        }
+
+        if (text[i] === "[") {
+            const m = text.slice(i).match(colorRegex);
+            if (m) {
+                COLOR(+m[1], +m[2]);
+                i += m[0].length; // zero-width
+                continue;
+            }
+        }
+
+        PUTCHAR(text[i]);
+        i++;
+
+        if (slow) await new Promise(r => setTimeout(r, delay));
+    }
 }
 
-function PRINT(text = "") {
+async function PRINT(text = "") {
     text = String(text);
-    parseAndPrint(text);
 
-    // only add newline if text does not already end with one
+    await parseAndPrint(text);
+
+    // Only add a newline if the text did NOT already end with one
     if (!text.endsWith("\n")) {
         nextLine();
     }
@@ -476,21 +517,21 @@ commandInput.addEventListener("keydown", async (e) => {
 /* ==================================================
    BOOT SCREEN
 ================================================== */
-//LOCATE(0,0);
-PRINT("**** JPLY C64 SailorMuulator JS_BASIC V-A.01 ****");
-PRINT("");
-PRINT("64K RAM SYSTEM  38911 BASIC BYTES FREE");
-PRINT("");
-PRINT("--------------------------------------------------");
-PRINT("TYPE HELP() THEN PRESS [ENTER]");
-PRINT("HELPJP()を打って、[ENTER]を押して");
-PRINT("ESCRIBA HELPES() Y PRECIONE [ENTER}");
-PRINT("");
-PRINT("ATDT+15593278 TO CONNECT TO JPLY BBS");
-PRINT("ATDT+815593278　JPLY BSSへ");
-PRINT("ATDT+525593278 PARA JPLY BBS");
-PRINT("");
-PRINT("READY.");
+LOCATE(0,0);
+PRINT("**** JPLY C64 SailorMuulator JS_BASIC V-A.01 ****\n");
+PRINT("\n");
+PRINT("64K RAM SYSTEM  38911 BASIC BYTES FREE\n");
+PRINT("\n");
+PRINT("--------------------------------------------------\n");
+PRINT("TYPE HELP() THEN PRESS [ENTER]\n");
+PRINT("HELPJP()を打って、[ENTER]を押して\n");
+PRINT("ESCRIBA HELPES() Y PRECIONE [ENTER}\n");
+PRINT("\n");
+PRINT("ATDT+15593278 TO CONNECT TO JPLY BBS\n");
+PRINT("ATDT+815593278　JPLY BSSへ\n");
+PRINT("ATDT+525593278 PARA JPLY BBS\n");
+PRINT("\n");
+PRINT("READY.\n");
 //for (let i = 0; i < 17; i++) PRINT("");
 
 document.addEventListener("click", () => commandInput.focus());
@@ -632,15 +673,65 @@ A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=
 PRINT(A);
 
 test with color
+(fixed, actually the font size on vscode is not very accurate eventho it is set to monospace)bug, stll a few characters seem to be off at the end of the print
 
 ECHOOFF();
 A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_LOGIN_SCREEN1COLOR.txt");
-A = A.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 PRINT(A);
+
+//did not need this line at all//A = A.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
 todo list
 //(fixed)bug seems it is not creating a newline when it reacher the end of hte width of the screen.
 (done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
+　
+TYPE REGISTER OR ENTER USERNAME:
+「ユーザ登録」もしくはハンドルを入力：
+ESCRIBA REGISTRAT O PONGA SU NOMBRE DE USUARIO]:
+
+PASSWORD:
+パスワード；
+CONTRASEÑA:
+
+
+
+registration
+
+get user IP and IMEI if possible
+block TOR, nessesary to avoid evil users
+
+
+NOTE;USER NAME CANNOT EASILY BE HCANGED
+ENTER NEW USERNAME:
+注意；ハンドル名がかんたんに変えられない。
+新しいハンドルを入力：
+NOTA; EL NOMBRE DE USUARIO NO ES FACIL DE CAMBIAR
+PONGA SU NUEVO NOMBRE DE USUARIO]:
+
+USERNAME TAKEN
+そのハンドルはもう既に存在してる
+ESE NOMBRE DE USUARIO YA EXISTE
+
+NEW PASSWORD:
+新しいパスワード；
+NUEVA CONTRASEÑA:
+
+CONFIRM PASSWORD:
+もう一度パスワード；
+CONFIRMAR CONTRASEÑA:
+
+
+PASSWORD MISMATCH!
+一致しない!
+LAS 2 CONTRASEÑAS NO SON IGUALES!
+
+
+WELCOME! PLEASE READ RULES
+ようこそ！ルールを読んでね！
+BIENVENID(O/A)! PORFAVOR LEE LAS REGLAS
+
+
+add rules option to main menu 
 add a bit of syntax sugar so it can be used more like BASIC 
 
 add:
@@ -690,8 +781,34 @@ amigojapan> Emmanuel_Chanel: こんにちは
 
 
 JPLY BBS rules:
-do not post inappropriate material, sware-words or attack other users.
+Please refrain from topics that contravene public order and morals.
+Illegal activity prohibited.
+do not post inappropriate material, no profanity, no attack other users.
 be friendly with other users.
+No trolling or SPAM
+No talk about illegal drugs or kiken-drugs
+Obey SysOp and Co-SysOps
+Japanese law applies in this BBS.
+
+JPLY BBSのルール：
+公序良俗に反する話題はご遠慮ください
+違法な行為、不適切な内容の投稿、卑猥な言葉の使用、他のユーザーへの攻撃は禁止です。
+他のユーザーには友好的に接してください。
+あらしとスパム行為は禁止です。
+違法なドラッグや危険ドラグの話も禁止
+システムオペレター達に従って下さい。
+このBBSは日本法律適用です。
+
+Reglas del BBS JPLY:
+Por favor, absténgase de abordar temas que contravengan el orden público y la moral.
+Actividad ilegal prhoivida.
+No publiques contenido inapropiado, no utilices lenguaje obseno, no ataques a otros usuarios.
+Sé amable con los demás usuarios.
+No envíes espam.
+No trolear.
+No hablar sobre drogas ilegales o drogas-kiken
+Obedece a los Operadores del systema
+Este BBS usa las leyes Japonesas
 
 where to get all the ascii charaters for making boarders liike in Vistual BBS
 https://www.ascii.ca/cp437.htm
