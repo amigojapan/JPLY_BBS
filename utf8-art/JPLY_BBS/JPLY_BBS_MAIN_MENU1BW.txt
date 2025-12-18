@@ -1,23 +1,23 @@
-0123456789012345678901234567890123456789
-       ___._________.___    ____.__.    0
-      |   |\_____   \   |   \__ |  |    1
-      |   | |    ___/   |    /  |  |    2
-  /\__|   | |   |   |   |___ \___  |    3
-  \_______| |___|   |______ \/ ____|    4
---Main Menu         BBS by amigojapan   5
-┌──────────────────────────────────────┐6
-│  P)age Sysop - Call amigojapan       │7
-│  D)oor Games - Online Games          │8
-│  W)arez      - Downlaod software     │9
-│  B)ulletin   - Threads & posts       │0
-│  M)ail       - Private messages      │1
-│  wH)o        - List all users        │2
-│  F)inger     - List online users     │3
-│  C)hat       - Chat                  │4
-│  A)bout      - About JPLY BBS        │5
-│  R)ulz       - How to behave on BBS  │6
-│  Q)uit       - Exit the system       │7
-└──────────────────────────────────────┘8
-┌──────────────────────────────────────┐9
-│   Type a letter then press [ENTER]   │0
-└──────────────────────────────────────┘1
+
+       ___._________.___    ____.__.    
+      |   |\_____   \   |   \__ |  |    
+      |   | |    ___/   |    /  |  |    
+  /\__|   | |   |   |   |___ \___  |    
+  \_______| |___|   |______ \/ ____|    
+--Main Menu         BBS by amigojapan   
+┌──────────────────────────────────────┐
+│  P)age Sysop - Call amigojapan       │
+│  D)oor Games - Online Games          │
+│  W)arez      - Download software     │
+│  B)ulletin   - Threads & posts       │
+│  M)ail       - Private messages      │
+│  wH)o        - List all users        │
+│  F)inger     - List online users     │
+│  C)hat       - Chat                  │
+│  A)bout      - About JPLY BBS        │
+│  R)ulz       - How to behave on BBS  │
+│  Q)uit       - Exit the system       │
+└──────────────────────────────────────┘
+┌──────────────────────────────────────┐
+│   Type a letter then press [ENTER]   │
+└──────────────────────────────────────┘

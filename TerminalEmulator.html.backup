@@ -485,12 +485,16 @@ function INPUT(promptText = "") {
     throw error;
   }
 }
-
+//ATDT+15593278
 function preprocess(code) {
-    return code.replace(
+    code=code.replace(
         /=\s*INPUT\s*\(/g,
         '= await INPUT('
     );
+    code = code.replace(
+    /ATDT\+15593278/g, 
+    'JPLYEN()');
+    return code;
 }
 //LOAD("alert('test');");
 
@@ -579,14 +583,25 @@ PRINT("ESCRIBA HELPES() Y PRECIONE [ENTER]\n");
 PRINT("\n");
 PRINT("ATM0 - MUTE ミュート SILENCIAR\n");
 PRINT("ATDT+15593278  - ENGLISH JPLY BBS\n");
-PRINT("ATDT+815593278 - JPLY BSS日本語\n");
+PRINT("ATDT+815593278 - JPLY BSS　日本語\n");
 PRINT("ATDT+525593278 - JPLY BBS ESPAÑOL\n");
+PRINT("PLEASE USE ALLCAPS FOR COMMANDS,\n");
+PRINT("PRESS ENTER WHEN DONE.\n");
 PRINT("\n");
 PRINT("READY.\n");
 //for (let i = 0; i < 17; i++) PRINT("");
 
 document.addEventListener("click", () => commandInput.focus());
 commandInput.focus();
+function JPLYEN() {
+    prg=""
+    prg+="ECHOOFF();"
+    prg+="PRINT('CONNECTING...');"
+    prg+="await PLAY('audio/modem.mp3');"
+    prg+="A = await CURL('https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.JS_BASIC');"
+    prg+="LOAD(A);"
+    LOAD(prg);
+}
 /*
 test input and locate 
 
@@ -731,6 +746,12 @@ ECHOOFF();
 A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_LOGIN_SCREEN1COLOR.txt");
 PRINT(A);
 
+test scriptloading
+
+ECHOOFF();
+A = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.JS_BASIC");
+LOAD(A);
+
 //did not need this line at all//A = A.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
 todo list
@@ -740,6 +761,9 @@ todo list
 bug LOADCONFIRM() prints ready before the program execution ends
 FIX cursor problem with non moving cursor
 try changing all text to double width characters, like i did with the english in otherworld frontier　
+maybe try inverting the behavious of capslock? KeyboardEvent.getModifierState('CapsLock')//return ture if capslock is on
+maybe add *optional* CRT effect with something like this https://github.com/D3nn7/crt-css?tab=readme-ov-file
+
 TYPE REGISTER OR ENTER USERNAME:
 「ユーザ登録」もしくはハンドルを入力：
 ESCRIBA REGISTRAT O PONGA SU NOMBRE DE USUARIO]:
@@ -906,6 +930,9 @@ that era.
 SeeRaaMuulator - is a word I just coined, which , means a software that just simulates the look and feel of something, not the actual function of the thing being simulated. SailorMulator maybe  better in English I guess? synonym: skeumorphism
 SeeRaaMuulator: es una palabra que acabo de acuñar y que significa un software que simplemente simula la apariencia de algo, no la función real de lo que se está simulando. Supongo que SailorMulator tal vez sea mejor en inglés. Sinónimo: esqueumorfismo
 セーラームーレーター - これは私が作った言葉で、シミュレートされるものの実際の機能ではなく、何かの外観と感触をシミュレートするだけのソフトウェアを意味します。 SailorMulator はおそらく英語の方が得意だと思います。同義語: skeumorphism
+
+teletext? seems to be something simillar to JPLY BBS
+https://nmsceefax.co.uk/#id=WyJubXMtY2VlZmF4IiwiaW50ZXJuYWwubmF0aGFubWVkaWFzZXJ2aWNlcy5jby51ayIsIi93ZWJzb2NrZXRzL2NlZWZheCJd:page=100
 */
 </script>
 </body>
