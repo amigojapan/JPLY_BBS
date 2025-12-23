@@ -1,0 +1,23 @@
+
+       ___._________.___    ____.__.    
+      |   |\_____   \   |   \__ |  |    
+      |   | |    ___/   |    /  |  |    
+  /\__|   | |   |   |   |___ \___  |    
+  \_______| |___|   |______ \/ ____|    
+--Menu Principal       BBS de amigojapan   
+┌──────────────────────────────────────┐
+│  P)age Sysop - Lamar a amigojapan    │
+│  D)oor Games - Juegos en-linea       │
+│  W)arez      - Descargar Programas   │
+│  B)ulletin   - Tablón de menajes     │
+│  M)ail       - Mensajes privados     │
+│  wH)o        - Lista de usuarios     │
+│  F)inger     - Usuarios en-linea     │
+│  C)hat       - Charlar               │
+│  A)bout      - Acerca de JPLY BBS    │
+│  R)ulz       - Reglas de este BBS    │
+│  Q)uit       - Salir del systema     │
+└──────────────────────────────────────┘
+┌──────────────────────────────────────┐
+│ Escribe una lettra y preciona[ENTER] │
+└──────────────────────────────────────┘

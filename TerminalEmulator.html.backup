@@ -561,6 +561,11 @@ commandInput.addEventListener("keydown", async (e) => {
         let result = await eval(`(async()=>{ ${code} })()`);
         if (result !== undefined) PRINT(result);
     } catch (err) {
+        if (err.message.startsWith("ATDT")) {
+            PLAY("audio/busy.mp3");
+            return;
+        }
+
         PRINT("?SYNTAX  ERROR:"+err.message);
     }
 

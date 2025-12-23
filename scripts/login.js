@@ -1,0 +1,27 @@
+ECHOOFF();
+A = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/../i18n.js");
+LOAD(A);
+login_art = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_LOGIN_SCREEN1COLOR.txt");
+await SLOWPRINT(login_art,2);
+COLOR(12,0);
+await SLOWPRINT(translate["enter nick or reg."],2);
+NICK = await INPUT();
+await SLOWPRINT(translate["pw prompt"],2);
+PASSWORD = INPUT("");
+await SLOWPRINT(translate["welcome"]+NICK+"!",2);
+main_menuEN = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_MAIN_MENU1BWEN.txt");
+main_menuJP = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_MAIN_MENU1BWJP.txt");
+main_menuES = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_MAIN_MENU1BWES.txt");
+if(i18n_getlang()=="English"){
+    main_menu = main_menuEN;
+} else
+if(i18n_getlang()=="Japanese"){
+    main_menu = main_menuJP;
+} else
+if(i18n_getlang()=="Spanish"){
+    main_menu = main_menuES;
+} else {
+    throw new Error("INVALID LANGUAGE exception!");
+}
+await SLOWPRINT(main_menu,2);
+option = await INPUT();

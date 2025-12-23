@@ -107,6 +107,7 @@
 </head>
 
 <body>
+<script src="i18n.js"></script>
 <div class="tv">
     <div id="screen"></div>
 </div>
@@ -462,6 +463,7 @@ function INPUT(promptText = "") {
  * @param {string} url The URL of the text file.
  * @returns {Promise<string>} A promise that resolves to the text content of the file.
  */
+/*
  async function CURL(url) {
   try {
     // Fetch the resource from the network.
@@ -485,15 +487,96 @@ function INPUT(promptText = "") {
     throw error;
   }
 }
+*/
+
+/**
+ * Performs an HTTP POST request to a URL, sending data as a URL-encoded string.
+ * This function is asynchronous and will wait (when used with 'await') until the request is sent,
+ * the response is received, and then return the response text.
+ * @param {string} url The URL for the request.
+ * @param {Object} [options={}] Optional configuration for the request.
+ * @param {string} [options.data=null] The request data as a URL-encoded string (e.g., 'param1=value1&param2=value2').
+ * @param {Object} [options.headers={}] Additional headers to include.
+ * @returns {Promise<string>} A promise that resolves to the text content of the response.
+ */
+ async function CURL(url, options = {}) {
+  try {
+    const {
+      data = null,
+      headers = {},
+      ...rest // Allow other fetch options if needed
+    } = options;
+
+    let fetchBody = null;
+    let fetchHeaders = { ...headers };
+
+    // For POST, set data as body with URL-encoded content type
+    if (data) {
+      fetchBody = data;
+      if (!fetchHeaders['Content-Type']) {
+        fetchHeaders['Content-Type'] = 'application/x-www-form-urlencoded';
+      }
+    }
+
+    // Fetch the resource with POST method
+    // This line will wait until the response is received
+    const response = await fetch(url, {
+      method: 'POST',
+      body: fetchBody,
+      headers: fetchHeaders,
+      ...rest
+    });
+
+    // Check if the request was successful
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Read the response body as plain text
+    // This will also wait until the text is fully read
+    const textData = await response.text();
+
+    // Return the response text
+    return textData;
+  } catch (error) {
+    // Handle any errors that occurred during the fetch operation or in the processing
+    console.error("Error in CURL operation:", error);
+    throw error;
+  }
+}
+
+// Usage Examples:
+
+// To use it in an async context and wait for the response:
+async function eu() { //exampleUsage
+  try {
+     // POST request with URL-encoded data string
+    const response2 = await CURL('https://example.com/apiendpoint', {
+      data: 'param1=value1&param2=value2',
+      //headers: { 'Authorization': 'Bearer your-token' }
+    });
+    console.log('POST response:', response2);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+
 //ATDT+15593278
 function preprocess(code) {
-    code=code.replace(
-        /=\s*INPUT\s*\(/g,
-        '= await INPUT('
-    );
+    //code=code.replace(
+    //    /=\s*INPUT\s*\(/g,
+    //    '= await INPUT('
+    //);
     code = code.replace(
     /ATDT\+15593278/g, 
     'JPLYEN()');
+    code = code.replace(
+    /ATDT\+815593278/g, 
+    'JPLYJP()');
+    code = code.replace(
+    /ATDT\+525593278/g, 
+    'JPLYES()');
     return code;
 }
 //LOAD("alert('test');");
@@ -501,7 +584,7 @@ function preprocess(code) {
 async function LOAD(program) {
     code=preprocess(program);
     try {
-        let result = await eval(`(async()=>{ ${code} })()`);
+        let result = await window.eval(`(async()=>{ ${code} })()`);
         if (result !== undefined) PRINT(result);
     } catch (err) {
         PRINT("?SYNTAX  ERROR:"+err.message);
@@ -512,12 +595,32 @@ async function LOAD(program) {
     commandInput.focus();
 }
 
+//OPENURLCONFIRM("https://google.com");
+//test injection
+//OPENURLCONFIRM("';alert(\"t\")'");
+function OPENURLCONFIRM(url) {
+    // Basic sanitization: ensure it starts with http:// or https://
+    if (!/^https?:\/\//i.test(url)) {
+        alert("Invalid URL: must start with http:// or https://");
+        return;
+    }
+
+    const confirmed = confirm(
+        "YOU ARE SURE YOU WANT TO LOAD THIS URL?\n\n" +
+        url + "\n\n" +
+        "ARE YOU SURE YOU WANT TO CONTINUE?"
+    );
+
+    if (confirmed) {
+        window.open(url, '_blank');
+    }
+}
 //LOADCONFIRM("alert('test');");
 function LOADCONFIRM(program) {
     pre=""
     pre+="PRINT('*YOU ARE ABOUT TO LOAD A PROGRAM!*,\\n');"
     pre+="PRINT('ARE YOU SURE YOU WANT TO CONTINUE? Y/N\\n');"
-    pre+="response = INPUT();"
+    pre+="response = await INPUT();"
     pre+="response = response.toUpperCase();"
     pre+="if(response=='Y') {"
     pre+=program
@@ -561,6 +664,11 @@ commandInput.addEventListener("keydown", async (e) => {
         let result = await eval(`(async()=>{ ${code} })()`);
         if (result !== undefined) PRINT(result);
     } catch (err) {
+        if (err.message.startsWith("ATDT")) {
+            PLAY("audio/busy.mp3");
+            return;
+        }
+
         PRINT("?SYNTAX  ERROR:"+err.message);
     }
 
@@ -599,14 +707,36 @@ PRINT("READY.\n");
 document.addEventListener("click", () => commandInput.focus());
 commandInput.focus();
 function JPLYEN() {
+    translate = i18n_setlang("English");
     prg=""
     prg+="ECHOOFF();"
     prg+="PRINT('CONNECTING...');"
     prg+="await PLAY('audio/modem.mp3');"
-    prg+="A = await CURL('https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.JS_BASIC');"
+    prg+="A = await CURL('https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.js');"
     prg+="LOAD(A);"
     LOAD(prg);
 }
+function JPLYJP() {
+    translate = i18n_setlang("Japanese");
+    prg=""
+    prg+="ECHOOFF();"
+    prg+="PRINT('接続中...');"
+    prg+="await PLAY('audio/modem.mp3');"
+    prg+="A = await CURL('https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.js');"
+    prg+="LOAD(A);"
+    LOAD(prg);
+}
+function JPLYES() {
+    translate = i18n_setlang("Spanish");
+    prg=""
+    prg+="ECHOOFF();"
+    prg+="PRINT('CONECTANDO...');"
+    prg+="await PLAY('audio/modem.mp3');"
+    prg+="A = await CURL('https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.js');"
+    prg+="LOAD(A);"
+    LOAD(prg);
+}
+
 /*
 test input and locate 
 
@@ -622,7 +752,7 @@ LOCATE(5,5);
 PRINT("A");
 
 oneliner
-ECHOOFF(); PRINT("ENTER NAME:"); A =INPUT(); PRINT("HELLO " + A); AGE = INPUT("AGE?"); PRINT("YOU ARE " + AGE + " YEARS OLD"); LOCATE(5,5); PRINT("HELLO"); LOCATE(5,5); PRINT("A");
+ECHOOFF(); PRINT("ENTER NAME:"); A =await INPUT(); PRINT("HELLO " + A); AGE = INPUT("AGE?"); PRINT("YOU ARE " + AGE + " YEARS OLD"); LOCATE(5,5); PRINT("HELLO"); LOCATE(5,5); PRINT("A");
 
 
 test UTF8ART art
@@ -754,10 +884,23 @@ PRINT(A);
 test scriptloading
 
 ECHOOFF();
-A = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.JS_BASIC");
+A = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.js");
 LOAD(A);
 
 //did not need this line at all//A = A.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+testing i18n
+
+translate = i18n_setlang("Japanese");
+PRINT(translate["Hello World"]);
+
+
+test POST
+
+var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/register.php', {
+  data: 'nick=amigojapan&pw=mockpassword&email=mockemail@email.com'
+});
+PRINT(response);
 
 todo list
 //(fixed)bug seems it is not creating a newline when it reacher the end of hte width of the screen.
