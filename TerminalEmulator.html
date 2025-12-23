@@ -564,10 +564,10 @@ async function eu() { //exampleUsage
 
 //ATDT+15593278
 function preprocess(code) {
-    //code=code.replace(
-    //    /=\s*INPUT\s*\(/g,
-    //    '= await INPUT('
-    //);
+    code=code.replace(
+        /=\s*INPUT\s*\(/g,
+        '= await INPUT('
+    );
     code = code.replace(
     /ATDT\+15593278/g, 
     'JPLYEN()');
@@ -584,7 +584,7 @@ function preprocess(code) {
 async function LOAD(program) {
     code=preprocess(program);
     try {
-        let result = await window.eval(`(async()=>{ ${code} })()`);
+        let result = await eval(`(async()=>{ ${code} })()`);
         if (result !== undefined) PRINT(result);
     } catch (err) {
         PRINT("?SYNTAX  ERROR:"+err.message);
@@ -620,7 +620,7 @@ function LOADCONFIRM(program) {
     pre=""
     pre+="PRINT('*YOU ARE ABOUT TO LOAD A PROGRAM!*,\\n');"
     pre+="PRINT('ARE YOU SURE YOU WANT TO CONTINUE? Y/N\\n');"
-    pre+="response = await INPUT();"
+    pre+="response = INPUT();"
     pre+="response = response.toUpperCase();"
     pre+="if(response=='Y') {"
     pre+=program
@@ -712,7 +712,7 @@ function JPLYEN() {
     prg+="ECHOOFF();"
     prg+="PRINT('CONNECTING...');"
     prg+="await PLAY('audio/modem.mp3');"
-    prg+="A = await CURL('https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.js');"
+    prg+="A = await CURL('https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.JS_BASIC');"
     prg+="LOAD(A);"
     LOAD(prg);
 }
@@ -722,7 +722,7 @@ function JPLYJP() {
     prg+="ECHOOFF();"
     prg+="PRINT('接続中...');"
     prg+="await PLAY('audio/modem.mp3');"
-    prg+="A = await CURL('https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.js');"
+    prg+="A = await CURL('https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.JS_BASIC');"
     prg+="LOAD(A);"
     LOAD(prg);
 }
@@ -732,7 +732,7 @@ function JPLYES() {
     prg+="ECHOOFF();"
     prg+="PRINT('CONECTANDO...');"
     prg+="await PLAY('audio/modem.mp3');"
-    prg+="A = await CURL('https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.js');"
+    prg+="A = await CURL('https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.JS_BASIC');"
     prg+="LOAD(A);"
     LOAD(prg);
 }
@@ -752,7 +752,7 @@ LOCATE(5,5);
 PRINT("A");
 
 oneliner
-ECHOOFF(); PRINT("ENTER NAME:"); A =await INPUT(); PRINT("HELLO " + A); AGE = INPUT("AGE?"); PRINT("YOU ARE " + AGE + " YEARS OLD"); LOCATE(5,5); PRINT("HELLO"); LOCATE(5,5); PRINT("A");
+ECHOOFF(); PRINT("ENTER NAME:"); A =INPUT(); PRINT("HELLO " + A); AGE = INPUT("AGE?"); PRINT("YOU ARE " + AGE + " YEARS OLD"); LOCATE(5,5); PRINT("HELLO"); LOCATE(5,5); PRINT("A");
 
 
 test UTF8ART art
@@ -884,7 +884,7 @@ PRINT(A);
 test scriptloading
 
 ECHOOFF();
-A = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.js");
+A = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.JS_BASIC");
 LOAD(A);
 
 //did not need this line at all//A = A.replace(/\r\n/g, "\n").replace(/\r/g, "\n");

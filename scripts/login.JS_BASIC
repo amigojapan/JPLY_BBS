@@ -1,11 +1,9 @@
 ECHOOFF();
-A = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/../i18n.js");
-LOAD(A);
 login_art = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_LOGIN_SCREEN1COLOR.txt");
 await SLOWPRINT(login_art,2);
 COLOR(12,0);
 await SLOWPRINT(translate["enter nick or reg."],2);
-NICK = await INPUT();
+NICK = INPUT();
 await SLOWPRINT(translate["pw prompt"],2);
 PASSWORD = INPUT("");
 await SLOWPRINT(translate["welcome"]+NICK+"!",2);
@@ -24,4 +22,4 @@ if(i18n_getlang()=="Spanish"){
     throw new Error("INVALID LANGUAGE exception!");
 }
 await SLOWPRINT(main_menu,2);
-option = await INPUT();
+option = INPUT();

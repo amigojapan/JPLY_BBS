@@ -4,7 +4,7 @@
       |   | |    ___/   |    /  |  |    
   /\__|   | |   |   |   |___ \___  |    
   \_______| |___|   |______ \/ ____|    
---Menu Principal       BBS de amigojapan   
+--Menu Principal       BBS de amigojapan
 ┌──────────────────────────────────────┐
 │  P)age Sysop - Lamar a amigojapan    │
 │  D)oor Games - Juegos en-linea       │

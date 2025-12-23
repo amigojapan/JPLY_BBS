@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>C64 SailorMuulator Help</title>
+<style>
+    body {
+        background-color: #352879; /* C64 blue */
+        color: #6cffee; /* C64 light blue/cyan */
+        font-family: 'Courier New', monospace;
+        padding: 20px;
+    }
+    pre {
+        font-family: inherit;
+        font-size: 16px;
+        line-height: 1.2;
+        white-space: pre-wrap;
+    }
+    h1 {
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+    }
+</style>
+</head>
+<body>
+<pre>
+-HELP IN ENGLISH
+ECHOOFF();
+-TURNS COMMAND ECHO OFF
+ECHOON();
+-TURNS COMMAND ECHO ON
+PRINT("HELLO WORLD!:");
+-PRINTS HELLO WORLD!
+VARNAME = INPUT();
+-AWAITS FOR USER TO INPUT AND PRESS ENTER, THEN STORES VALUE IN VARIABLE VARNAME
+COLOR(0-15,0-15);
+-CHANGES THE COLOR OF THE FOREGROUND AND BACKGROUND
+LOCATE(X, Y);
+-CHANGES THE POSITION OF THE NEXT PRINT STATEMENT TO X AND Y COORDINATES
+await PLAY(URL);
+-PLAYS THE SOUND LOCATED AT STRING IN URL VARIABLE
+await SLOWPRINT(JPLYBBS,4.17);
+-PRINTS TEXT WITH A DELAY
+A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_LOGIN_SCREEN1BW.txt");
+-FETCHES A PAGE FROM WEB
+LOAD(A);
+-LOADS AND RUNS THE JS_BASIC PROGRAM IN A
+var A = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/register.php', 
+    {data: 'nick=amigojapan&pw=mockpassword&email=mockemail@email.com'
+});
+-DOES POST METHOD TO URL THEN RETURNS RESULT TO A
+</pre>
+</body>
+</html>
