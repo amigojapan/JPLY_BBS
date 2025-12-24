@@ -676,7 +676,60 @@ commandInput.addEventListener("keydown", async (e) => {
     PRINT("READY.");
     commandInput.focus();
 });
+function splitStringEvery40(inputString) {
+    const result = [];
 
+    // Normalize newlines (just in case)
+    const lines = String(inputString).replace(/\r/g, "").split("\n");
+
+    for (const line of lines) {
+
+        // Empty line → keep it
+        if (line.length === 0) {
+            result.push("");
+            continue;
+        }
+
+        // Split long lines into 40-char chunks
+        for (let i = 0; i < line.length; i += 40) {
+            result.push(line.slice(i, i + 40));
+        }
+    }
+
+    return result;
+}
+/*
+test more
+
+ECHOOFF();
+A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/3pagetamplate.txt");
+MORE(A);
+*/
+
+async function MORE(text) {
+    const arr = splitStringEvery40(text);
+    const PAGE_LINES = 22; // visible text rows (24th is input)
+    lineCounter=0;
+    for (const line of arr) {
+
+        // If screen is full, pause
+        if (lineCounter >= PAGE_LINES) {
+            await SLOWPRINT("************ PRESS ENTER ************\n", 2);
+            await INPUT();
+            lineCounter=0;
+            //cursorY = 0; // reset logical page
+        }
+
+        await SLOWPRINT(line + "\n", 2);
+        lineCounter++;
+    }
+}
+// add HELP() function
+async function HELP() {
+    ECHOOFF();
+    A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/helpEN.txt");
+    MORE(A);
+}
 /* ==================================================
    BOOT SCREEN
 ================================================== */
