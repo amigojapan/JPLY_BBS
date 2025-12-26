@@ -55,6 +55,7 @@ CREATE TABLE users (
     nick TEXT NOT NULL,
     pw TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE
+    salt TEXT NOT NULL UNIQUE
 );
     */
 

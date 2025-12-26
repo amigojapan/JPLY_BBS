@@ -955,10 +955,20 @@ var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/register.
 });
 PRINT(response);
 
+test if is logged in
+
+var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/is_loged_in.php', {
+  data: 'nick=test&pw=test&email=test'
+});
+PRINT(response);
+
+
+
 todo list
 //(fixed)bug seems it is not creating a newline when it reacher the end of hte width of the screen.
 (done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
 (done)LOAD()
+bug help appears as help in safai only, dont have a mac to test it, cant fix it
 bug LOADCONFIRM() prints ready before the program execution ends
 FIX cursor problem with non moving cursor
 try changing all text to double width characters, like i did with the english in otherworld frontier　
