@@ -1,0 +1,34 @@
+await SLOWPRINT("\nRegistration still under construction!!! experimental\n",2);
+quit=false;
+while(quit==false) {
+    await SLOWPRINT(translate["enter nick or reg."],2);
+    NICK = await INPUT();
+    await SLOWPRINT(translate["pw prompt"],2);
+    PASSWORD = INPUT("");
+    await SLOWPRINT("\nemail:\n",2);
+    EMAIL = await INPUT("");
+    await SLOWPRINT("\n*Please confirm*\n\n",2);
+    await SLOWPRINT("\n*Write this informaiton down*\n\n",2);
+    await SLOWPRINT("\nNICK:"+NICK+"\n",2);
+    await SLOWPRINT("\nPASSWORD:"+PASSWORD+"\n",2);
+    await SLOWPRINT("\nEMAIL(Will not be displayed):"+EMAIL+"\n",2);
+    await SLOWPRINT("\nCorrect? Y/N:\n",2);
+    option = INPUT();
+    option = option.toUpperCase();
+    switch (option) {
+        case "Y":
+            var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/register.php', {
+                data: 'nick='+NICK+'&pw='+PASSWORD+'&email='+EMAIL
+            });
+            await SLOWPRINT(response,2);              
+            await SLOWPRINT("\nNew user registered!\n",2);
+            await SLOWPRINT("************ PRESS ENTER ************",2)
+            await INPUT();
+            quit=true;
+            break;
+        case "N":
+          break;
+        default:
+          await SLOWPRINT("Invalid Option!",2);
+      }
+}

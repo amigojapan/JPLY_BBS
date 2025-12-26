@@ -1,0 +1,23 @@
+[C1,0]
+       ___._________.___    ____.__.    
+      |   |\_____   \   |   \__ |  |    
+      |   | |    ___/   |    /  |  |    
+  /\__|   | |   |   |   |___ \___  |    
+  \_______| |___|   |______ \/ ____|    
+[C10,0]--Main Menu         BBS by amigojapan   
+[C9,0]┌──────────────────────────────────────┐
+│  [C5,0]P[C9,0])age Sysop - Call amigojapan       │
+│  [C5,0]D[C9,0])oor Games - Online Games          │
+│  [C5,0]W[C9,0])arez      - Download software     │
+│  [C5,0]B[C9,0])ulletin   - Threads & posts       │
+│  [C5,0]M[C9,0])ail       - Private messages      │
+│  w[C5,0]H[C9,0])o        - List all users        │
+│  [C5,0]F[C9,0])inger     - List online users     │
+│  [C5,0]C[C9,0])hat       - Chat                  │
+│  [C5,0]A[C9,0])bout      - About JPLY BBS        │
+│  [C5,0]R[C9,0])ulz       - How to behave on BBS  │
+│  [C5,0]Q[C9,0])uit       - Exit the system       │
+└──────────────────────────────────────┘
+┌──────────────────────────────────────┐
+│   Type a letter then press [C5,0][ENTER][C9,0]   │
+└──────────────────────────────────────┘

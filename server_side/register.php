@@ -80,7 +80,7 @@ ALTER TABLE users ADD COLUMN salt TEXT NOT NULL;
     echo "SHA512 Hash: " . htmlspecialchars($result['hash']) . "\n";
 
 // 1. Connection details
-$databaseFile = 'userdb.sqllite';
+$databaseFile = 'userdb.sqlite3';
 
 try {
     // 2. Create a new PDO connection to the SQLite database

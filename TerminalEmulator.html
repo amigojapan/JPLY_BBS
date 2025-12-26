@@ -283,7 +283,7 @@ function getColor(n) {
         0:"#000000", // black
         1:"#ffffff", // white
         2:"#808080", // gray
-        3:"#b0c4de", // light steel blue
+        3:"#659BDF", // mid light blue
         4:"#a9a9a9", // dark gray
         7:"#c0c0c0", // silver
         8:"#dda0dd", // plum
@@ -584,7 +584,7 @@ function preprocess(code) {
 async function LOAD(program) {
     code=preprocess(program);
     try {
-        let result = await eval(`(async()=>{ ${code} })()`);
+        let result = await window.eval(`(async()=>{ ${code} })()`);
         if (result !== undefined) PRINT(result);
     } catch (err) {
         PRINT("?SYNTAX  ERROR:"+err.message);
@@ -931,7 +931,7 @@ test with color
 remember, you need to test it with the version on hte server, otherwise you will get an error of failed to fetch
 
 ECHOOFF();
-A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_LOGIN_SCREEN1COLOR.txt");
+A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/modem_speed_menu.txt");
 PRINT(A);
 
 test scriptloading
@@ -1134,6 +1134,8 @@ SeeRaaMuulator: es una palabra que acabo de acuñar y que significa un software 
 
 teletext? seems to be something simillar to JPLY BBS
 https://nmsceefax.co.uk/#id=WyJubXMtY2VlZmF4IiwiaW50ZXJuYWwubmF0aGFubWVkaWFzZXJ2aWNlcy5jby51ayIsIi93ZWJzb2NrZXRzL2NlZWZheCJd:page=100
+
+§A resurecction of Night Nack BBS§
 */
 </script>
 </body>
