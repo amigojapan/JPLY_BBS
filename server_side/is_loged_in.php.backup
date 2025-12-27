@@ -1,13 +1,28 @@
 <?php
 header('Content-Type: text/plain');
 
+
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 
+
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo "ERROR:not POST method";
     exit;
+}
+function hash_string_with_salt($string,$salt) {
+    // Generate a secure random salt (e.g., 16 bytes for a 32-character hex salt)
+    $salt_length = 16;
+
+    // Concatenate the salt and the string before hashing
+    $salted_string = $salt . $string;
+
+    // Generate the SHA512 hash
+    $hash = hash('sha512', $salted_string);
+
+    return $hash;
 }
 
 // ---- POST PARAMETERS (same as register.php) ----
@@ -29,7 +44,7 @@ try {
     // ---- FETCH USER ----
     // Email + nick match (safer than email alone)
     $stmt = $db->prepare(
-        'SELECT pw FROM users
+        'SELECT nick, pw, salt FROM users
          WHERE email = :email AND nick = :nick
          LIMIT 1'
     );
@@ -60,14 +75,30 @@ try {
     var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/is_loged_in.php', {
     data: 'nick=test&pw=test&email=test'
     });
-    PRINT(response);
+    MORE(response);
+
+    //invalid user
+    var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/is_loged_in.php', {
+    data: 'nick=test1&pw=test&email=test'
+    });
+    MORE(response);
+
+    //invalid password
+    var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/is_loged_in.php', {
+    data: 'nick=test&pw=test2&email=test'
+    });
+    MORE(response);
 
 */
     // ---- RECREATE HASH ----
-    $computedHash = hash('sha512', $row['salt'] . $password);
+    $computedHash=hash_string_with_salt($password,$row['salt']);
+    //$computedHash = hash('sha512', $password. $row['salt'] );
 
-    if (!hash_equals($row['hash'], $computedHash)) {
+    if(!hash_equals($row['pw'], $computedHash)) {
         echo "ERROR:pw";
+        exit;
+    } else {
+        echo "OK" ;
         exit;
     }
 } catch (Exception $e) {

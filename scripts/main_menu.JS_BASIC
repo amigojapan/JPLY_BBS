@@ -3,14 +3,17 @@ while(quit==false) {
     if(i18n_getlang()=="English"){
         main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_MAIN_MENU1BWENCOLOR.txt");
         rulz = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/RULZEN.txt");
+        about = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/aboutEN.txt");
     } else
     if(i18n_getlang()=="Japanese"){
         main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_MAIN_MENU1BWJPCOLOR.txt");
         rulz = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/RULZEN.txt");
+        about = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/aboutEN.txt");
     } else
     if(i18n_getlang()=="Spanish"){
         main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_MAIN_MENU1BWESCOLOR.txt");
         rulz = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/RULZEN.txt");
+        about = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/aboutEN.txt");
     } else {
         throw new Error("INVALID LANGUAGE exception!");
     }
@@ -22,16 +25,21 @@ while(quit==false) {
         case "T":
           await SLOWPRINT("T selected!",2);
           break;
+        case "A":
+          await MORE(about);
+          await SLOWPRINT("************ PRESS ENTER ************",2)
+          await INPUT();
+          break;  
         case "R":
-            await MORE(rulz);
-            await SLOWPRINT("************ PRESS ENTER ************",2)
-            await INPUT();
+          await MORE(rulz);
+          await SLOWPRINT("************ PRESS ENTER ************",2)
+          await INPUT();
           break;
-          case "Q":
-            await SLOWPRINT("\nGoodbye!\n",2);
-            COLOR(3,14);
-            await SLOWPRINT("\nDISCONECTED...\n");
-            quit=true;
+        case "Q":
+          await SLOWPRINT("\nGoodbye!\n",2);
+          COLOR(3,14);
+          await SLOWPRINT("\nDISCONECTED...\n");
+          quit=true;
           break;
         default:
           await SLOWPRINT("Invalid Option or not implemented yet...",2);

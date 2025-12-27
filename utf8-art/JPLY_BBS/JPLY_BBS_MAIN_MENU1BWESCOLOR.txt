@@ -9,7 +9,7 @@
 │  [C5,0]P[C9,0])age Sysop - Lamar a amigojapan    │
 │  [C5,0]D[C9,0])oor Games - Juegos en-linea       │
 │  [C5,0]W[C9,0])arez      - Descargar Programas   │
-│  [C5,0]B[C9,0])ulletin   - Tablón de menajes     │
+│  [C5,0]B[C9,0])ulletin   - Tablero de menajes    │
 │  [C5,0]M[C9,0])ail       - Mensajes privados     │
 │  w[C5,0]H[C9,0])o        - Lista de usuarios     │
 │  [C5,0]F[C9,0])inger     - Usuarios en-linea     │

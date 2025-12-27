@@ -27,11 +27,10 @@ function hash_string_with_salt($string,$salt) {
 
 // ---- POST PARAMETERS (same as register.php) ----
 $nick = $_POST['nick'] ?? '';
-$email    = $_POST['email']    ?? '';
 $password = $_POST['pw'] ?? '';
 
 // Basic validation
-if ($email === '' || $password === '') {
+if ($password === '') {
     echo "ERROR:basic validation erro";
     exit;
 }
@@ -45,11 +44,9 @@ try {
     // Email + nick match (safer than email alone)
     $stmt = $db->prepare(
         'SELECT nick, pw, salt FROM users
-         WHERE email = :email AND nick = :nick
+         WHERE nick = :nick
          LIMIT 1'
     );
-
-    $stmt->bindValue(':email', $email, SQLITE3_TEXT);
     $stmt->bindValue(':nick', $nick, SQLITE3_TEXT);
 
     $result = $stmt->execute();
@@ -73,7 +70,7 @@ try {
     test if is logged in
 
     var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/is_loged_in.php', {
-    data: 'nick=test&pw=test&email=test'
+    data: 'nick=test&pw=test'
     });
     MORE(response);
 
