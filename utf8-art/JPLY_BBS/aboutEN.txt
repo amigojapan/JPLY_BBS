@@ -1,6 +1,6 @@
 JPLY BBS
 is a Bulletin Board System
-which is means to simulate what BBSs
+which is means to simulate what BBSes
 where like in the late 80s.
 It is a resurrection of
 §Night NAK BBS§ form the
@@ -8,7 +8,7 @@ late 80s in Mexico city.
 The SysOp has poured his
 heart and soul into this BBS.
 it is supposed to inspire
-nostalgia in those who used BBSs
+nostalgia in those who used BBSes
 and teach the younger generations
 what telecommunications were
 like before teh Internet.
@@ -20,49 +20,4 @@ Please stay around and enjoy
 your experience!
 
 regards!
-amigojapan (Usmar Padow)
-
-JPLY BBSは掲示板システム（BBS）であり、
-1980年代後半のBBSの雰囲気を再現する
-ことを目的としています。
-これはメキシコシティで1980年代後半
-に運営されていた§Night NAK BBS§
-の復活版です。
-システムオペレーターは
-このBBSに汗と涙を注いでいます。
-BBSを利用していた人々に
-懐かしさを呼び起こし、
-若い世代にインターネット以前の
-通信環境を伝えることを
-目的としています。
-
-注：これはまだ進行中の作業です。
-
-どうぞお楽しみください！
-
-よろしくお願いします！
-amigojapan (パドウ・ウスマー)
-
-JPLY BBS
-es un sistema de tabrero de mensajes
-que simula cómo eran los BBSs
-a finales de los años 80s.
-Es una resurrección del
-§Night NAK BBS§ de
-finales de los 80s en la 
-ciudad de México.
-El SysOp ha puesto todo su
-corazón y alma en crear este BBS.
-Se supone que debe inspirar
-nostalgia en aquellos que usaban BBSs
-y enseñar a las generaciones más jóvenes
-cómo eran las telecomunicaciones
-antes de Internet.
-
-NOTA: esto aún es un trabajo en progreso, 
-
-¡Quédate y disfruta
-de tu experiencia!
-
-¡Saludos!
 amigojapan (Usmar Padow)

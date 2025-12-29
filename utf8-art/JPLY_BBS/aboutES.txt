@@ -1,0 +1,23 @@
+JPLY BBS
+es un sistema de tabrero de mensajes
+que simula cómo eran los BBSes
+a finales de los años 80s.
+Es una resurrección del
+§Night NAK BBS§ de
+finales de los 80s en la 
+ciudad de México.
+El SysOp ha puesto todo su
+corazón y alma en crear este BBS.
+Se supone que debe inspirar
+nostalgia en aquellos que usaban BBSes
+y enseñar a las generaciones más jóvenes
+cómo eran las telecomunicaciones
+antes de Internet.
+
+NOTA: esto aún es un trabajo en progreso, 
+
+¡Quédate y disfruta
+de tu experiencia!
+
+¡Saludos!
+amigojapan (Usmar Padow)

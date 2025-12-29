@@ -9,7 +9,7 @@
 │  P)age Sysop - Lamar a amigojapan    │
 │  D)oor Games - Juegos en-linea       │
 │  W)arez      - Descargar Programas   │
-│  B)ulletin   - Tablón de menajes     │
+│  B)ulletin   - Tablero de menajes    │
 │  M)ail       - Mensajes privados     │
 │  wH)o        - Lista de usuarios     │
 │  F)inger     - Usuarios en-linea     │
