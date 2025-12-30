@@ -7,13 +7,13 @@ while(quit==false) {
     } else
     if(i18n_getlang()=="Japanese"){
         main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_MAIN_MENU1BWJPCOLOR.txt");
-        rulz = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/RULZEN.txt");
-        about = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/aboutEN.txt");
+        rulz = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/RULZJP.txt");
+        about = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/aboutJP.txt");
     } else
     if(i18n_getlang()=="Spanish"){
         main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_MAIN_MENU1BWESCOLOR.txt");
-        rulz = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/RULZEN.txt");
-        about = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/aboutEN.txt");
+        rulz = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/RULZES.txt");
+        about = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/aboutES.txt");
     } else {
         throw new Error("INVALID LANGUAGE exception!");
     }
@@ -30,10 +30,9 @@ while(quit==false) {
           await SLOWPRINT("************ PRESS ENTER ************",2)
           await INPUT();
           break;  
-        case "R":
-          await MORE(rulz);
-          await SLOWPRINT("************ PRESS ENTER ************",2)
-          await INPUT();
+        case "C":
+          chatprg = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/chat.JS_BASIC");
+          await LOAD(chatprg);
           break;
         case "Q":
           await SLOWPRINT("\nGoodbye!\n",2);

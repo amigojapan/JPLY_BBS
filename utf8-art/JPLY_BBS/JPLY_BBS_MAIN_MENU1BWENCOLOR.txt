@@ -12,10 +12,10 @@
 │  [C5,0]B[C9,0])ulletin   - Threads & posts       │
 │  [C5,0]M[C9,0])ail       - Private messages      │
 │  w[C5,0]H[C9,0])o        - List all users        │
-│  [C5,0]F[C9,0])inger     - List online users     │
+│  [C5,0]U[C9,0])TF8 art   - Art gallery           │
 │  [C5,0]C[C9,0])hat       - Chat                  │
 │  [C5,0]A[C9,0])bout      - About JPLY BBS        │
-│  [C5,0]R[C9,0])ulz       - How to behave on BBS  │
+│  [C5,0]R[C9,0])ulz       - BBS Rules(must read)  │
 │  [C5,0]Q[C9,0])uit       - Exit the system       │
 └──────────────────────────────────────┘
 ┌──────────────────────────────────────┐
