@@ -29,7 +29,12 @@ while(quit==false) {
           await MORE(about);
           await SLOWPRINT("************ PRESS ENTER ************",2)
           await INPUT();
-          break;  
+          break;
+        case "R":
+          await MORE(rulz);
+          await SLOWPRINT("************ PRESS ENTER ************",2)
+          await INPUT();
+          break;    
         case "C":
           chatprg = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/chat.JS_BASIC");
           await LOAD(chatprg);

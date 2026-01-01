@@ -1,8 +1,19 @@
-await SLOWPRINT("\nRegistration still under construction!!! experimental\n",2);
+function isAlphanumeric(str) {
+    // Regex explanation:
+    // ^      - starts with the following pattern
+    // [a-zA-Z0-9]+ - one or more uppercase letters, lowercase letters, or digits
+    // $      - ends with the previous pattern
+    return /^[a-zA-Z0-9]+$/.test(str);
+}
+await SLOWPRINT("\nRegistration screen\n",2);
 quit=false;
 while(quit==false) {
-    await SLOWPRINT(translate["enter nick or reg."],2);
+    await SLOWPRINT("new nickname Alphanumeric only:",2);
     NICK = await INPUT();
+    if(!isAlphanumeric(NICK)) {
+        await SLOWPRINT("nickname must be Alphanumeric only!",2);
+        continue;
+    }
     await SLOWPRINT(translate["pw prompt"],2);
     PASSWORD = INPUT("");
     await SLOWPRINT("\nemail:\n",2);

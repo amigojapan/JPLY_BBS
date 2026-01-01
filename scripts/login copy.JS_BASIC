@@ -8,7 +8,7 @@ while(quit==false) {
     await SLOWPRINT(translate["enter nick or reg."],2);
     NICK = await INPUT();
     REGISTER = NICK.toUpperCase();
-    if(REGISTER=="REGISTER"||REGISTER=="REGISTRAR"||REGISTER=="ユーザー登録") {
+    if(REGISTER=="REGISTER") {
         REGSCRIPT = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/registration.JS_BASIC");
         await LOAD(REGSCRIPT);    
     }

@@ -2,7 +2,7 @@
 //dictionary for english, kept in seperate file you can include it by require("localizations.lua")
 var i18n = {};
 i18n["English"] = {
-	"enter nick or reg.":"\nENTER NICK (REGISTER IF NEW USER):\n",
+	"enter nick or reg.":'\nENTER NICK OR TYPE "REGISTER" IF NEW USER:\n',
 	"pw prompt":"\nPASSWORD:\n",
 	"welcome":"\nWELCOME ",
     "Hello World": "Hello World",
@@ -128,7 +128,7 @@ i18n["Japanese"] = {
 	"Leave Town": "村を出る"
 };
 i18n["Spanish"] = {
-	"enter nick or reg.":"\nUSUARIO O (REGISTAR):\n",
+	"enter nick or reg.":'\nUSUARIO O "REGISTAR:\n',
 	"pw prompt":"\nCONTRASEÑA:\n",
 	"welcome":"\nBIENVENID(O/A) ",
     "Hello World": "Hola Mundo",

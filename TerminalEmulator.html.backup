@@ -283,7 +283,7 @@ function getColor(n) {
         0:"#000000", // black
         1:"#ffffff", // white
         2:"#808080", // gray
-        3:"#b0c4de", // light steel blue
+        3:"#659BDF", // mid light blue
         4:"#a9a9a9", // dark gray
         7:"#c0c0c0", // silver
         8:"#dda0dd", // plum
@@ -584,7 +584,7 @@ function preprocess(code) {
 async function LOAD(program) {
     code=preprocess(program);
     try {
-        let result = await eval(`(async()=>{ ${code} })()`);
+        let result = await window.eval(`(async()=>{ ${code} })()`);
         if (result !== undefined) PRINT(result);
     } catch (err) {
         PRINT("?SYNTAX  ERROR:"+err.message);
@@ -740,7 +740,7 @@ PRINT("\n");
 PRINT("---------------------------------\n");
 PRINT("TYPE HELP() THEN PRESS [ENTER]\n");
 PRINT("HELPJP()を打って、[ENTER]を押して\n");
-PRINT("ESCRIBA HELPES() Y PRECIONE [ENTER]\n");
+PRINT("ESCRIBA HELPES() Y PRESIONE [ENTER]\n");
 PRINT("\n");
 PRINT("ATM0 - MUTE ミュート SILENCIAR\n");
 PRINT("ATDT+15593278  - ENGLISH JPLY BBS\n");
@@ -931,7 +931,7 @@ test with color
 remember, you need to test it with the version on hte server, otherwise you will get an error of failed to fetch
 
 ECHOOFF();
-A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_MAIN_MENU1BWESCOLOR.txt");
+A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/modem_speed_menu.txt");
 PRINT(A);
 
 test scriptloading
@@ -955,10 +955,20 @@ var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/register.
 });
 PRINT(response);
 
+test if is logged in
+
+var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/is_loged_in.php', {
+  data: 'nick=test&pw=test&email=test'
+});
+PRINT(response);
+
+
+
 todo list
 //(fixed)bug seems it is not creating a newline when it reacher the end of hte width of the screen.
 (done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
 (done)LOAD()
+bug help appears as help in safai only, dont have a mac to test it, cant fix it
 bug LOADCONFIRM() prints ready before the program execution ends
 FIX cursor problem with non moving cursor
 try changing all text to double width characters, like i did with the english in otherworld frontier　
@@ -1017,7 +1027,7 @@ add a bit of syntax sugar so it can be used more like BASIC
 add:
 TYPE HELP() FOR HELP THEN PRESS [ENTER]
 TYPE HELPJP()を打ってそして[ENTER]を押して、日本語のヘルプを表示します
-ESCRIBA HELPES() Y PRESIONE [ENTER} PARA AYUDA EN ESPAÑOL
+ESCRIBA HELPES() Y PRECIONE [ENTER} PARA AYUDA EN ESPAÑOL
 
 TYPE ATDT+15593278 TO CONNECT TO ENGLISH JPLY BBS
 ATDT+815593278を打ったら。JPLY BSSの日本版に入ります
@@ -1134,6 +1144,8 @@ SeeRaaMuulator: es una palabra que acabo de acuñar y que significa un software 
 
 teletext? seems to be something simillar to JPLY BBS
 https://nmsceefax.co.uk/#id=WyJubXMtY2VlZmF4IiwiaW50ZXJuYWwubmF0aGFubWVkaWFzZXJ2aWNlcy5jby51ayIsIi93ZWJzb2NrZXRzL2NlZWZheCJd:page=100
+
+§A resurecction of Night Nack BBS§
 */
 </script>
 </body>
