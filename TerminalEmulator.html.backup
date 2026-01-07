@@ -90,8 +90,18 @@
         caret-color: transparent;
         font-family: 'C64', monospace;
         font-size: inherit;
+        /*
         position: absolute;
         left: -9999px;
+        */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+        z-index: -1;
     }
 
     .cursor {
@@ -427,6 +437,23 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function OUCH() {
+    PRINT("OUCH, DONT PEEK AND POKE ME LIKE THAT!");
+}
+
+function PEEK(n) {
+    OUCH();
+    if(n==42) {
+        return "You know hte meaning of life.";
+    }
+    return "Easter egg";
+}
+
+function POKE(n,n2) {
+    OUCH();
+}
+
+
 async function SLOWPRINT(text = "", time_ms = 50) {
     text = String(text);
     await parseAndPrint(text, true, time_ms);
@@ -636,6 +663,21 @@ commandInput.addEventListener("keydown", async (e) => {
 
     const typed = commandInput.value.trim();
 
+    // Safari-safe modem busy detection
+    // --- VALID DIAL NUMBERS ---
+    const validATDT = new Set([
+        "ATDT+15593278",
+        "ATDT+815593278",
+        "ATDT+525593278"
+    ]);
+
+    // --- INVALID ATDT → BUSY TONE (Safari-safe) ---
+    if (typed.startsWith("ATDT+") && !validATDT.has(typed)) {
+        await PLAY("audio/busy.mp3");
+        GOTO_INPUT_LINE();
+        PRINT("NO CARRIER");
+        return;
+    }
     if (inputMode) {
         if(echo) {
             echoCommand(typed);
@@ -735,7 +777,7 @@ async function HELP() {
 ================================================== */
 LOCATE(0,0);
 PRINT("**** JPLY C64 SailorMuulator ****\n");
-PRINT("**** JS_BASIC V-A.01         ****\n");
+PRINT("**** JS_BASIC V-A.03         ****\n");
 PRINT("\n");
 PRINT("---------------------------------\n");
 PRINT("TYPE HELP() THEN PRESS [ENTER]\n");
@@ -1148,5 +1190,86 @@ https://nmsceefax.co.uk/#id=WyJubXMtY2VlZmF4IiwiaW50ZXJuYWwubmF0aGFubWVkaWFzZXJ2
 §A resurecction of Night Nack BBS§
 */
 </script>
+<!-- =========================================================
+     MOBILE TOP PREVIEW BAR (APPEND ONLY)  ✅ WORKING VERSION
+     Always visible at the TOP while typing on mobile (Android/iOS).
+     Mirrors #command-input.value so you can see what you're typing.
+     ========================================================= -->
+     <style>
+        #__topPreviewBar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+      
+          padding: 10px 12px;
+          background: rgba(0,0,0,0.92);
+          color: #fff;
+      
+          font: 16px/1.2 monospace;
+          z-index: 2147483647;
+      
+          display: none;            /* shown only on mobile while input is active */
+          pointer-events: none;
+          box-sizing: border-box;
+      
+          border-bottom: 1px solid rgba(255,255,255,0.15);
+          white-space: pre;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      
+        #__topPreviewLabel { opacity: 0.7; margin-right: 8px; }
+      </style>
+      
+      <div id="__topPreviewBar" aria-hidden="true">
+        <span id="__topPreviewLabel">TYPING:</span><span id="__topPreviewText"></span>
+      </div>
+      
+      <script>
+      (function () {
+        const isIOS = /iPad|iPhone|iPod/i.test(navigator.userAgent);
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        if (!isIOS && !isAndroid) return;
+      
+        const commandInput = document.getElementById("command-input");
+        const bar = document.getElementById("__topPreviewBar");
+        const textEl = document.getElementById("__topPreviewText");
+        if (!commandInput || !bar || !textEl) return;
+      
+        function setText() {
+          const v = String(commandInput.value || "");
+          textEl.textContent = v.length > 300 ? (v.slice(0, 300) + "…") : v;
+        }
+      
+        function show() {
+          bar.style.display = "block";
+          setText();
+        }
+      
+        function hide() {
+          bar.style.display = "none";
+        }
+      
+        commandInput.addEventListener("focus", show);
+        commandInput.addEventListener("blur", hide);
+      
+        commandInput.addEventListener("input", () => {
+          if (bar.style.display !== "none") setText();
+        });
+      
+        // Backup poll (works even if focus events are weird)
+        setInterval(() => {
+          const active = (document.activeElement === commandInput);
+          if (active) {
+            if (bar.style.display === "none") show();
+            else setText();
+          } else {
+            if (bar.style.display !== "none") hide();
+          }
+        }, 150);
+      })();
+      </script>
+                                
 </body>
 </html>

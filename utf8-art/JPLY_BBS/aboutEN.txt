@@ -1,6 +1,6 @@
 JPLY BBS
 is a Bulletin Board System
-which is means to simulate what BBSes
+which is means to simulate what BBSs
 where like in the late 80s.
 It is a resurrection of
 §Night NAK BBS§ form the
@@ -8,7 +8,7 @@ late 80s in Mexico city.
 The SysOp has poured his
 heart and soul into this BBS.
 it is supposed to inspire
-nostalgia in those who used BBSes
+nostalgia in those who used BBSs
 and teach the younger generations
 what telecommunications were
 like before the Internet.
