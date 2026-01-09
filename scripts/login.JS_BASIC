@@ -20,6 +20,8 @@ while(quit==false) {
     await MORE(response);
     if(response=="OK") {
         await SLOWPRINT(translate["welcome"]+NICK+"!",2);
+        graffiti_wall = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/graffiti_wall.JS_BASIC");
+        await LOAD(graffiti_wall);
         main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
         await LOAD(main_menu);
     }

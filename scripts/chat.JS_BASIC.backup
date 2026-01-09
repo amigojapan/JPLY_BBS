@@ -1,11 +1,98 @@
 function getRandomAlphanumericChar() {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"; //
-    // Generate a random index based on the string length
     const randomIndex = Math.floor(Math.random() * chars.length);
-    // Return the character at that random index
     return chars.charAt(randomIndex); //
-  }
-  
+}
+
+// --- IGNORE LIST ---
+const ignoreList = new Set(["doraemon"]);
+
+// --- KNOWN NICKS (for /a autocomplete) ---
+const knownNicks = new Set();
+
+function cleanNick(n) {
+    // NAMES replies can prefix nicks with @ + % ~ & etc
+    return (n || "").replace(/^[@+%~&]/, "");
+}
+
+function rememberNick(nick) {
+    nick = cleanNick(nick);
+    if (!nick) return;
+    knownNicks.add(nick);
+}
+
+function forgetNick(nick) {
+    nick = cleanNick(nick);
+    if (!nick) return;
+    knownNicks.delete(nick);
+}
+
+function matchesNickPrefix(nick, prefix) {
+    if (!nick || !prefix) return false;
+
+    const n = nick.toLowerCase();
+    const p = prefix.toLowerCase();
+
+    // Direct match: nick starts with prefix
+    if (n.startsWith(p)) return true;
+
+    // Also match: JPLY_BBS_<one alnum>_<prefix...>
+    // Example: JPLY_BBS_A_amigojapan  should match prefix "ami"
+    const bbsPrefix = "jply_bbs_";
+    if (n.startsWith(bbsPrefix)) {
+        // Expect: JPLY_BBS_ X _ rest...
+        // indexes: 0..7 = "jply_bbs", 8 = "_"
+        // So: "jply_bbs_" length = 9
+        // After that: 1 char (alnum), then "_" then the real nick.
+        const rest = n.slice(bbsPrefix.length); // "x_amigojapan"
+        if (rest.length >= 3) {
+            const tag = rest[0];       // 'x'
+            const underscore = rest[1];// '_'
+            const real = rest.slice(2);// "amigojapan"
+
+            const isAlnum = (tag >= 'a' && tag <= 'z') || (tag >= '0' && tag <= '9');
+            if (underscore === "_" && isAlnum && real.startsWith(p)) return true;
+        }
+    }
+
+    return false;
+}
+
+function autocompleteNick(prefix) {
+    if (!prefix) return null;
+    const p = prefix.toLowerCase();
+
+    const matches = Array.from(knownNicks).filter(n => matchesNickPrefix(n, p));
+    if (matches.length === 0) return null;
+    if (matches.length === 1) return matches[0];
+
+    // Prefer "real nick" matches first (without JPLY_BBS_X_), then shortest, then alphabetical.
+    function rank(nick) {
+        const n = nick.toLowerCase();
+        const isBbs = n.startsWith("jply_bbs_");
+        return {
+            isBbs: isBbs ? 1 : 0,
+            len: nick.length,
+            nick: nick
+        };
+    }
+
+    matches.sort((a, b) => {
+        const ra = rank(a), rb = rank(b);
+        if (ra.isBbs !== rb.isBbs) return ra.isBbs - rb.isBbs;
+        if (ra.len !== rb.len) return ra.len - rb.len;
+        return ra.nick.localeCompare(rb.nick);
+    });
+
+    return matches[0];
+}
+
+function ignore_nick(nick) {
+    const ignoreNick = nick.toLowerCase();
+    ignoreList.add(ignoreNick);
+    PRINT(`*** Ignoring ${ignoreNick} ***\n`);
+}
+
 async function IRC_CLIENT() {
     ECHOOFF();
 
@@ -13,12 +100,13 @@ async function IRC_CLIENT() {
     await SLOWPRINT("--------------------\n\n", 15);
     await SLOWPRINT("/quit for main menu\n\n", 15);
     await SLOWPRINT("/ignore nick\n\n", 15);
+    await SLOWPRINT("/a nickprefix message   (autocomplete nick)\n", 15);
+    await SLOWPRINT("/who   (show known nicks)\n\n", 15);
 
-
-    const nick = "JPLY_BBS_"+getRandomAlphanumericChar()+"_"+NICK;//await INPUT("NICK: ");
+    const nick = "JPLY_BBS_" + getRandomAlphanumericChar() + "_" + NICK;
     if (!nick) return;
 
-    const channel = "#VoxAssist";//await INPUT("CHANNEL (#): ");
+    const channel = "#VoxAssist";
     if (!channel) return;
 
     await SLOWPRINT("\nCONNECTING...\n\n", 10);
@@ -27,9 +115,23 @@ async function IRC_CLIENT() {
 
     let connected = false;
 
-    // --- IGNORE LIST ---
-    const ignoreList = new Set(["doraemon"]);
+    // include self
+    rememberNick(nick);
 
+    if (i18n_getlang() == "English") {
+        ignore_nick("Vox-ja-bot")
+        ignore_nick("Vox-es-bot")
+    } else
+    if (i18n_getlang() == "Japanese") {
+        ignore_nick("Vox-Assist-bot")
+        ignore_nick("Vox-es-bot")
+    } else
+    if (i18n_getlang() == "Spanish") {
+        ignore_nick("Vox-ja-bot")
+        ignore_nick("Vox-Assist-bot")
+    } else {
+        throw new Error("INVALID LANGUAGE exception!");
+    }
 
     ws.onopen = () => {
         ws.send(JSON.stringify({
@@ -44,7 +146,7 @@ async function IRC_CLIENT() {
     };
 
     ws.onclose = () => {
-        PRINT("\n*** DISCONNECTED ***\n");
+        PRINT("\n*** DISCONNECTED type /quit ***\n");
     };
 
     ws.onmessage = async (ev) => {
@@ -65,25 +167,65 @@ async function IRC_CLIENT() {
             return;
         }
 
-        // JOIN
-        let m = line.match(/^:([^!]+)!.* JOIN :(.*)$/);
+        // ----------------------------
+        // NAMES list (populates users already in channel)
+        // Example:
+        // :server 353 yourNick = #VoxAssist :nick1 @nick2 +nick3
+        // ----------------------------
+        let m = line.match(/^\S+\s353\s+\S+\s+\S+\s+(\S+)\s+:(.*)$/);
         if (m) {
-            PRINT(`*** ${m[1]} joined ${m[2]}\n`);
+            const namesChan = m[1];
+            const names = (m[2] || "").trim().split(/\s+/);
+            for (const n of names) rememberNick(n);
+
+            // Optional: show a small notice (comment out if noisy)
+            // PRINT(`*** Users in ${namesChan}: ${names.length}\n`);
+            // COLOR(12,0)
+            return;
+        }
+
+        // JOIN (accept both "JOIN :#chan" and "JOIN #chan")
+        m = line.match(/^:([^!]+)!.*\sJOIN\s+:?(.+)$/);
+        if (m) {
+            const joinNick = m[1];
+            const joinChan = (m[2] || "").trim();
+            rememberNick(joinNick);
+
+            PRINT(`*** ${joinNick} joined ${joinChan}\n`);
+            COLOR(12, 0)
             return;
         }
 
         // PART
-        m = line.match(/^:([^!]+)!.* PART ([^ ]+)/);
+        m = line.match(/^:([^!]+)!.*\sPART\s+(\S+)/);
         if (m) {
-            PRINT(`*** ${m[1]} left ${m[2]}\n`);
+            const partNick = m[1];
+            const partChan = m[2];
+            forgetNick(partNick);
+
+            PRINT(`*** ${partNick} left ${partChan}\n`);
+            COLOR(12, 0)
+            return;
+        }
+
+        // QUIT (some servers send quit instead of part sometimes)
+        m = line.match(/^:([^!]+)!.*\sQUIT\s*:?(.+)?$/);
+        if (m) {
+            const quitNick = m[1];
+            forgetNick(quitNick);
+
+            PRINT(`*** ${quitNick} quit\n`);
+            COLOR(12, 0)
             return;
         }
 
         // PRIVMSG
-        m = line.match(/^:([^!]+)!.* PRIVMSG ([^ ]+) :(.*)$/);
+        m = line.match(/^:([^!]+)!.*\sPRIVMSG\s+(\S+)\s+:(.*)$/);
         if (m) {
             const fromNick = m[1];
             const text = m[3];
+
+            rememberNick(fromNick);
 
             // 🔕 Ignore check
             if (ignoreList.has(fromNick.toLowerCase())) {
@@ -91,6 +233,7 @@ async function IRC_CLIENT() {
             }
 
             PRINT(`<${fromNick}> ${text}\n`, 3);
+            COLOR(12, 0)
             return;
         }
     };
@@ -106,6 +249,14 @@ async function IRC_CLIENT() {
         if (text === "/quit") {
             ws.close();
             break;
+        }
+
+        // show known nicks
+        if (text === "/who") {
+            const arr = Array.from(knownNicks);
+            arr.sort((a, b) => a.localeCompare(b));
+            PRINT(`*** Known nicks (${arr.length}): ${arr.join(", ")} ***\n`);
+            continue;
         }
 
         // /ignore commands
@@ -148,6 +299,47 @@ async function IRC_CLIENT() {
             continue;
         }
 
+        // /a nickprefix message (autocomplete)
+        if (text.startsWith("/a")) {
+            // allow "/a " only (avoid matching "/abc")
+            if (text.length === 2 || text[2] === " ") {
+                const rest = text.slice(2).trim();
+                const firstSpace = rest.indexOf(" ");
+                if (firstSpace === -1) {
+                    PRINT("*** Usage: /a nickprefix message ***\n");
+                    continue;
+                }
+
+                const prefix = rest.slice(0, firstSpace).trim();
+                const msg = rest.slice(firstSpace + 1);
+
+                if (!prefix || !msg) {
+                    PRINT("*** Usage: /a nickprefix message ***\n");
+                    continue;
+                }
+
+                const fullNick = autocompleteNick(prefix);
+                if (!fullNick) {
+                    PRINT(`*** No nick matches "${prefix}" ***\n`);
+                    continue;
+                }
+
+                if (!connected) continue;
+
+                const outgoing = `${fullNick} ${msg}`;
+
+                ws.send(JSON.stringify({
+                    type: "msg",
+                    channel: channel,
+                    text: outgoing
+                }));
+
+                PRINT(nick + ": " + outgoing + "\n");
+                COLOR(12, 0);
+                continue;
+            }
+        }
+
         if (!connected) continue;
 
         // Normal chat
@@ -156,10 +348,10 @@ async function IRC_CLIENT() {
             channel: channel,
             text: text
         }));
-        //echo
-        PRINT(nick+": "+text+"\n")
-        //PRINT(`RETURN TO COLOR\n`, 3);
-        COLOR(12,0);//return colro to default just in-case someone changed hte color
+
+        // echo
+        PRINT(nick + ": " + text + "\n");
+        COLOR(12, 0);
     }
 }
 

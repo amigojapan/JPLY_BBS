@@ -619,7 +619,7 @@ async function LOAD(program) {
 
     GOTO_INPUT_LINE()
     PRINT("READY.");
-    commandInput.focus();
+    //*commandInput.focus();
 }
 
 //OPENURLCONFIRM("https://google.com");
@@ -716,7 +716,7 @@ commandInput.addEventListener("keydown", async (e) => {
 
     GOTO_INPUT_LINE()
     PRINT("READY.");
-    commandInput.focus();
+    //*commandInput.focus();
 });
 function splitStringEvery40(inputString) {
     const result = [];
@@ -800,7 +800,7 @@ PRINT("READY.\n");
 //for (let i = 0; i < 17; i++) PRINT("");
 
 document.addEventListener("click", () => commandInput.focus());
-commandInput.focus();
+//*commandInput.focus();
 function JPLYEN() {
     translate = i18n_setlang("English");
     prg=""
@@ -1270,6 +1270,74 @@ https://nmsceefax.co.uk/#id=WyJubXMtY2VlZmF4IiwiaW50ZXJuYWwubmF0aGFubWVkaWFzZXJ2
         }, 150);
       })();
       </script>
-                                
+               <!-- =========================================================
+     DISMISS MOBILE KEYBOARD ON ENTER (APPEND ONLY)
+     Blurs #command-input AFTER Enter is processed.
+     ========================================================= -->
+<script>
+    (function () {
+      const isIOS = /iPad|iPhone|iPod/i.test(navigator.userAgent);
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      if (!isIOS && !isAndroid) return;
+    
+      const input = document.getElementById("command-input");
+      if (!input) return;
+    
+      input.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter") return;
+    
+        // Let your existing Enter handler run first,
+        // THEN blur to dismiss the soft keyboard.
+        setTimeout(() => {
+          // Only blur if still focused
+          if (document.activeElement === input) {
+            input.blur();
+          }
+        }, 0);
+      }, true); // capture=true so we don't interfere
+    })();
+    </script>
+       <!-- =========================================================
+     MOBILE: KEYBOARD ONLY ON TAP (APPEND ONLY)
+     Blocks programmatic focus() unless it follows a user tap.
+     ========================================================= -->
+<script>
+    (function () {
+      const isIOS = /iPad|iPhone|iPod/i.test(navigator.userAgent);
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      if (!isIOS && !isAndroid) return;
+    
+      const input = document.getElementById("command-input");
+      if (!input) return;
+    
+      // Gate: only allow focus for a short time after a real user tap.
+      let allowFocusUntil = 0;
+      const ALLOW_MS = 800;
+    
+      function armFocusGate() {
+        allowFocusUntil = Date.now() + ALLOW_MS;
+        // if you want immediate keyboard on tap:
+        try { input.focus({ preventScroll: true }); } catch { input.focus(); }
+      }
+    
+      // Any tap on the screen should bring up the keyboard (and allow focus briefly)
+      document.addEventListener("pointerdown", armFocusGate, { passive: true });
+      document.addEventListener("touchstart", armFocusGate, { passive: true });
+    
+      // Intercept focus attempts
+      input.addEventListener("focus", (e) => {
+        // If focus wasn't caused by a recent tap, immediately blur so keyboard won't show.
+        if (Date.now() > allowFocusUntil) {
+          // Delay blur slightly to avoid some Android quirks
+          setTimeout(() => input.blur(), 0);
+        }
+      }, true);
+    
+      // Optional: if user dismisses keyboard, keep it dismissed until next tap
+      // (no extra code needed: gate handles it)
+    
+    })();
+    </script>
+                  
 </body>
 </html>
