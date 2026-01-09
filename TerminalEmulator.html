@@ -618,9 +618,33 @@ async function LOAD(program) {
     }
 
     GOTO_INPUT_LINE()
-    PRINT("READY.");
+    //PRINT("READY.");
     //*commandInput.focus();
 }
+async function LOADINCONTEXT(program) {
+    //window.PASSWORD="not set";
+    context={};//new context
+    context=window;
+    context.PASSWORD="SECRET";
+    //test this later to see if it does not overwrite the password
+    //LOADINCONTEXT("PRINT(PASSWORD)");
+
+    code=preprocess(program);
+    try {
+        // Create an anonymous function that returns the result of the script
+        // and immediately call it with the desired context.
+        return function() {
+            return eval(code);
+        }.call(context);
+    } catch (err) {
+        PRINT("?SYNTAX  ERROR:"+err.message);
+    }
+
+    GOTO_INPUT_LINE()
+    //PRINT("READY.");
+    //*commandInput.focus();
+}
+
 
 //OPENURLCONFIRM("https://google.com");
 //test injection
@@ -716,7 +740,7 @@ commandInput.addEventListener("keydown", async (e) => {
 
     GOTO_INPUT_LINE()
     PRINT("READY.");
-    //*commandInput.focus();
+    //commandInput.focus();
 });
 function splitStringEvery40(inputString) {
     const result = [];
@@ -777,7 +801,7 @@ async function HELP() {
 ================================================== */
 LOCATE(0,0);
 PRINT("**** JPLY C64 SailorMuulator ****\n");
-PRINT("**** JS_BASIC V-A.03         ****\n");
+PRINT("**** JS_BASIC V-α.04         ****\n");
 PRINT("\n");
 PRINT("---------------------------------\n");
 PRINT("TYPE HELP() THEN PRESS [ENTER]\n");
@@ -791,12 +815,17 @@ PRINT("ATDT+525593278 - JPLY BBS ESPAÑOL\n");
 PRINT("PLEASE USE ALLCAPS FOR COMMANDS,\n");
 PRINT("PRESS ENTER WHEN DONE.\n");
 if(isMobile) {
-    PRINT("FOR BEST RESULTS ON MOBILE,\n");
-    PRINT("WE RECOMMEND USING A\n");
-    PRINT("BLUETOOTH PHYSICAL KEYBOARD\n");
+    //PRINT("FOR BEST RESULTS ON MOBILE,\n");
+    //PRINT("WE RECOMMEND USING A\n");
+    //PRINT("BLUETOOTH PHYSICAL KEYBOARD\n");
+    PRINT("TOUCH SCREEN TO START TYPING\n");
 }
 PRINT("\n");
 PRINT("READY.\n");
+if(!isMobile) {
+    
+    commandInput.focus();
+}
 //for (let i = 0; i < 17; i++) PRINT("");
 
 document.addEventListener("click", () => commandInput.focus());
@@ -979,7 +1008,7 @@ PRINT(A);
 test scriptloading
 
 ECHOOFF();
-A = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/login.JS_BASIC");
+A = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/line_editor.JS_BASIC");
 LOAD(A);
 
 //did not need this line at all//A = A.replace(/\r\n/g, "\n").replace(/\r/g, "\n");

@@ -1,0 +1,301 @@
+let advacedMode = false;
+//mode = "list";
+mode = null;
+
+// In Lua this came from BlindOSlib/settings/punctuation.
+// Here we provide minimal JS equivalents / stubs.
+function file_exists(path) {
+  try {
+    return fs.existsSync(path);
+  } catch {
+    return false;
+  }
+}
+
+function split_by_space(s) {
+  if (!s) return [""];
+  // Keep it simple: split on whitespace like typical CLI parsing
+  return String(s).trim().split(/\s+/);
+}
+
+
+
+// -----------------------------
+// Core functions (ported)
+// -----------------------------
+function removeRows(array, startRow, endRow) {
+  // Validate input indices (Lua is 1-based; JS arrays are 0-based)
+  if (
+    startRow < 1 ||
+    startRow > array.length ||
+    endRow < 1 ||
+    endRow > array.length ||
+    startRow > endRow
+  ) {
+    PRINT("Invalid indices");
+    return;
+  }
+
+  // Remove the specified range of rows
+  // Convert 1-based row -> 0-based index
+  const startIdx = startRow - 1;
+  const count = endRow - startRow + 1;
+  array.splice(startIdx, count);
+
+  // Print the modified array for demonstration
+  PRINT("Modified Array:");
+  for (let i = 0; i < array.length; i++) {
+    PRINT(i + 1, array[i]);
+  }
+}
+
+function moveAndInsertRows(array, startRow, endRow, insertRow) {
+  // Validate input indices (all are 1-based in original logic)
+  if (
+    startRow < 1 ||
+    startRow > array.length ||
+    endRow < 1 ||
+    endRow > array.length ||
+    insertRow < 1 ||
+    insertRow > array.length + 1
+  ) {
+    PRINT("Invalid indices");
+    return 0;
+  }
+
+  // Extract the range of rows to be moved (without removing yet, like Lua version)
+  const rowsToMove = [];
+  let rowsMoved = 0;
+
+  for (let i = startRow; i <= endRow; i++) {
+    rowsToMove.push(array[i - 1]); // 1-based -> 0-based
+    rowsMoved++;
+  }
+
+  // Insert the "copied" rows at the specified position
+  // insertRow is 1-based => splice index is insertRow-1
+  let insertIdx = insertRow - 1;
+  for (let i = 0; i < rowsToMove.length; i++) {
+    array.splice(insertIdx + i, 0, rowsToMove[i]);
+  }
+
+  // Print the modified array for demonstration
+  PRINT("Modified Array:");
+  for (let i = 0; i < array.length; i++) {
+    PRINT(i + 1, array[i]);
+  }
+
+  return rowsMoved;
+}
+
+function ennumerate_lines(buffer, from, to) {
+  let output = "";
+  const f = Number(from);
+  const t = Number(to);
+
+  for (let counter = 1; counter <= buffer.length; counter++) {
+    const line = buffer[counter - 1];
+    if (counter >= f && counter <= t) {
+      output += `Line ${counter} ${line}.\n`;
+    }
+  }
+  return output;
+}
+
+// -----------------------------
+// Main program (ported)
+// -----------------------------
+async function LINE_EDITOR(URL=null) {
+
+  const buffer = [];
+
+    if(URL) {
+        //const fileData = fs.readFileSync(filename, "utf8");
+        const fileData = await CURL(URL);
+        // emulate io.lines(): split into lines; drop trailing empty last line if exists
+        const lines = fileData.split(/\r?\n/);
+        for (let i = 0; i < lines.length; i++) {
+        // In Lua, io.lines() won't return the final empty line if file ends with \n
+        // We'll mimic that by ignoring the last empty line produced by split.
+        if (i === lines.length - 1 && lines[i] === "") break;
+        buffer.push(lines[i]);
+        }
+        PRINT("Buffer contains " + buffer.length + " lines.");
+    }
+  // external call
+  if (mode === "list") {
+    const listing = ennumerate_lines(buffer, 1, buffer.length);
+    PRINT(listing);
+    return;
+  }
+
+  if (!advacedMode) {
+    PRINT("\nWelcome to line editor\n");
+    PRINT("Type help and press enter for help on how to use the commands\n");
+  }
+
+  // loop
+  let quit = false;
+  while (quit === false) {
+    GOTO_INPUT_LINE();
+    PRINT("\nEnter edit command, help for help:");
+    const command_input = await INPUT();
+
+    const command_line_arr = split_by_space(command_input);
+
+    if (command_line_arr[0] === "list") {
+      let listing = "";
+      if (command_line_arr[2] === "from") {
+        // list lines from X to Y
+        listing = ennumerate_lines(buffer, command_line_arr[3], command_line_arr[5]);
+      } else {
+        listing = ennumerate_lines(buffer, 1, buffer.length);
+      }
+      PRINT(listing);
+
+    } else if (command_line_arr[0] === "line" && command_line_arr[1] === "count") {
+      PRINT("Buffer contains " + buffer.length + " lines.");
+
+    } else if (command_line_arr[0] === "delete" && command_line_arr[1] === "line") {
+      const index = Number(command_line_arr[2]);
+      if (index > buffer.length) {
+        PRINT("The buffer has only" + buffer.length + " lines " + " you cannot insert at index " + index);
+      } else {
+        buffer.splice(index - 1, 1); // 1-based -> 0-based
+      }
+
+    } else if (command_line_arr[0] === "move" && command_line_arr[1] === "lines") {
+      // syntax: move lines number to number to index
+      const from = Number(command_line_arr[2]);
+      const to = Number(command_line_arr[4]);
+      const index = Number(command_line_arr[6]);
+
+      if (index > buffer.length || from > buffer.length || to > buffer.length) {
+        PRINT("\nThe buffer has only" + buffer.length + " lines " + " check parameters");
+        PRINT("\nsyntax, move lines number to number to index");
+      } else {
+        if (index < from) {
+          const rowsMoved = moveAndInsertRows(buffer, from, to, index);
+          removeRows(buffer, rowsMoved + from, rowsMoved + to);
+        } else {
+          const rowsMoved = moveAndInsertRows(buffer, from, to, index + 1);
+          removeRows(buffer, from, to);
+        }
+      }
+
+    } else if (command_line_arr[0] === "append" && command_line_arr[1] === "line") {
+      buffer.push("");
+      PRINT("\nType contents: ");
+      const new_line = await INPUT();
+      PRINT(new_line);
+      buffer[buffer.length - 1] = new_line;
+
+    } else if (command_line_arr[0] === "insert" && command_line_arr[1] === "line") {
+      const index = Number(command_line_arr[2]);
+      if (index > buffer.length) {
+        PRINT("The buffer has only" + buffer.length + " lines " + " you cannot insert at index " + index);
+      } else {
+        PRINT("Type contents: ");
+        let new_line = await INPUT();
+        new_line = String(new_line).replace(/\n/g, "");
+        // Lua: table.insert(buffer, command_line_arr[3], new_line)
+        buffer.splice(index - 1, 0, new_line);
+        PRINT(new_line);
+        buffer[index - 1] = new_line;
+      }
+
+    } else if (command_line_arr[0] === "edit" && command_line_arr[1] === "line") {
+      const index = Number(command_line_arr[2]);
+      if (index > buffer.length) {
+        PRINT("\nThe buffer has only" + buffer.length + " lines " + " you cannot edit at index " + index);
+      } else {
+        PRINT("\nLine used to contain: " + buffer[index - 1]);
+        PRINT("\nType new contents: ");
+        const new_line = await INPUT();
+        buffer[index - 1] = new_line;
+      }
+
+    } else if (command_line_arr[0] === "say" && command_line_arr[1] === "line") {
+      const index = Number(command_line_arr[2]);
+      if (index > buffer.length) {
+        PRINT("\nThe buffer has only" + buffer.length + " lines " + " you asked for index " + index);
+      } else {
+        let tmp = buffer[index - 1];
+
+        if (command_line_arr[3] === "with" && command_line_arr[4] === "punctuation") {
+          if (command_line_arr[5] === "and" && command_line_arr[6] === "spaces") {
+            tmp = convert_punctuation_to_words(buffer[index - 1], true, true);
+            PRINT("space");
+          } else {
+            tmp = convert_punctuation_to_words(buffer[index - 1], true);
+            PRINT("punct");
+          }
+        }
+
+        PRINT(tmp);
+      }
+
+    } else if (command_line_arr[0] === "save") {
+      if (!advacedMode) {
+        PRINT("\nSave buffer? Y for yes N for no");
+      } else {
+        PRINT("\nSave buffer?(Y/N)");
+      }
+
+      const answer = String(await INPUT()).toLowerCase();
+      if (answer === "y") {
+        let data = "";
+        for (let counter = 1; counter <= buffer.length; counter++) {
+          data += buffer[counter - 1] + "\n";
+        }
+        //fs.writeFileSync(filename, data, "utf8");
+        return data;
+        //PRINT("File " + filename + " saved.");
+      }
+
+    } else if (command_line_arr[0] === "help") {      
+      PRINT("\n-line count\n");
+      PRINT("-list lines\n");
+      PRINT("-list lines from X to Y\n");
+      PRINT("-delete line X\n");
+      PRINT("-append line, appends a new line at the end of the buffer\n");
+      PRINT("-insert line X\n");
+      PRINT("-edit line X\n");
+      PRINT("-move lines number to number to index\n");
+      PRINT("-save\n");
+      PRINT("-quit\n");
+
+    } else if (command_input === "quit") {
+      if (!advacedMode) {
+        PRINT("\nQuit editor? Y for yes N for no");
+      } else {
+        PRINT("\nQuit editor with-ought saving?(Y/N)");
+      }
+
+      const answer = String(await INPUT()).toLowerCase();
+      if (answer === "y") {
+        PRINT("\nLeaving editor");
+        break;
+      }
+    }else {
+        PRINT("\nERROR:unknown command:\n");
+        PRINT(command_input);
+    }
+  }
+
+  // add an option to list a range of lines
+}
+
+// Entry point (like Lua arg[1], arg[2])
+/*
+LINE_EDITOR(process.argv.slice(2)).catch((e) => {
+  PRINT("Fatal error:", e && e.stack ? e.stack : String(e));
+  process.exitCode = 1;
+});
+*/
+
+LINE_EDITOR("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/aboutEN.txt");
+/*
+A = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/line_editor.JS_BASIC");
+LOAD(A);
+*/
