@@ -1,0 +1,103 @@
+//temp put nick and password
+NICK="test2";
+PASSWORD="test2";
+ECHOOFF();
+
+function padRight40(s) {
+    s = String(s ?? "");
+    if (s.length >= 40) return s;
+    return s + " ".repeat(40 - s.length);
+}
+
+// --- CHANGE THIS URL to your real server-side mail reader endpoint ---
+const MAIL_READ_URL = "https://amjp.psy-k.org/JPLY_BBS/server_side/mail_receive.php";
+
+COLOR(12,0);
+await SLOWPRINT("\n\n", 2);
+
+COLOR(2,12);
+await SLOWPRINT("BBS MAIL - LATEST MESSAGE\n", 2);
+await SLOWPRINT("------------------------\n\n", 2);
+
+var response = await CURL(MAIL_READ_URL, {
+    data: "NICK=" + encodeURIComponent(NICK) +
+          "&PASSWORD=" + encodeURIComponent(PASSWORD) +
+          "&LIMIT=1" +
+          "&UNREAD_ONLY=1" +
+          "&MARK_READ=1"
+});
+//(done)I think I need to change UNREAD_ONLY to 1, let me try before
+try {
+    var items = JSON.parse(response);
+
+    // Server returns an array of rows
+    if (!items || items.length === 0) {
+        COLOR(0,11);
+        await SLOWPRINT("No mail found.\n", 2);
+    } else {
+        var m = items[0];
+
+        // Display ALL fields returned by the server:
+        // id, from_username, to_username, subject, message_text, is_read, created_at
+
+        COLOR(0,11);
+        await SLOWPRINT(padRight40("DATE:"), 2);
+        COLOR(12,0);
+        await SLOWPRINT(padRight40(m.created_at), 2);
+
+        COLOR(0,11);
+        await SLOWPRINT(padRight40("ID:"), 2);
+        COLOR(12,0);
+        await SLOWPRINT(padRight40(m.id), 2);
+
+        COLOR(0,11);
+        await SLOWPRINT(padRight40("FROM:"), 2);
+        COLOR(12,0);
+        await SLOWPRINT(padRight40(m.from_username), 2);
+
+        COLOR(0,11);
+        await SLOWPRINT(padRight40("TO:"), 2);
+        COLOR(12,0);
+        await SLOWPRINT(padRight40(m.to_username), 2);
+
+        COLOR(0,11);
+        await SLOWPRINT(padRight40("READ:"), 2);
+        COLOR(12,0);
+        await SLOWPRINT(padRight40(m.is_read), 2);
+
+        await SLOWPRINT("\n", 2);
+
+        COLOR(0,10);
+        await SLOWPRINT(padRight40("SUBJECT:"), 2);
+        COLOR(12,0);
+        await SLOWPRINT(padRight40(m.subject), 2);
+
+        await SLOWPRINT("\n", 2);
+
+        COLOR(0,9);
+        await SLOWPRINT(padRight40("MESSAGE:"), 2);
+        COLOR(12,0);
+        await SLOWPRINT("\n", 2);
+
+        // Print message text as-is (can be multi-line)
+        await MORE(String(m.message_text ?? "") + "\n", 2);
+
+        await SLOWPRINT("\n", 2);
+        COLOR(2,12);
+        await SLOWPRINT("(This message was marked as read.)\n", 2);
+    }
+} catch (e) {
+    // If server returns "ERROR:...." or non-JSON, show raw text
+    COLOR(0,9);
+    await SLOWPRINT("SERVER RESPONSE:\n", 2);
+    COLOR(12,0);
+    await SLOWPRINT(String(response) + "\n", 2);
+}
+
+COLOR(12,0);
+await SLOWPRINT("\nPress ENTER to continue...\n", 2);
+await INPUT();
+/*
+A = await CURL("scripts/mail_read_latest.JS_BASIC");
+LOAD(A);
+*/

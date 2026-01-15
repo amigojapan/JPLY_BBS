@@ -1,4 +1,4 @@
-let advacedMode = false;
+advacedMode = false;
 //mode = "list";
 mode = null;
 
@@ -96,7 +96,7 @@ function ennumerate_lines(buffer, from, to) {
   for (let counter = 1; counter <= buffer.length; counter++) {
     const line = buffer[counter - 1];
     if (counter >= f && counter <= t) {
-      output += `Line ${counter} ${line}.\n`;
+      output += `Line ${counter} ${line}\n`;
     }
   }
   return output;
@@ -125,7 +125,7 @@ async function LINE_EDITOR(URL=null) {
   // external call
   if (mode === "list") {
     const listing = ennumerate_lines(buffer, 1, buffer.length);
-    PRINT(listing);
+    MORE(listing,0);
     return;
   }
 
@@ -137,6 +137,7 @@ async function LINE_EDITOR(URL=null) {
   // loop
   let quit = false;
   while (quit === false) {
+    COLOR(12,0);
     GOTO_INPUT_LINE();
     PRINT("\nEnter edit command, help for help:");
     const command_input = await INPUT();
@@ -151,7 +152,7 @@ async function LINE_EDITOR(URL=null) {
       } else {
         listing = ennumerate_lines(buffer, 1, buffer.length);
       }
-      PRINT(listing);
+      await MORE(listing,0);
 
     } else if (command_line_arr[0] === "line" && command_line_arr[1] === "count") {
       PRINT("Buffer contains " + buffer.length + " lines.");
@@ -252,7 +253,8 @@ async function LINE_EDITOR(URL=null) {
         return data;
         //PRINT("File " + filename + " saved.");
       }
-
+    } else if (command_line_arr[0] === "ta") {      
+      advacedMode = !advacedMode;
     } else if (command_line_arr[0] === "help") {      
       PRINT("\n-line count\n");
       PRINT("-list lines\n");
@@ -262,9 +264,9 @@ async function LINE_EDITOR(URL=null) {
       PRINT("-insert line X\n");
       PRINT("-edit line X\n");
       PRINT("-move lines number to number to index\n");
+      PRINT("-ta toggle advanced mode\n");
       PRINT("-save\n");
       PRINT("-quit\n");
-
     } else if (command_input === "quit") {
       if (!advacedMode) {
         PRINT("\nQuit editor? Y for yes N for no");
@@ -294,8 +296,9 @@ LINE_EDITOR(process.argv.slice(2)).catch((e) => {
 });
 */
 
-LINE_EDITOR("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/aboutEN.txt");
+//LINE_EDITOR("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/aboutEN.txt");
 /*
 A = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/line_editor.JS_BASIC");
 LOAD(A);
 */
+window.LINE_EDITOR = LINE_EDITOR;

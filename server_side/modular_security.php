@@ -31,8 +31,7 @@ function hash_string_with_salt(string $string, string $salt): string {
  * @param string|null $err       Output error text (optional)
  * @return bool
  */
-function is_user_identified(
-    string $nickname,
+fu  string $nickname,
     string $password,
     ?string &$err = null
 ): bool {

@@ -1,0 +1,160 @@
+ECHOOFF();
+
+// **delete this!
+NICK="test2";
+PASSWORD="test2";
+
+function padRight40(s) {
+    s = String(s ?? "");
+    if (s.length >= 40) return s;
+    return s + " ".repeat(40 - s.length);
+}
+
+// ---- URLs ----
+const MAIL_READ_URL  = "https://amjp.psy-k.org/JPLY_BBS/server_side/mail_receive.php";
+
+// Where you host send_mail.JS_BASIC (upload it to your scripts folder)
+const SEND_MAIL_SOURCE_URL =
+  "https://amjp.psy-k.org/JPLY_BBS/scripts/send_mail.JS_BASIC";
+
+const PROXY_PREFIX =
+  "https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=";
+
+var __SEND_MAIL_LIB_READY = false;
+
+// Load send_mail.JS_BASIC as a library and ensure its exports exist
+async function LOAD_SEND_MAIL_LIBRARY() {
+    if (__SEND_MAIL_LIB_READY) return true;
+
+    let code = await CURL(PROXY_PREFIX + encodeURIComponent(SEND_MAIL_SOURCE_URL));
+    code = String(code);
+
+    // Force library mode so it won't auto-run when LOADed
+    code = 'var __SEND_MAIL_MODE="LIB";\n' + code;
+
+    LOAD(code);
+
+    // Confirm exported functions exist
+    try {
+        if (typeof window !== "undefined" && typeof window.SEND_MAIL_REPLY === "function") {
+            __SEND_MAIL_LIB_READY = true;
+            return true;
+        }
+    } catch (e) {}
+    try {
+        if (typeof globalThis !== "undefined" && typeof globalThis.SEND_MAIL_REPLY === "function") {
+            __SEND_MAIL_LIB_READY = true;
+            return true;
+        }
+    } catch (e) {}
+
+    PRINT("?ERROR: send_mail library failed to load/export\n");
+    return false;
+}
+
+// Read newest mail (limit 1) and mark it read
+async function READ_LATEST_MAIL() {
+    const response = await CURL(MAIL_READ_URL, {
+        data: "NICK=" + encodeURIComponent(NICK) +
+              "&PASSWORD=" + encodeURIComponent(PASSWORD) +
+              "&LIMIT=1" +
+              "&UNREAD_ONLY=1" +
+              "&MARK_READ=1"
+    });
+
+    let items = null;
+    try {
+        items = JSON.parse(response);
+    } catch (e) {
+        return { error: true, raw: response };
+    }
+
+    if (!items || items.length === 0) return { empty: true };
+    return { ok: true, message: items[0] };
+}
+
+// Display mail
+async function DISPLAY_MAIL(m) {
+    COLOR(2,12);
+    await SLOWPRINT("BBS MAIL - LATEST MESSAGE\n", 2);
+    await SLOWPRINT("------------------------\n\n", 2);
+
+    COLOR(0,11); await SLOWPRINT(padRight40("DATE:"), 2);
+    COLOR(12,0); await SLOWPRINT(padRight40(m.created_at), 2);
+
+    COLOR(0,11); await SLOWPRINT(padRight40("ID:"), 2);
+    COLOR(12,0); await SLOWPRINT(padRight40(m.id), 2);
+
+    COLOR(0,11); await SLOWPRINT(padRight40("FROM:"), 2);
+    COLOR(12,0); await SLOWPRINT(padRight40(m.from_username), 2);
+
+    COLOR(0,11); await SLOWPRINT(padRight40("TO:"), 2);
+    COLOR(12,0); await SLOWPRINT(padRight40(m.to_username), 2);
+
+    COLOR(0,11); await SLOWPRINT(padRight40("READ:"), 2);
+    COLOR(12,0); await SLOWPRINT(padRight40(m.is_read), 2);
+
+    await SLOWPRINT("\n", 2);
+
+    COLOR(0,10); await SLOWPRINT(padRight40("SUBJECT:"), 2);
+    COLOR(12,0); await SLOWPRINT(padRight40(m.subject), 2);
+
+    await SLOWPRINT("\n", 2);
+
+    COLOR(0,9);
+    await SLOWPRINT(padRight40("MESSAGE:"), 2);
+    COLOR(12,0);
+    await SLOWPRINT("\n", 2);
+
+    await MORE(String(m.message_text ?? "") + "\n", 2);
+
+    await SLOWPRINT("\n", 2);
+    COLOR(2,12);
+    await SLOWPRINT("(Marked as read after fetch)\n", 2);
+}
+
+// ---- MAIN ----
+COLOR(12,0);
+await SLOWPRINT("\n\n", 2);
+
+const result = await READ_LATEST_MAIL();
+
+if (result.error) {
+    COLOR(0,9);
+    await SLOWPRINT("SERVER RESPONSE (not JSON):\n", 2);
+    COLOR(12,0);
+    await SLOWPRINT(String(result.raw) + "\n", 2);
+} else if (result.empty) {
+    COLOR(0,11);
+    await SLOWPRINT("No mail found.\n", 2);
+} else {
+    const m = result.message;
+    await DISPLAY_MAIL(m);
+
+    COLOR(2,12);
+    await SLOWPRINT("\nOptions: R = Reply, ENTER = Exit\n", 2);
+    COLOR(12,0);
+    GOTO_INPUT_LINE();
+    const cmd = String(await INPUT()).trim().toLowerCase();
+
+    if (cmd === "r") {
+        const ok = await LOAD_SEND_MAIL_LIBRARY();
+        if (ok) {
+            // Call reply helper from the library
+            let fn = null;
+            try { fn = window.SEND_MAIL_REPLY; } catch (e) {}
+            if (!fn) { try { fn = globalThis.SEND_MAIL_REPLY; } catch (e) {} }
+
+            if (typeof fn === "function") {
+                await fn(m);
+            } else {
+                COLOR(0,9);
+                await SLOWPRINT("\nERROR: SEND_MAIL_REPLY not available.\n", 2);
+            }
+        }
+    }
+}
+
+COLOR(12,0);
+await SLOWPRINT("\nPress ENTER to continue...\n", 2);
+await INPUT();

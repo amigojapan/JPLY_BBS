@@ -45,6 +45,25 @@ while(quit==false) {
           await SLOWPRINT("\nDISCONECTED...\n");
           quit=true;
           break;
+        case "H":
+            await SLOWPRINT("\nUsers:\n",2);
+            var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/who.php', {
+                data: 'NICK='+NICK+'&PASSWORD='+PASSWORD
+            });
+            try {
+                var user_items = JSON.parse(response);
+                await SLOWPRINT("\n", 2);
+                output="";
+                for (const item of user_items) {
+                    output+=item.nick+"\n";
+                }
+                await MORE(output);
+                await PRINT("****** PRESS ENTER ********")
+                await INPUT();
+            } catch {
+                await SLOWPRINT(response,2);
+            }
+          break;
         default:
           await SLOWPRINT("Invalid Option or not implemented yet...",2);
       }

@@ -1,13 +1,13 @@
+ECHOOFF();
+
 function padRight40(s) {
     s = String(s);
     if (s.length >= 40) return s;
     return s + " ".repeat(40 - s.length);
 }
 
-ECHOOFF();
-NICK='test';
-PASSWORD="test";
 COLOR(12,0);
+await SLOWPRINT("\n\n",2);
 login_art = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/graffiti_title.txt");
 await SLOWPRINT(login_art,2);
 COLOR(2,12);
@@ -41,10 +41,11 @@ await SLOWPRINT("\n\nAdd graffiti? (Y/N):",2);
 add = await INPUT();
 add = add.toUpperCase();
 if(add=="Y") {
-    await SLOWPRINT("\n\nGraffiti:\n",2);
+    await SLOWPRINT("\n\nGraffiti up to 40 characters:\n",2);
     graffiti = await INPUT();
+    graffiti = graffiti.substring(0, 40); 
     var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/graffiti_wall_post.php', {
-        data: 'NICK='+NICK+'&PASSWORD='+PASSWORD+'&graffiti_text='+encodeURIComponent(graffiti)
+        data: 'NICK='+NICK+'&PASSWORD='+PASSWORD+'&graffiti_text='+graffiti
     });    
-    await SLOWPRINT("\n\nGraffiti added.\nYou will see it on next login.\n",2);
+    await SLOWPRINT(response+"\n\nGraffiti added.\nYou will see it on next login.\n",2);
 }

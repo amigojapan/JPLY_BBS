@@ -1,0 +1,197 @@
+// ------------------------------------------------------------
+// send_mail.JS_BASIC
+//
+// Standalone: run it to compose + send a mail.
+// Library: LOAD it and call:
+//   await window.SEND_MAIL_COMPOSE();            // asks TO + SUBJECT + body
+//   await window.SEND_MAIL_REPLY(messageObj);   // replies to from_username
+//
+// IMPORTANT:
+// - Exports functions to window/globalThis so it works across LOAD contexts.
+// - Loads line_editor.JS_BASIC internally and exports LINE_EDITOR too.
+// ------------------------------------------------------------
+
+ECHOOFF();
+
+// ---- URLs (change if needed) ----
+const MAIL_SEND_URL = "https://amjp.psy-k.org/JPLY_BBS/server_side/mail_send.php";
+
+const LINE_EDITOR_SOURCE_URL =
+  "https://amjp.psy-k.org/JPLY_BBS/scripts/line_editor.JS_BASIC";
+
+const PROXY_PREFIX =
+  "https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=";
+
+// ---- internal state ----
+var __SENDMAIL_LINE_EDITOR_READY = false;
+
+// Load the line editor code and EXPORT it to window/globalThis
+async function __SENDMAIL_LOAD_LINE_EDITOR() {
+    if (__SENDMAIL_LINE_EDITOR_READY) return true;
+
+    let code = await CURL(PROXY_PREFIX + encodeURIComponent(LINE_EDITOR_SOURCE_URL));
+    code = String(code);
+
+    // Strip any auto-run: lines that start with LINE_EDITOR(
+    const lines = code.split("\n");
+    const cleaned = [];
+    for (let i = 0; i < lines.length; i++) {
+        const L = lines[i];
+        if (/^\s*LINE_EDITOR\s*\(/.test(L)) continue;
+        cleaned.push(L);
+    }
+
+    // Export LINE_EDITOR out of LOAD context
+    cleaned.push("");
+    cleaned.push("try { window.LINE_EDITOR = LINE_EDITOR; } catch(e) {}");
+    cleaned.push("try { globalThis.LINE_EDITOR = LINE_EDITOR; } catch(e) {}");
+
+    LOAD(cleaned.join("\n"));
+
+    // Confirm
+    try {
+        if (typeof window !== "undefined" && typeof window.LINE_EDITOR === "function") {
+            __SENDMAIL_LINE_EDITOR_READY = true;
+            return true;
+        }
+    } catch (e) {}
+    try {
+        if (typeof globalThis !== "undefined" && typeof globalThis.LINE_EDITOR === "function") {
+            __SENDMAIL_LINE_EDITOR_READY = true;
+            return true;
+        }
+    } catch (e) {}
+
+    PRINT("?ERROR: could not load LINE_EDITOR\n");
+    return false;
+}
+
+// Low-level send (no editor)
+async function SEND_MAIL_RAW(toNick, subject, body) {
+    const resp = await CURL(MAIL_SEND_URL, {
+        data: "NICK=" + encodeURIComponent(NICK) +
+              "&PASSWORD=" + encodeURIComponent(PASSWORD) +
+              "&TO=" + encodeURIComponent(toNick) +
+              "&SUBJECT=" + encodeURIComponent(subject) +
+              "&MESSAGE=" + encodeURIComponent(body)
+    });
+
+    try {
+        return JSON.parse(resp);
+    } catch (e) {
+        return { error: true, raw: resp };
+    }
+}
+
+// Compose with line editor, then send.
+// If toNick/subject are null/empty, it will prompt for them.
+async function SEND_MAIL_COMPOSE(toNick, subject) {
+    toNick = String(toNick ?? "").trim();
+    subject = String(subject ?? "").trim();
+
+    COLOR(2,12);
+    await SLOWPRINT("\nSEND BBS MAIL\n", 2);
+    await SLOWPRINT("-------------\n", 2);
+    COLOR(12,0);
+
+    if (!toNick) {
+        await SLOWPRINT("TO (nickname): ", 2);
+        GOTO_INPUT_LINE();
+        toNick = String(await INPUT()).trim();
+    }
+    if (!toNick) {
+        COLOR(0,9);
+        await SLOWPRINT("\nCancelled (no TO).\n", 2);
+        return { cancelled: true };
+    }
+
+    if (!subject) {
+        await SLOWPRINT("SUBJECT: ", 2);
+        GOTO_INPUT_LINE();
+        subject = String(await INPUT()).trim();
+    }
+    if (!subject) subject = "(no subject)";
+
+    const ok = await __SENDMAIL_LOAD_LINE_EDITOR();
+    if (!ok) return { error: true, message: "LINE_EDITOR load failed" };
+
+    // Get editor function from global exports
+    let editorFn = null;
+    try { editorFn = window.LINE_EDITOR; } catch (e) {}
+    if (!editorFn) {
+        try { editorFn = globalThis.LINE_EDITOR; } catch (e) {}
+    }
+    if (typeof editorFn !== "function") {
+        COLOR(0,9);
+        await SLOWPRINT("\nERROR: LINE_EDITOR not available.\n", 2);
+        return { error: true, message: "LINE_EDITOR not available" };
+    }
+
+    COLOR(12,0);
+    await SLOWPRINT("\nWrite message body in the editor.\n", 2);
+    await SLOWPRINT("Commands: append line, insert line X, edit line X, save, quit\n\n", 2);
+
+    // Body is whatever the editor returns on save
+    const body = await editorFn(null);
+
+    if (!body || String(body).trim() === "") {
+        COLOR(0,9);
+        await SLOWPRINT("\nCancelled (no body saved).\n", 2);
+        return { cancelled: true };
+    }
+
+    COLOR(2,12);
+    await SLOWPRINT("\nSending...\n", 2);
+
+    const res = await SEND_MAIL_RAW(toNick, subject, body);
+
+    if (res && res.ok) {
+        COLOR(2,12);
+        await SLOWPRINT("OK! sent (id=" + res.id + ")\n", 2);
+    } else {
+        COLOR(0,9);
+        await SLOWPRINT("Send failed:\n", 2);
+        COLOR(12,0);
+        await SLOWPRINT(JSON.stringify(res) + "\n", 2);
+    }
+
+    return res;
+}
+
+// Reply helper: replies to sender of the mail object returned by mail_receive.php
+async function SEND_MAIL_REPLY(messageObj) {
+    const m = messageObj || {};
+    const toNick = String(m.from_username ?? "").trim();
+    let subj = String(m.subject ?? "").trim();
+
+    if (!toNick) {
+        COLOR(0,9);
+        await SLOWPRINT("\nERROR: Cannot reply (missing from_username).\n", 2);
+        return { error: true, message: "missing from_username" };
+    }
+
+    if (!/^re:/i.test(subj)) subj = "Re: " + subj;
+    if (!subj) subj = "Re: (no subject)";
+
+    return await SEND_MAIL_COMPOSE(toNick, subj);
+}
+
+// ---- Export to global scope (critical for LOAD context issues) ----
+try {
+    window.SEND_MAIL_RAW = SEND_MAIL_RAW;
+    window.SEND_MAIL_COMPOSE = SEND_MAIL_COMPOSE;
+    window.SEND_MAIL_REPLY = SEND_MAIL_REPLY;
+} catch (e) {}
+try {
+    globalThis.SEND_MAIL_RAW = SEND_MAIL_RAW;
+    globalThis.SEND_MAIL_COMPOSE = SEND_MAIL_COMPOSE;
+    globalThis.SEND_MAIL_REPLY = SEND_MAIL_REPLY;
+} catch (e) {}
+
+// ---- Standalone run (skips when loaded as library) ----
+// When you load as a library, set: __SEND_MAIL_MODE="LIB" before LOAD() (see reader script below).
+if (typeof __SEND_MAIL_MODE === "undefined" || __SEND_MAIL_MODE !== "LIB") {
+    await SEND_MAIL_COMPOSE(null, null);
+    await SLOWPRINT("\nPress ENTER to continue...\n", 2);
+    await INPUT();
+}
