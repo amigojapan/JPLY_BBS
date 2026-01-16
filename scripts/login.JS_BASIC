@@ -1,5 +1,17 @@
 ECHOOFF();
-//await SLOWPRINT("entered login screen",2);
+// URL of the mail send program
+var SEND_MAIL_URL =
+  "https://amjp.psy-k.org/JPLY_BBS/scripts/send_mail.JS_BASIC";
+
+var READ_MAIL_URL =
+  "https://amjp.psy-k.org/JPLY_BBS/scripts/mail_read_latest.JS_BASIC";
+
+var MAIL_RECEIVE_URL =
+  "https://amjp.psy-k.org/JPLY_BBS/server_side/mail_receive.php";
+
+var PROXY =
+  "https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=";
+
 login_art = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_LOGIN_SCREEN1COLOR.txt");
 await SLOWPRINT(login_art,2);
 COLOR(12,0);
@@ -22,6 +34,11 @@ while(quit==false) {
         await SLOWPRINT(translate["welcome"]+NICK+"!",2);
         graffiti_wall = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/graffiti_wall.JS_BASIC");
         await LOAD(graffiti_wall);
+        //check for mail
+        var code = await CURL(PROXY + encodeURIComponent(
+            "https://amjp.psy-k.org/JPLY_BBS/scripts/check_mail.JS_BASIC"
+        ));
+        LOAD(code);          
         main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
         await LOAD(main_menu);
     }

@@ -1,0 +1,109 @@
+ECHOOFF();
+
+// URL of the mail send program
+var SEND_MAIL_URL =
+  "https://amjp.psy-k.org/JPLY_BBS/scripts/send_mail.JS_BASIC";
+
+var READ_MAIL_URL =
+  "https://amjp.psy-k.org/JPLY_BBS/scripts/mail_read_latest.JS_BASIC";
+
+var MAIL_RECEIVE_URL =
+  "https://amjp.psy-k.org/JPLY_BBS/server_side/mail_receive.php";
+
+var PROXY =
+  "https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=";
+
+quit=false;
+while(quit==false) {
+
+    if(i18n_getlang()=="English"){
+        mail_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/MAIL_MENUENCOLOREN.txt");
+    } else
+    if(i18n_getlang()=="Japanese"){
+        mail_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/MAIL_MENUENCOLORJP.txt");
+    } else
+    if(i18n_getlang()=="Spanish"){
+        mail_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/MAIL_MENUENCOLORES.txt");
+    } else {
+        throw new Error("INVALID LANGUAGE exception!");
+    }
+    var code = await CURL(PROXY + encodeURIComponent(
+      "https://amjp.psy-k.org/JPLY_BBS/scripts/check_mail.JS_BASIC"
+    ));
+    LOAD(code);
+    //check for mail
+    var code = await CURL(PROXY + encodeURIComponent(
+      "https://amjp.psy-k.org/JPLY_BBS/scripts/check_mail.JS_BASIC"
+    ));
+    LOAD(code);
+    
+    await SLOWPRINT(mail_menu,2);
+
+    GOTO_INPUT_LINE();
+    option = String(await INPUT()).trim().toUpperCase();
+
+    COLOR(12,0);
+
+    switch (option) {
+
+        case "R": {
+          var code = await CURL(PROXY + encodeURIComponent(READ_MAIL_URL));
+          await LOAD(code);
+          break;
+        }
+
+        case "M": {
+          var response = await CURL(MAIL_RECEIVE_URL, {
+            data: "NICK=" + encodeURIComponent(NICK) +
+                  "&PASSWORD=" + encodeURIComponent(PASSWORD) +
+                  "&LIMIT=1000" +
+                  "&UNREAD_ONLY=1" +
+                  "&MARK_READ=1"
+          });
+
+          PRINT("All unread mail has been marked as read.\n");
+          await SLOWPRINT("************ PRESS ENTER ************",2);
+          await INPUT();
+          break;
+        }
+
+        case "S": {
+          quit = true;
+          var code = await CURL(PROXY + encodeURIComponent(SEND_MAIL_URL));
+          await LOAD(code);
+          break;
+        }
+
+        case "W": {
+            await SLOWPRINT("\nUsers:\n",2);
+            var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/who.php', {
+                data: 'NICK='+NICK+'&PASSWORD='+PASSWORD
+            });
+            try {
+                var user_items = JSON.parse(response);
+                await SLOWPRINT("\n", 2);
+                output="";
+                for (var item of user_items) {
+                    output+=item.nick+"\n";
+                }
+                await MORE(output);
+                await PRINT("****** PRESS ENTER ********");
+                await INPUT();
+            } catch {
+                await SLOWPRINT(response,2);
+            }
+          break;
+        }
+
+        case "B": {
+          // IMPORTANT: stop THIS loop before loading main menu
+          quit = true;
+          main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
+          await LOAD(main_menu);
+          break;
+        }
+
+        default:
+          await SLOWPRINT("Invalid Option or not implemented yet...",2);
+    }
+}

@@ -14,12 +14,12 @@
 ECHOOFF();
 
 // ---- URLs (change if needed) ----
-const MAIL_SEND_URL = "https://amjp.psy-k.org/JPLY_BBS/server_side/mail_send.php";
+var MAIL_SEND_URL = "https://amjp.psy-k.org/JPLY_BBS/server_side/mail_send.php";
 
-const LINE_EDITOR_SOURCE_URL =
+var LINE_EDITOR_SOURCE_URL =
   "https://amjp.psy-k.org/JPLY_BBS/scripts/line_editor.JS_BASIC";
 
-const PROXY_PREFIX =
+var PROXY_PREFIX =
   "https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=";
 
 // ---- internal state ----
@@ -29,14 +29,14 @@ var __SENDMAIL_LINE_EDITOR_READY = false;
 async function __SENDMAIL_LOAD_LINE_EDITOR() {
     if (__SENDMAIL_LINE_EDITOR_READY) return true;
 
-    let code = await CURL(PROXY_PREFIX + encodeURIComponent(LINE_EDITOR_SOURCE_URL));
+    var code = await CURL(PROXY_PREFIX + encodeURIComponent(LINE_EDITOR_SOURCE_URL));
     code = String(code);
 
     // Strip any auto-run: lines that start with LINE_EDITOR(
-    const lines = code.split("\n");
-    const cleaned = [];
-    for (let i = 0; i < lines.length; i++) {
-        const L = lines[i];
+    var lines = code.split("\n");
+    var cleaned = [];
+    for (var i = 0; i < lines.length; i++) {
+        var L = lines[i];
         if (/^\s*LINE_EDITOR\s*\(/.test(L)) continue;
         cleaned.push(L);
     }
@@ -68,7 +68,7 @@ async function __SENDMAIL_LOAD_LINE_EDITOR() {
 
 // Low-level send (no editor)
 async function SEND_MAIL_RAW(toNick, subject, body) {
-    const resp = await CURL(MAIL_SEND_URL, {
+    var resp = await CURL(MAIL_SEND_URL, {
         data: "NICK=" + encodeURIComponent(NICK) +
               "&PASSWORD=" + encodeURIComponent(PASSWORD) +
               "&TO=" + encodeURIComponent(toNick) +
@@ -95,7 +95,7 @@ async function SEND_MAIL_COMPOSE(toNick, subject) {
     COLOR(12,0);
 
     if (!toNick) {
-        await SLOWPRINT("TO (nickname): ", 2);
+        await SLOWPRINT("TO (nickname): \n", 2);
         GOTO_INPUT_LINE();
         toNick = String(await INPUT()).trim();
     }
@@ -106,17 +106,17 @@ async function SEND_MAIL_COMPOSE(toNick, subject) {
     }
 
     if (!subject) {
-        await SLOWPRINT("SUBJECT: ", 2);
+        await SLOWPRINT("SUBJECT: \n", 2);
         GOTO_INPUT_LINE();
         subject = String(await INPUT()).trim();
     }
     if (!subject) subject = "(no subject)";
 
-    const ok = await __SENDMAIL_LOAD_LINE_EDITOR();
+    var ok = await __SENDMAIL_LOAD_LINE_EDITOR();
     if (!ok) return { error: true, message: "LINE_EDITOR load failed" };
 
     // Get editor function from global exports
-    let editorFn = null;
+    var editorFn = null;
     try { editorFn = window.LINE_EDITOR; } catch (e) {}
     if (!editorFn) {
         try { editorFn = globalThis.LINE_EDITOR; } catch (e) {}
@@ -132,7 +132,7 @@ async function SEND_MAIL_COMPOSE(toNick, subject) {
     await SLOWPRINT("Commands: append line, insert line X, edit line X, save, quit\n\n", 2);
 
     // Body is whatever the editor returns on save
-    const body = await editorFn(null);
+    var body = await editorFn(null);
 
     if (!body || String(body).trim() === "") {
         COLOR(0,9);
@@ -143,7 +143,7 @@ async function SEND_MAIL_COMPOSE(toNick, subject) {
     COLOR(2,12);
     await SLOWPRINT("\nSending...\n", 2);
 
-    const res = await SEND_MAIL_RAW(toNick, subject, body);
+    var res = await SEND_MAIL_RAW(toNick, subject, body);
 
     if (res && res.ok) {
         COLOR(2,12);
@@ -160,9 +160,9 @@ async function SEND_MAIL_COMPOSE(toNick, subject) {
 
 // Reply helper: replies to sender of the mail object returned by mail_receive.php
 async function SEND_MAIL_REPLY(messageObj) {
-    const m = messageObj || {};
-    const toNick = String(m.from_username ?? "").trim();
-    let subj = String(m.subject ?? "").trim();
+    var m = messageObj || {};
+    var toNick = String(m.from_username ?? "").trim();
+    var subj = String(m.subject ?? "").trim();
 
     if (!toNick) {
         COLOR(0,9);
@@ -188,10 +188,12 @@ try {
     globalThis.SEND_MAIL_REPLY = SEND_MAIL_REPLY;
 } catch (e) {}
 
-// ---- Standalone run (skips when loaded as library) ----
-// When you load as a library, set: __SEND_MAIL_MODE="LIB" before LOAD() (see reader script below).
-if (typeof __SEND_MAIL_MODE === "undefined" || __SEND_MAIL_MODE !== "LIB") {
+async function __SEND_MAIL_MAIN() {
     await SEND_MAIL_COMPOSE(null, null);
     await SLOWPRINT("\nPress ENTER to continue...\n", 2);
     await INPUT();
+    mail_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/mail_menu.JS_BASIC");
+    await LOAD(mail_menu);
 }
+
+__SEND_MAIL_MAIN();

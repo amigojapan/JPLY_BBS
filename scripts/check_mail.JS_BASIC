@@ -1,0 +1,41 @@
+// ------------------------------------
+// CHECK FOR UNREAD MAIL
+// Prints: "You've got mail!" if unread mail exists
+// Prints nothing if none
+// ------------------------------------
+
+ECHOOFF();
+
+// URL of the mail send program
+var SEND_MAIL_URL =
+  "https://amjp.psy-k.org/JPLY_BBS/scripts/send_mail.JS_BASIC";
+
+var READ_MAIL_URL =
+  "https://amjp.psy-k.org/JPLY_BBS/scripts/mail_read_latest.JS_BASIC";
+
+var MAIL_RECEIVE_URL =
+  "https://amjp.psy-k.org/JPLY_BBS/server_side/mail_receive.php";
+
+var PROXY =
+  "https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=";
+
+// Call server: check for ONE unread mail, do NOT mark read
+var response = await CURL(MAIL_RECEIVE_URL, {
+    data: "NICK=" + encodeURIComponent(NICK) +
+          "&PASSWORD=" + encodeURIComponent(PASSWORD) +
+          "&LIMIT=1" +
+          "&UNREAD_ONLY=1" +
+          "&MARK_READ=0"
+});
+
+// Try to parse JSON
+try {
+    var items = JSON.parse(response);
+
+    if (items && items.length > 0) {
+        COLOR(2,12);
+        PRINT("You've got mail!\n");
+    }
+} catch (e) {
+    // silently ignore errors
+}

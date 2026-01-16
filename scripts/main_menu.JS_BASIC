@@ -18,11 +18,20 @@ while(quit==false) {
         throw new Error("INVALID LANGUAGE exception!");
     }
     await SLOWPRINT(main_menu,2);
-    option = INPUT();
+    option = await INPUT();
     option = option.toUpperCase();
     COLOR(12,0);
     switch (option) {
-        case "T":
+      case "M":
+              await SLOWPRINT("M selected!",2);
+            
+              // IMPORTANT: stop THIS loop before loading mail menu
+              quit = true;
+            
+              mail_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/mail_menu.JS_BASIC");
+              await LOAD(mail_menu);
+              break;
+              case "T":
           await SLOWPRINT("T selected!",2);
           break;
         case "A":
@@ -54,7 +63,7 @@ while(quit==false) {
                 var user_items = JSON.parse(response);
                 await SLOWPRINT("\n", 2);
                 output="";
-                for (const item of user_items) {
+                for (var item of user_items) {
                     output+=item.nick+"\n";
                 }
                 await MORE(output);

@@ -1,8 +1,8 @@
 ECHOOFF();
 
 // **delete this!
-NICK="test2";
-PASSWORD="test2";
+//NICK="test2";
+//PASSWORD="test2";
 
 function padRight40(s) {
     s = String(s ?? "");
@@ -11,13 +11,13 @@ function padRight40(s) {
 }
 
 // ---- URLs ----
-const MAIL_READ_URL  = "https://amjp.psy-k.org/JPLY_BBS/server_side/mail_receive.php";
+var MAIL_READ_URL  = "https://amjp.psy-k.org/JPLY_BBS/server_side/mail_receive.php";
 
 // Where you host send_mail.JS_BASIC (upload it to your scripts folder)
-const SEND_MAIL_SOURCE_URL =
+var SEND_MAIL_SOURCE_URL =
   "https://amjp.psy-k.org/JPLY_BBS/scripts/send_mail.JS_BASIC";
 
-const PROXY_PREFIX =
+var PROXY_PREFIX =
   "https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=";
 
 var __SEND_MAIL_LIB_READY = false;
@@ -54,7 +54,7 @@ async function LOAD_SEND_MAIL_LIBRARY() {
 
 // Read newest mail (limit 1) and mark it read
 async function READ_LATEST_MAIL() {
-    const response = await CURL(MAIL_READ_URL, {
+    var response = await CURL(MAIL_READ_URL, {
         data: "NICK=" + encodeURIComponent(NICK) +
               "&PASSWORD=" + encodeURIComponent(PASSWORD) +
               "&LIMIT=1" +
@@ -117,7 +117,7 @@ async function DISPLAY_MAIL(m) {
 COLOR(12,0);
 await SLOWPRINT("\n\n", 2);
 
-const result = await READ_LATEST_MAIL();
+var result = await READ_LATEST_MAIL();
 
 if (result.error) {
     COLOR(0,9);
@@ -128,17 +128,17 @@ if (result.error) {
     COLOR(0,11);
     await SLOWPRINT("No mail found.\n", 2);
 } else {
-    const m = result.message;
+    var m = result.message;
     await DISPLAY_MAIL(m);
 
     COLOR(2,12);
     await SLOWPRINT("\nOptions: R = Reply, ENTER = Exit\n", 2);
     COLOR(12,0);
     GOTO_INPUT_LINE();
-    const cmd = String(await INPUT()).trim().toLowerCase();
+    var cmd = String(await INPUT()).trim().toLowerCase();
 
     if (cmd === "r") {
-        const ok = await LOAD_SEND_MAIL_LIBRARY();
+        var ok = await LOAD_SEND_MAIL_LIBRARY();
         if (ok) {
             // Call reply helper from the library
             let fn = null;
