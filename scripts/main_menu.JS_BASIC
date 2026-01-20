@@ -22,16 +22,14 @@ while(quit==false) {
     option = option.toUpperCase();
     COLOR(12,0);
     switch (option) {
-      case "M":
-              await SLOWPRINT("M selected!",2);
-            
-              // IMPORTANT: stop THIS loop before loading mail menu
-              quit = true;
-            
-              mail_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/mail_menu.JS_BASIC");
-              await LOAD(mail_menu);
-              break;
-              case "T":
+        case "M":
+          // IMPORTANT: stop THIS loop before loading mail menu
+          quit = true;
+        
+          mail_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/mail_menu.JS_BASIC");
+          await LOAD(mail_menu);
+          break;
+        case "T":
           await SLOWPRINT("T selected!",2);
           break;
         case "A":

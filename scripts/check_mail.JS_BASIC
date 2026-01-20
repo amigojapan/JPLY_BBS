@@ -33,8 +33,8 @@ try {
     var items = JSON.parse(response);
 
     if (items && items.length > 0) {
-        COLOR(2,12);
-        PRINT("You've got mail!\n");
+        COLOR(0,12);
+        await PRINT("\n\nYou've got mail!\n");
     }
 } catch (e) {
     // silently ignore errors

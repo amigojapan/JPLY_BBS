@@ -27,15 +27,15 @@ while(quit==false) {
     } else {
         throw new Error("INVALID LANGUAGE exception!");
     }
-    var code = await CURL(PROXY + encodeURIComponent(
-      "https://amjp.psy-k.org/JPLY_BBS/scripts/check_mail.JS_BASIC"
-    ));
-    LOAD(code);
+    //var code = await CURL(PROXY + encodeURIComponent(
+    //  "https://amjp.psy-k.org/JPLY_BBS/scripts/check_mail.JS_BASIC"
+    //));
+    //LOAD(code);
     //check for mail
-    var code = await CURL(PROXY + encodeURIComponent(
-      "https://amjp.psy-k.org/JPLY_BBS/scripts/check_mail.JS_BASIC"
+    var code = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=" + encodeURIComponent(
+        "https://amjp.psy-k.org/JPLY_BBS/scripts/check_mail.JS_BASIC"
     ));
-    LOAD(code);
+    LOAD(code);          
     
     await SLOWPRINT(mail_menu,2);
 

@@ -83,12 +83,23 @@ async function SEND_MAIL_RAW(toNick, subject, body) {
     }
 }
 
+async function USER_EXISTS_NICK(nick) {
+    var post = "nickname=" + encodeURIComponent(nick);
+
+    var res = await CURL(
+        "https://amjp.psy-k.org/JPLY_BBS/server_side/user_exists.php",
+        { data: post }
+    );
+
+    if (!res) return false;
+    return res.trim() === "OK";
+}
+
 // Compose with line editor, then send.
 // If toNick/subject are null/empty, it will prompt for them.
 async function SEND_MAIL_COMPOSE(toNick, subject) {
     toNick = String(toNick ?? "").trim();
     subject = String(subject ?? "").trim();
-
     COLOR(2,12);
     await SLOWPRINT("\nSEND BBS MAIL\n", 2);
     await SLOWPRINT("-------------\n", 2);
@@ -104,6 +115,13 @@ async function SEND_MAIL_COMPOSE(toNick, subject) {
         await SLOWPRINT("\nCancelled (no TO).\n", 2);
         return { cancelled: true };
     }
+    user_exixts = await USER_EXISTS_NICK(toNick);
+    if(!user_exixts) {
+        COLOR(0,9);
+        await SLOWPRINT("\nSorry that username not exists on this BBS!\nplease try again with a different username\n",2);
+        return; 
+    }
+
 
     if (!subject) {
         await SLOWPRINT("SUBJECT: \n", 2);
@@ -170,6 +188,12 @@ async function SEND_MAIL_REPLY(messageObj) {
         return { error: true, message: "missing from_username" };
     }
 
+    user_exixts = await USER_EXISTS_NICK(toNick);
+    if(!user_exixts) {
+        await SLOWPRINT("\nSorry that username not exists on this BBS!\nplease try again with a different username\n",2);
+        return; 
+    }
+ 
     if (!/^re:/i.test(subj)) subj = "Re: " + subj;
     if (!subj) subj = "Re: (no subject)";
 

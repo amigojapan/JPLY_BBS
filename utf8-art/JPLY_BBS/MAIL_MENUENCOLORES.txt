@@ -1,5 +1,4 @@
-[C1,0]
-       ___._________.___    ____.__.    
+[C1,0]     ___._________.___    ____.__.    
       |   |\_____   \   |   \__ |  |    
       |   | |    ___/   |    /  |  |    
   /\__|   | |   |   |   |___ \___  |    
@@ -8,7 +7,7 @@
 [C9,0]┌──────────────────────────────────────┐
 │  [C5,0]R[C9,0])ead next  - Leer correo           │
 │  [C5,0]M[C9,0])ark read  - Marcar todos leidos   │
-│  [C5,0]S[C9,0])send      - Mandar correro        │
+│  [C5,0]S[C9,0])end       - Mandar correro        │
 │  [C5,0]W[C9,0])ho        - Lista de usuarios     │
 │  [C5,0]B[C9,0])ack       - Regresar al menu prin.│
 └──────────────────────────────────────┘

@@ -35,7 +35,7 @@ while(quit==false) {
         graffiti_wall = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/graffiti_wall.JS_BASIC");
         await LOAD(graffiti_wall);
         //check for mail
-        var code = await CURL(PROXY + encodeURIComponent(
+        var code = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=" + encodeURIComponent(
             "https://amjp.psy-k.org/JPLY_BBS/scripts/check_mail.JS_BASIC"
         ));
         LOAD(code);          

@@ -1,3 +1,16 @@
+async function USER_EXISTS_NICK(nick) {
+    var post = "nickname=" + encodeURIComponent(nick);
+
+    var res = await CURL(
+        "https://amjp.psy-k.org/JPLY_BBS/server_side/user_exists.php",
+        { data: post }
+    );
+
+    if (!res) return false;
+    return res.trim() === "OK";
+}
+
+
 function isAlphanumeric(str) {
     // Regex explanation:
     // ^      - starts with the following pattern
@@ -14,6 +27,11 @@ while(quit==false) {
         await SLOWPRINT("nickname must be Alphanumeric only!",2);
         continue;
     }
+    user_exixts = await USER_EXISTS_NICK(NICK);
+    if(user_exixts) {
+        await SLOWPRINT("\nSorry that username already exists!\nplease try again with a different nick\n",2);
+        continue; 
+    }
     await SLOWPRINT(translate["pw prompt"],2);
     PASSWORD = INPUT("");
     await SLOWPRINT("\nemail:\n",2);
@@ -24,7 +42,7 @@ while(quit==false) {
     await SLOWPRINT("\nPASSWORD:"+PASSWORD+"\n",2);
     await SLOWPRINT("\nEMAIL(Will not be displayed):"+EMAIL+"\n",2);
     await SLOWPRINT("\nCorrect? Y/N:\n",2);
-    option = INPUT();
+    option = await INPUT();
     option = option.toUpperCase();
     switch (option) {
         case "Y":
