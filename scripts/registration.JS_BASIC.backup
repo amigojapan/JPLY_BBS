@@ -18,30 +18,30 @@ function isAlphanumeric(str) {
     // $      - ends with the previous pattern
     return /^[a-zA-Z0-9]+$/.test(str);
 }
-await SLOWPRINT(translate["\nRegistration screen\n"],2);
+await SLOWPRINT("\nRegistration screen\n",2);
 quit=false;
 while(quit==false) {
-    await SLOWPRINT(translate["new nickname Alphanumeric only:"],2);
+    await SLOWPRINT("new nickname Alphanumeric only:",2);
     NICK = await INPUT();
     if(!isAlphanumeric(NICK)) {
-        await SLOWPRINT(translate["nickname must be Alphanumeric only!"],2);
+        await SLOWPRINT("nickname must be Alphanumeric only!",2);
         continue;
     }
     user_exixts = await USER_EXISTS_NICK(NICK);
     if(user_exixts) {
-        await SLOWPRINT(translate["\nSorry that username already exists!\nplease try again with a different nick\n"],2);
+        await SLOWPRINT("\nSorry that username already exists!\nplease try again with a different nick\n",2);
         continue; 
     }
     await SLOWPRINT(translate["pw prompt"],2);
     PASSWORD = INPUT("");
-    await SLOWPRINT(translate["\nemail:\n"],2);
+    await SLOWPRINT("\nemail:\n",2);
     EMAIL = await INPUT("");
-    await SLOWPRINT(translate["\n*Please confirm*\n\n"],2);
-    await SLOWPRINT(translate["\n*Write this informaiton down*\n\n"],2);
-    await SLOWPRINT(translate["\nNICK:"]+NICK+"\n",2);
-    await SLOWPRINT(translate["\nPASSWORD:"]+PASSWORD+"\n",2);
-    await SLOWPRINT(translate["\nEMAIL(Will not be displayed):"]+EMAIL+"\n",2);
-    await SLOWPRINT(translate["\nCorrect? Y/N:\n"],2);
+    await SLOWPRINT("\n*Please confirm*\n\n",2);
+    await SLOWPRINT("\n*Write this informaiton down*\n\n",2);
+    await SLOWPRINT("\nNICK:"+NICK+"\n",2);
+    await SLOWPRINT("\nPASSWORD:"+PASSWORD+"\n",2);
+    await SLOWPRINT("\nEMAIL(Will not be displayed):"+EMAIL+"\n",2);
+    await SLOWPRINT("\nCorrect? Y/N:\n",2);
     option = await INPUT();
     option = option.toUpperCase();
     switch (option) {
@@ -49,15 +49,15 @@ while(quit==false) {
             var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/register.php', {
                 data: 'nick='+NICK+'&pw='+PASSWORD+'&email='+EMAIL
             });
-            //await SLOWPRINT(response,2);              
-            await SLOWPRINT(translate["\nNew user registered!\n"],2);
-            await SLOWPRINT(translate["************ PRESS ENTER ************"],2)
+            await SLOWPRINT(response,2);              
+            await SLOWPRINT("\nNew user registered!\n",2);
+            await SLOWPRINT("************ PRESS ENTER ************",2)
             await INPUT();
             quit=true;
             break;
         case "N":
           break;
         default:
-          await SLOWPRINT(translate["Invalid Option!"],2);
+          await SLOWPRINT("Invalid Option!",2);
       }
 }

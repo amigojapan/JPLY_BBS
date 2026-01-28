@@ -144,27 +144,27 @@
 
 ------
 english
-    "Invalid indices":"Invalid indices",
-    "Modified Array:":"Modified Array:",
-    "Line ${counter} ${line}\n":"Line ${counter} ${line}\n",
-    "Buffer contains ":"Buffer contains ",
-    " lines.":" lines.",
-    "\nWelcome to line editor\n":"\nWelcome to line editor\n",
-    "Type help and press enter for help on how to use the commands\n":"Type help and press enter for help on how to use the commands\n",
-    "\nEnter edit command, help for help:":"\nEnter edit command:",
-    "The buffer has only":"The buffer has only ",
-    " lines you cannot insert at index ":" lines, You cannot insert at index  ",
-    " lines, Check parameters":"  lines, Check parameters",
-    "\nsyntax, move lines number to number to index":"\nsyntax, move lines number to number to index",
-    "\nType contents: ":"\nType contents: ",
-    " lines you cannot insert at index ":" lines. You cannot insert at index ",
-    "\nLine used to contain: ":"\nLine used to contain: ",
-    " lines. You asked for index ":" lines. You asked for index ",
-    "\nSave buffer? Y for yes N for no":"\nSave buffer? Y for yes N for no",
-    "\nQuit editor? Y for yes N for no":"\nQuit editor? Y for yes N for no",
-    "\nQuit editor with-ought saving?(Y/N)":"\nQuit editor with-ought saving?(Y/N)",
-    "\nLeaving editor":"\nLeaving editor",
-    "\nERROR:unknown command:\n":"\nERROR:unknown command:\n",
+    translate["Invalid indices"]
+    translate["Modified Array:"]
+    translate["Line ${counter} ${line}\n"]
+    translate["Buffer contains "]
+    translate[" lines."]
+    translate["\nWelcome to line editor\n"]
+    translate["Type help and press enter for help on how to use the commands\n"]
+    translate["\nEnter edit command, help for help:"]
+    translate["The buffer has only"]
+    translate[" lines you cannot insert at index "]
+    translate[" lines, Check parameters"]
+    translate["\nsyntax, move lines number to number to index"]
+    translate["\nType contents: "]
+    translate[" lines you cannot insert at index "]
+    translate["\nLine used to contain: "]
+    translate[" lines. You asked for index "]
+    translate["\nSave buffer? Y for yes N for no"]
+    translate["\nQuit editor? Y for yes N for no"]
+    translate["\nQuit editor with-ought saving?(Y/N)"]
+    translate["\nLeaving editor"]
+    translate["\nERROR:unknown command:\n"]
 ------
 japanese
     "Invalid indices":"インデックスが無効です。",
@@ -212,4 +212,4 @@ spanish
     "\nLeaving editor":"\nSaliendo del editor",
     "\nERROR:unknown command:\n":"\nERROR:comando desconosido\n",
     
-    //tomorrow, add the user existance checker and add it to the user register and mail systems
+    //(done)tomorrow, add the user existance checker and add it to the user register and mail systems

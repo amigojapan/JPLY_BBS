@@ -101,30 +101,30 @@ async function SEND_MAIL_COMPOSE(toNick, subject) {
     toNick = String(toNick ?? "").trim();
     subject = String(subject ?? "").trim();
     COLOR(2,12);
-    await SLOWPRINT(translate["\n\nSEND BBS MAIL\n"], 2);
+    await SLOWPRINT("\nSEND BBS MAIL\n", 2);
     await SLOWPRINT("-------------\n", 2);
     COLOR(12,0);
 
     if (!toNick) {
-        await SLOWPRINT(translate["TO (nickname): \n"], 2);
+        await SLOWPRINT("TO (nickname): \n", 2);
         GOTO_INPUT_LINE();
         toNick = String(await INPUT()).trim();
     }
     if (!toNick) {
         COLOR(0,9);
-        await SLOWPRINT(translate["\nCancelled (no TO).\n"], 2);
+        await SLOWPRINT("\nCancelled (no TO).\n", 2);
         return { cancelled: true };
     }
     user_exixts = await USER_EXISTS_NICK(toNick);
     if(!user_exixts) {
         COLOR(0,9);
-        await SLOWPRINT(translate["\nSorry that username not exists on this BBS!\nplease try again with a different username\n"],2);
+        await SLOWPRINT("\nSorry that username not exists on this BBS!\nplease try again with a different username\n",2);
         return; 
     }
 
 
     if (!subject) {
-        await SLOWPRINT(translate["SUBJECT: \n"], 2);
+        await SLOWPRINT("SUBJECT: \n", 2);
         GOTO_INPUT_LINE();
         subject = String(await INPUT()).trim();
     }
@@ -146,20 +146,20 @@ async function SEND_MAIL_COMPOSE(toNick, subject) {
     }
 
     COLOR(12,0);
-    await SLOWPRINT(translate["\nWrite message body in the line editor then save.\n"], 2);
-    //await SLOWPRINT("Commands: append line, insert line X, edit line X, save, quit\n\n", 2);
+    await SLOWPRINT("\nWrite message body in the editor.\n", 2);
+    await SLOWPRINT("Commands: append line, insert line X, edit line X, save, quit\n\n", 2);
 
     // Body is whatever the editor returns on save
     var body = await editorFn(null);
 
     if (!body || String(body).trim() === "") {
         COLOR(0,9);
-        await SLOWPRINT(translate["\nCancelled (no body saved).\n"], 2);
+        await SLOWPRINT("\nCancelled (no body saved).\n", 2);
         return { cancelled: true };
     }
 
     COLOR(2,12);
-    await SLOWPRINT(translate["\nSending...\n"], 2);
+    await SLOWPRINT("\nSending...\n", 2);
 
     var res = await SEND_MAIL_RAW(toNick, subject, body);
 
@@ -168,7 +168,7 @@ async function SEND_MAIL_COMPOSE(toNick, subject) {
         await SLOWPRINT("OK! sent (id=" + res.id + ")\n", 2);
     } else {
         COLOR(0,9);
-        await SLOWPRINT(translate["Send failed:\n"], 2);
+        await SLOWPRINT("Send failed:\n", 2);
         COLOR(12,0);
         await SLOWPRINT(JSON.stringify(res) + "\n", 2);
     }
@@ -184,13 +184,13 @@ async function SEND_MAIL_REPLY(messageObj) {
 
     if (!toNick) {
         COLOR(0,9);
-        await SLOWPRINT(translate["\nERROR: Cannot reply (missing from_username).\n"], 2);
+        await SLOWPRINT("\nERROR: Cannot reply (missing from_username).\n", 2);
         return { error: true, message: "missing from_username" };
     }
 
     user_exixts = await USER_EXISTS_NICK(toNick);
     if(!user_exixts) {
-        await SLOWPRINT(translate["\nSorry that username not exists on this BBS!\nplease try again with a different username\n"],2);
+        await SLOWPRINT("\nSorry that username not exists on this BBS!\nplease try again with a different username\n",2);
         return; 
     }
  
@@ -214,7 +214,7 @@ try {
 
 async function __SEND_MAIL_MAIN() {
     await SEND_MAIL_COMPOSE(null, null);
-    await SLOWPRINT(translate["************ PRESS ENTER ************"], 2);
+    await SLOWPRINT("\nPress ENTER to continue...\n", 2);
     await INPUT();
     mail_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/mail_menu.JS_BASIC");
     await LOAD(mail_menu);
