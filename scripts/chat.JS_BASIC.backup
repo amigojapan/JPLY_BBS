@@ -100,7 +100,8 @@ async function IRC_CLIENT() {
     await SLOWPRINT("--------------------\n\n", 15);
     await SLOWPRINT("/quit for main menu\n\n", 15);
     await SLOWPRINT("/ignore nick\n\n", 15);
-    await SLOWPRINT("/a nickprefix message   (autocomplete nick)\n", 15);
+    await SLOWPRINT("/unignore nick\n\n", 15);
+    await SLOWPRINT("/a nickprefix message (autocomplete nick)\n", 15);
     await SLOWPRINT("/who   (show known nicks)\n\n", 15);
 
     const nick = "JPLY_BBS_" + getRandomAlphanumericChar() + "_" + NICK;

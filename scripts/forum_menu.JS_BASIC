@@ -1,0 +1,362 @@
+ECHOOFF();
+
+var FORUM_LIST_TOPICS_URL   = "https://amjp.psy-k.org/JPLY_BBS/server_side/forum_list_topics.php";
+var FORUM_CREATE_TOPIC_URL  = "https://amjp.psy-k.org/JPLY_BBS/server_side/forum_create_topic.php";
+var FORUM_LIST_POSTS_URL    = "https://amjp.psy-k.org/JPLY_BBS/server_side/forum_list_posts.php";
+var FORUM_READ_POST_URL     = "https://amjp.psy-k.org/JPLY_BBS/server_side/forum_read_post.php";
+var FORUM_REPLY_URL         = "https://amjp.psy-k.org/JPLY_BBS/server_side/forum_reply.php";
+
+var PROXY = "https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=";
+
+function _fmtTime(ts) { return String(ts); }
+
+// ---- load your line editor exactly once ----
+async function ENSURE_LINE_EDITOR() {
+  if (window.LINE_EDITOR) return;
+  var code = await CURL(PROXY + encodeURIComponent("https://amjp.psy-k.org/JPLY_BBS/scripts/line_editor.JS_BASIC"));
+  await LOAD(code);
+}
+
+// ---------------- API helpers ----------------
+
+async function FORUM_LIST_TOPICS(limit, offset) {
+  // Try V2 format first (meta + topics). If your PHP is still old, fallback to array.
+  var response = await CURL(FORUM_LIST_TOPICS_URL, {
+    data:
+      "NICK=" + encodeURIComponent(NICK) +
+      "&PASSWORD=" + encodeURIComponent(PASSWORD) +
+      "&LIMIT=" + encodeURIComponent(String(limit || 20)) +
+      "&OFFSET=" + encodeURIComponent(String(offset || 0)) +
+      "&FORMAT=V2"
+  });
+
+  var j = JSON.parse(response);
+
+  // V2 => {meta:{...}, topics:[...]}
+  if (j && j.topics && j.meta) return j;
+
+  // Old => [ ...topics... ]
+  return { meta: null, topics: j };
+}
+
+async function FORUM_CREATE_TOPIC() {
+  await ENSURE_LINE_EDITOR();
+
+  COLOR(14,0);
+  await PRINT("\n--- CREATE TOPIC ---\n");
+  await PRINT("TITLE: ");
+  var title = String(await INPUT()).trim();
+  if (!title) return;
+
+  await PRINT("\nEntering LINE EDITOR for BODY.\n");
+  await PRINT("Type: append line / insert line / edit line / list lines / save / quit\n\n");
+
+  var body = await LINE_EDITOR();      // <-- YOUR editor
+  if (!body) return;                  // user quit without saving
+
+  body = String(body).trim();
+  if (!body) return;
+
+  var response = await CURL(FORUM_CREATE_TOPIC_URL, {
+    data:
+      "NICK=" + encodeURIComponent(NICK) +
+      "&PASSWORD=" + encodeURIComponent(PASSWORD) +
+      "&TITLE=" + encodeURIComponent(title) +
+      "&BODY=" + encodeURIComponent(body)
+  });
+
+  try {
+    var j = JSON.parse(response);
+    if (j.ok) {
+      await PRINT("\nOK! Topic created. ID=" + j.topic_id + "\n");
+    } else {
+      await PRINT("\nERROR: " + response + "\n");
+    }
+  } catch {
+    await PRINT("\nERROR: " + response + "\n");
+  }
+
+  await PRINT("\n****** PRESS ENTER ********");
+  await INPUT();
+}
+
+async function FORUM_READ_POST(postId) {
+  var response = await CURL(FORUM_READ_POST_URL, {
+    data:
+      "NICK=" + encodeURIComponent(NICK) +
+      "&PASSWORD=" + encodeURIComponent(PASSWORD) +
+      "&POST_ID=" + encodeURIComponent(String(postId))
+  });
+
+  var j;
+  try { j = JSON.parse(response); } catch { j = null; }
+  if (!j || !j.post_id) {
+    await PRINT("\nERROR: " + response + "\n");
+    await PRINT("\n****** PRESS ENTER ********");
+    await INPUT();
+    return;
+  }
+
+  COLOR(7,0);
+  await PRINT("\n--- READ POST ---\n");
+  await PRINT("TOPIC: " + j.topic_id + " (" + j.topic_title + ")\n");
+  await PRINT("POST_ID: " + j.post_id + "\n");
+  await PRINT("PARENT: " + (j.parent_post_id === null ? "-" : j.parent_post_id) + "\n");
+  await PRINT("BY: " + j.author_nick + "\n");
+  await PRINT("AT: " + _fmtTime(j.created_at) + "\n");
+  await PRINT("SUBJECT: " + j.subject + "\n");
+  await PRINT("----------------------------------------\n");
+  await MORE(j.body + "\n");
+  await PRINT("\n****** PRESS ENTER ********");
+  await INPUT();
+}
+
+async function FORUM_POST_REPLY(topicId, postsList) {
+  await ENSURE_LINE_EDITOR();
+
+  COLOR(14,0);
+  await PRINT("\nReply to: (T)opic or (R)eply ? ");
+  var which = String(await INPUT()).trim().toUpperCase();
+
+  var parentPostId = "";
+  if (which === "R") {
+    await PRINT("Reply number to reply to: ");
+    var n = parseInt(String(await INPUT()).trim(), 10);
+    if (!n || n < 1 || n > postsList.length) return;
+    parentPostId = String(postsList[n - 1].post_id);
+  } else {
+    parentPostId = "";
+  }
+
+  await PRINT("SUBJECT: ");
+  var subject = String(await INPUT()).trim();
+  if (!subject) return;
+
+  await PRINT("\nEntering LINE EDITOR for BODY.\n");
+  await PRINT("Type: append line / insert line / edit line / list lines / save / quit\n\n");
+
+  var body = await LINE_EDITOR();   // <-- YOUR editor
+  if (!body) return;
+
+  body = String(body).trim();
+  if (!body) return;
+
+  var data =
+    "NICK=" + encodeURIComponent(NICK) +
+    "&PASSWORD=" + encodeURIComponent(PASSWORD) +
+    "&TOPIC_ID=" + encodeURIComponent(String(topicId)) +
+    "&SUBJECT=" + encodeURIComponent(subject) +
+    "&BODY=" + encodeURIComponent(body);
+
+  if (parentPostId !== "") data += "&PARENT_POST_ID=" + encodeURIComponent(parentPostId);
+
+  var response = await CURL(FORUM_REPLY_URL, { data: data });
+
+  try {
+    var j = JSON.parse(response);
+    if (j.ok) {
+      await PRINT("\nOK! Posted. POST_ID=" + j.post_id + "\n");
+    } else {
+      await PRINT("\nERROR: " + response + "\n");
+    }
+  } catch {
+    await PRINT("\nERROR: " + response + "\n");
+  }
+
+  await PRINT("\n****** PRESS ENTER ********");
+  await INPUT();
+}
+
+async function FORUM_VIEW_TOPIC(topicId) {
+  var response = await CURL(FORUM_LIST_POSTS_URL, {
+    data:
+      "NICK=" + encodeURIComponent(NICK) +
+      "&PASSWORD=" + encodeURIComponent(PASSWORD) +
+      "&TOPIC_ID=" + encodeURIComponent(String(topicId))
+  });
+
+  var j;
+  try { j = JSON.parse(response); } catch { j = null; }
+  if (!j || !j.posts) {
+    await PRINT("\nERROR: " + response + "\n");
+    await PRINT("\n****** PRESS ENTER ********");
+    await INPUT();
+    return;
+  }
+
+  COLOR(11,0);
+  await PRINT("\n=== TOPIC " + j.topic.topic_id + " ===\n");
+  await PRINT(j.topic.title + "\n");
+  await PRINT("LOCKED: " + j.topic.is_locked + "\n\n");
+
+  var out = "";
+  var idx = 1;
+  for (var p of j.posts) {
+    var parent = (p.parent_post_id === null || p.parent_post_id === undefined) ? "-" : String(p.parent_post_id);
+    var deleted = (String(p.is_deleted) === "1") ? " [DELETED]" : "";
+    out +=
+      ("[" + idx + "] " +
+       "POST_ID=" + p.post_id +
+       " PARENT=" + parent +
+       " BY=" + p.author_nick +
+       " AT=" + _fmtTime(p.created_at) +
+       deleted + "\n" +
+       "     " + p.subject + "\n" +
+       (p.excerpt ? ("     " + p.excerpt + "\n") : "") +
+       "\n");
+    idx++;
+  }
+
+  await MORE(out);
+
+  while (true) {
+    COLOR(14,0);
+    await PRINT("\nOptions: (R)ead  (P)ost reply  (B)ack\n");
+    await PRINT("> ");
+    var opt = String(await INPUT()).trim().toUpperCase();
+
+    if (opt === "B" || opt === "") return;
+
+    if (opt === "R") {
+      await PRINT("Reply number to read: ");
+      var n = parseInt(String(await INPUT()).trim(), 10);
+      if (!n || n < 1 || n > j.posts.length) continue;
+      var postId = j.posts[n - 1].post_id;
+      await FORUM_READ_POST(postId);
+      continue;
+    }
+
+    if (opt === "P") {
+      await FORUM_POST_REPLY(topicId, j.posts);
+      return await FORUM_VIEW_TOPIC(topicId); // reload after posting
+    }
+  }
+}
+
+// ---------------- MAIN LOOP with paging ----------------
+
+async function FORUM_MENU() {
+  var limit = 20;
+  var offset = 0; // offset-based paging always works
+  var page = 1;
+  var pages = "?";
+  var total = "?";
+
+  async function SHOW_TOPICS_PAGE() {
+    var res = await FORUM_LIST_TOPICS(limit, offset);
+
+    var topics = res.topics || [];
+    if (res.meta) {
+      total = res.meta.total;
+      pages = res.meta.pages;
+      page  = res.meta.page;
+    } else {
+      // Old server: no total count
+      page = Math.floor(offset / limit) + 1;
+      pages = "?";
+      total = "?";
+    }
+
+    var out = "\n--- TOPICS PAGE " + page + " / " + pages + " (total " + total + ") ---\n\n";
+    var i = 1;
+    for (var t of topics) {
+      out +=
+        "[" + i + "] ID=" + t.topic_id +
+        " replies=" + t.reply_count +
+        " locked=" + t.is_locked + "\n" +
+        "    " + t.title + "\n" +
+        "    by " + t.creator_nick +
+        " created=" + _fmtTime(t.created_at) +
+        " last=" + _fmtTime(t.last_post_at) + "\n\n";
+      i++;
+    }
+    if (topics.length === 0) out += "(no topics)\n";
+    await MORE(out);
+  }
+    if(i18n_getlang()=="English"){
+        forum_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/forum_menuENCOLOR.txt");
+    } else
+    if(i18n_getlang()=="Japanese"){
+        forum_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/forum_menuJPCOLOR.txt");
+    } else
+    if(i18n_getlang()=="Spanish"){
+        forum_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/forum_menuESCOLOR.txt");
+    } else {
+        throw new Error("INVALID LANGUAGE exception!");
+    }
+
+  while (true) {
+    COLOR(1,0);
+    await SLOWPRINT(forum_menu,2);
+    COLOR(9,0);
+    /*
+    await PRINT("\n=========================\n");
+    await PRINT("        BBS FORUM\n");
+    await PRINT("=========================\n");
+    await PRINT("(L) List topics (this page)\n");
+    await PRINT("(N) Next page\n");
+    await PRINT("(P) Prev page\n");
+    await PRINT("(J) Jump to page\n");
+    await PRINT("(C) Create topic\n");
+    await PRINT("(V) View topic\n");
+    await PRINT("(Q) Quit to Main Menu\n\n");
+    */
+    await PRINT("Page " + page + " / " + pages + "  > ");
+    var opt = String(await INPUT()).trim().toUpperCase();
+
+    if (opt === "L") {
+      await SHOW_TOPICS_PAGE();
+      continue;
+    }
+
+    if (opt === "N") {
+      offset += limit;
+      await SHOW_TOPICS_PAGE();
+      continue;
+    }
+
+    if (opt === "P") {
+      offset -= limit;
+      if (offset < 0) offset = 0;
+      await SHOW_TOPICS_PAGE();
+      continue;
+    }
+
+    if (opt === "J") {
+      await PRINT("Jump to page #: ");
+      var p = parseInt(String(await INPUT()).trim(), 10);
+      if (p && p >= 1) {
+        offset = (p - 1) * limit;
+      }
+      await SHOW_TOPICS_PAGE();
+      continue;
+    }
+
+    if (opt === "C") {
+      await FORUM_CREATE_TOPIC();
+      // after creating, go back to first page
+      offset = 0;
+      await SHOW_TOPICS_PAGE();
+      continue;
+    }
+
+    if (opt === "V") {
+      await PRINT("Enter TOPIC ID: ");
+      var tid = parseInt(String(await INPUT()).trim(), 10);
+      if (!tid) continue;
+      await FORUM_VIEW_TOPIC(tid);
+      continue;
+    }
+
+    if (opt === "Q" || opt === "B") {
+      // IMPORTANT: LOAD main menu and RETURN so the forum loop truly ends
+      var main_menu = await CURL(PROXY + encodeURIComponent("https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC"));
+      await LOAD(main_menu);
+      return;
+    }
+
+    await SLOWPRINT("Invalid Option...", 2);
+  }
+}
+
+await FORUM_MENU();
