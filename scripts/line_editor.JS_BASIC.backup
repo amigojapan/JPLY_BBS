@@ -18,8 +18,6 @@ function split_by_space(s) {
   return String(s).trim().split(/\s+/);
 }
 
-
-
 // -----------------------------
 // Core functions (ported)
 // -----------------------------
@@ -32,7 +30,7 @@ function removeRows(array, startRow, endRow) {
     endRow > array.length ||
     startRow > endRow
   ) {
-    PRINT("Invalid indices");
+    PRINT(translate["Invalid indices"]);
     return;
   }
 
@@ -43,7 +41,7 @@ function removeRows(array, startRow, endRow) {
   array.splice(startIdx, count);
 
   // Print the modified array for demonstration
-  PRINT("Modified Array:");
+  PRINT(translate["Modified Array:"]);
   for (let i = 0; i < array.length; i++) {
     PRINT(i + 1, array[i]);
   }
@@ -59,7 +57,7 @@ function moveAndInsertRows(array, startRow, endRow, insertRow) {
     insertRow < 1 ||
     insertRow > array.length + 1
   ) {
-    PRINT("Invalid indices");
+    PRINT(translate["Invalid indices"]);
     return 0;
   }
 
@@ -80,7 +78,7 @@ function moveAndInsertRows(array, startRow, endRow, insertRow) {
   }
 
   // Print the modified array for demonstration
-  PRINT("Modified Array:");
+  PRINT(translate["Modified Array:"]);
   for (let i = 0; i < array.length; i++) {
     PRINT(i + 1, array[i]);
   }
@@ -96,7 +94,7 @@ function ennumerate_lines(buffer, from, to) {
   for (let counter = 1; counter <= buffer.length; counter++) {
     const line = buffer[counter - 1];
     if (counter >= f && counter <= t) {
-      output += `Line ${counter} ${line}\n`;
+      output += translate["Line"] + String(counter) + " " + line + "\n";
     }
   }
   return output;
@@ -120,7 +118,7 @@ async function LINE_EDITOR(URL=null) {
         if (i === lines.length - 1 && lines[i] === "") break;
         buffer.push(lines[i]);
         }
-        PRINT("Buffer contains " + buffer.length + " lines.");
+        PRINT(translate["Buffer contains "] + buffer.length + translate[" lines."]);
     }
   // external call
   if (mode === "list") {
@@ -130,8 +128,8 @@ async function LINE_EDITOR(URL=null) {
   }
 
   if (!advacedMode) {
-    PRINT("\nWelcome to line editor\n");
-    PRINT("Type help and press enter for help on how to use the commands\n");
+    PRINT(translate["\nWelcome to line editor\n"]);
+    PRINT(translate["Type help and press enter for help on how to use the commands\n"]);
   }
 
   // loop
@@ -139,7 +137,7 @@ async function LINE_EDITOR(URL=null) {
   while (quit === false) {
     COLOR(12,0);
     GOTO_INPUT_LINE();
-    PRINT("\nEnter edit command, help for help:");
+    PRINT(translate["\nEnter edit command, help for help:"]);
     const command_input = await INPUT();
 
     const command_line_arr = split_by_space(command_input);
@@ -155,12 +153,12 @@ async function LINE_EDITOR(URL=null) {
       await MORE(listing,0);
 
     } else if (command_line_arr[0] === "line" && command_line_arr[1] === "count") {
-      PRINT("Buffer contains " + buffer.length + " lines.");
+      PRINT(translate["Buffer contains "] + buffer.length + translate[" lines."]);
 
     } else if (command_line_arr[0] === "delete" && command_line_arr[1] === "line") {
       const index = Number(command_line_arr[2]);
       if (index > buffer.length) {
-        PRINT("The buffer has only" + buffer.length + " lines " + " you cannot insert at index " + index);
+        PRINT(translate["The buffer has only"] + buffer.length +  translate[" lines you cannot insert at index "] + index);
       } else {
         buffer.splice(index - 1, 1); // 1-based -> 0-based
       }
@@ -172,8 +170,8 @@ async function LINE_EDITOR(URL=null) {
       const index = Number(command_line_arr[6]);
 
       if (index > buffer.length || from > buffer.length || to > buffer.length) {
-        PRINT("\nThe buffer has only" + buffer.length + " lines " + " check parameters");
-        PRINT("\nsyntax, move lines number to number to index");
+        PRINT("\nThe buffer has only" + buffer.length + translate[" lines, Check parameters"]);
+        PRINT(translate["\nsyntax, move lines number to number to index"]);
       } else {
         if (index < from) {
           const rowsMoved = moveAndInsertRows(buffer, from, to, index);
@@ -186,7 +184,7 @@ async function LINE_EDITOR(URL=null) {
 
     } else if (command_line_arr[0] === "append" && command_line_arr[1] === "line") {
       buffer.push("");
-      PRINT("\nType contents: ");
+      PRINT(translate["\nType contents: "]);
       const new_line = await INPUT();
       PRINT(new_line);
       buffer[buffer.length - 1] = new_line;
@@ -194,7 +192,7 @@ async function LINE_EDITOR(URL=null) {
     } else if (command_line_arr[0] === "insert" && command_line_arr[1] === "line") {
       const index = Number(command_line_arr[2]);
       if (index > buffer.length) {
-        PRINT("The buffer has only" + buffer.length + " lines " + " you cannot insert at index " + index);
+        PRINT(translate["The buffer has only"] + buffer.length +  translate[" lines you cannot insert at index "] + index);
       } else {
         PRINT("Type contents: ");
         let new_line = await INPUT();
@@ -210,7 +208,7 @@ async function LINE_EDITOR(URL=null) {
       if (index > buffer.length) {
         PRINT("\nThe buffer has only" + buffer.length + " lines " + " you cannot edit at index " + index);
       } else {
-        PRINT("\nLine used to contain: " + buffer[index - 1]);
+        PRINT(translate["\nLine used to contain: "] + buffer[index - 1]);
         PRINT("\nType new contents: ");
         const new_line = await INPUT();
         buffer[index - 1] = new_line;
@@ -219,7 +217,7 @@ async function LINE_EDITOR(URL=null) {
     } else if (command_line_arr[0] === "say" && command_line_arr[1] === "line") {
       const index = Number(command_line_arr[2]);
       if (index > buffer.length) {
-        PRINT("\nThe buffer has only" + buffer.length + " lines " + " you asked for index " + index);
+        PRINT("\nThe buffer has only" + buffer.length + translate[" lines. You asked for index "] + index);
       } else {
         let tmp = buffer[index - 1];
 
@@ -238,7 +236,7 @@ async function LINE_EDITOR(URL=null) {
 
     } else if (command_line_arr[0] === "save") {
       if (!advacedMode) {
-        PRINT("\nSave buffer? Y for yes N for no");
+        PRINT(translate["\nSave buffer? Y for yes N for no"]);
       } else {
         PRINT("\nSave buffer?(Y/N)");
       }
@@ -255,7 +253,8 @@ async function LINE_EDITOR(URL=null) {
       }
     } else if (command_line_arr[0] === "ta") {      
       advacedMode = !advacedMode;
-    } else if (command_line_arr[0] === "help") {      
+    } else if (command_line_arr[0] === "help") {  
+      if(i18n_getlang()=="English"){
       PRINT("\n-line count\n");
       PRINT("-list lines\n");
       PRINT("-list lines from X to Y\n");
@@ -267,16 +266,44 @@ async function LINE_EDITOR(URL=null) {
       PRINT("-ta toggle advanced mode\n");
       PRINT("-save\n");
       PRINT("-quit\n");
+      } else
+      if(i18n_getlang()=="Japanese"){
+        PRINT("\n-line count、行数\n");
+        PRINT("-list lines、全行表示\n");
+        PRINT("-list lines from X to Y、X行からY行まで表示\n");
+        PRINT("-delete line X、X行を削除\n");
+        PRINT("-append line、バッファーに新行を追加\n");
+        PRINT("-insert line X、X行に行を追加\n");
+        PRINT("-edit line X、X行を編集\n");
+        PRINT("-move lines X to Y to index、行XからYまでインデックスに移動\n");
+        PRINT("-ta toggle advanced mode、上級者モードON\n");
+        PRINT("-save、保存\n");
+        PRINT("-quit、保存せずに終了\n");      } else
+      if(i18n_getlang()=="Spanish"){
+        PRINT("\n-line count, numero de lineas\n");
+        PRINT("-list lines, listar lienas\n");
+        PRINT("-list lines from X to Y, mover lineas de X a Y\n");
+        PRINT("-delete line X, borrar linea X\n");
+        PRINT("-append line, adiciona una linea al fin del bufer\n");
+        PRINT("-insert line X,insertar lina X\n");
+        PRINT("-edit line X, editar linea X\n");
+        PRINT("-move lines X to Y to index, mover lina X a Y a indice\n");
+        PRINT("-ta toggle advanced mode, cambiar a modo avanzado\n");
+        PRINT("-save, guardar\n");
+        PRINT("-quit, salir\n");
+      } else {
+          throw new Error("INVALID LANGUAGE exception!");
+      }
     } else if (command_input === "quit") {
       if (!advacedMode) {
-        PRINT("\nQuit editor? Y for yes N for no");
+        PRINT(translate["\nQuit editor? Y for yes N for no"]);
       } else {
-        PRINT("\nQuit editor with-ought saving?(Y/N)");
+        PRINT(translate["\nQuit editor with-ought saving?(Y/N)"]);
       }
 
       const answer = String(await INPUT()).toLowerCase();
       if (answer === "y") {
-        PRINT("\nLeaving editor");
+        PRINT(translate["\nLeaving editor"]);
         break;
       }
     }else {

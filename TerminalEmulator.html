@@ -20,6 +20,10 @@
     }
 
     html, body {
+        /*this should scale out 50%*/
+        transform: scale(0.9);
+        transform-origin: center center;
+
         margin: 0;
         padding: 0;
         height: 100vh;
@@ -39,6 +43,7 @@
 
 
     .tv {
+        
         width: 96vw;
         height: 96vh;
         max-width: 1400px;
@@ -802,6 +807,19 @@ async function HELP() {
     A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/helpEN.txt");
     MORE(A);
 }
+
+async function HELPJP() {
+    ECHOOFF();
+    A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/helpJP.txt");
+    MORE(A);
+}
+
+async function HELPES() {
+    ECHOOFF();
+    A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/helpES.txt");
+    MORE(A);
+}
+
 /* ==================================================
    BOOT SCREEN
 ================================================== */
@@ -818,8 +836,9 @@ PRINT("ATM0 - MUTE ミュート SILENCIAR\n");
 PRINT("ATDT+15593278  - ENGLISH JPLY BBS\n");
 PRINT("ATDT+815593278 - JPLY BSS　日本語\n");
 PRINT("ATDT+525593278 - JPLY BBS ESPAÑOL\n");
-PRINT("PLEASE USE ALLCAPS FOR COMMANDS,\n");
-PRINT("PRESS ENTER WHEN DONE.\n");
+PRINT("PLEASE USE ALLCAPS FOR COMMANDS.\n");
+PRINT("コマンドは半額英文字でお願いします。\n");
+PRINT("COMANDOS EN LETRAS CAPITALES.\n");
 if(isMobile) {
     //PRINT("FOR BEST RESULTS ON MOBILE,\n");
     //PRINT("WE RECOMMEND USING A\n");

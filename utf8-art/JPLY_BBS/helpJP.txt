@@ -1,25 +1,29 @@
--HELP IN ENGLISH
+-日本語ヘルプ
 ECHOOFF();
--TURNS COMMAND ECHO OFF
+-エコをオフにします
 ECHOON();
--TURNS COMMAND ECHO ON
+-エコをオンにします
 PRINT("HELLO WORLD!:");
--PRINTS HELLO WORLD!
+-HELLO WORLD!を表示
 VARNAME = INPUT();
--AWAITS FOR USER TO INPUT AND PRESS ENTER, THEN STORES VALUE IN VARIABLE VARNAME
-COLOR(0-15,0-15);
--CHANGES THE COLOR OF THE FOREGROUND AND BACKGROUND
+-ユーザーの入力を待って、VARNAMEに保存
+COLOR(0-17,0-17);
+-背景と全面の色を変える
 LOCATE(X, Y);
--CHANGES THE POSITION OF THE NEXT PRINT STATEMENT TO X AND Y COORDINATES
+-次のPRINTの場所を変える
 await PLAY(URL);
--PLAYS THE SOUND LOCATED AT STRING IN URL VARIABLE
+-URL変数の音を鳴らす
 await SLOWPRINT(JPLYBBS,4.17);
--PRINTS TEXT WITH A DELAY
+-ゆっくりと表示
 A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/JPLY_BBS_LOGIN_SCREEN1BW.txt");
--FETCHES A PAGE FROM WEB
+-WEBページをA変数に保存
 LOAD(A);
--LOADS AND RUNS THE JS_BASIC PROGRAM IN A
+-A変数のプログラムをロード
 var A = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/register.php', 
     {data: 'nick=amigojapan&pw=mockpassword&email=mockemail@email.com'
 });
--DOES POST METHOD TO URL THEN RETURNS RESULT TO A
+-POSTメッソドでURLを開く
+
+ATM0 - ミュート              
+ATDT+815593278 - JPLY BSS　日本語           
+コマンドは半額英文字でお願いします。                      
