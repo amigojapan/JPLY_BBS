@@ -22,6 +22,11 @@ while(quit==false) {
     option = option.toUpperCase();
     COLOR(12,0);
     switch (option) {
+        case "P":
+          chatprg = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/chat.JS_BASIC");
+          await LOAD(chatprg);
+          await ((typeof IRC_CLIENT!=='undefined')?IRC_CLIENT:(typeof globalThis!=='undefined' && globalThis.IRC_CLIENT)?globalThis.IRC_CLIENT:(typeof window!=='undefined' && window.IRC_CLIENT)?window.IRC_CLIENT:null)("page sysop");     // page sysop
+          break;
         case "B":
           // IMPORTANT: stop THIS loop before loading mail menu
           quit = true;
@@ -33,7 +38,14 @@ while(quit==false) {
         case "M":
           // IMPORTANT: stop THIS loop before loading mail menu
           quit = true;
-        
+          var code = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=" + encodeURIComponent(
+            "https://amjp.psy-k.org/JPLY_BBS/scripts/mail_menu.JS_BASIC"
+          ));
+          await LOAD(code);
+          break;
+        case "T":
+          await SLOWPRINT("T selected!",2);
+          
           mail_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/mail_menu.JS_BASIC");
           await LOAD(mail_menu);
           break;
@@ -53,6 +65,7 @@ while(quit==false) {
         case "C":
           chatprg = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/chat.JS_BASIC");
           await LOAD(chatprg);
+          await ((typeof IRC_CLIENT!=='undefined')?IRC_CLIENT:(typeof globalThis!=='undefined' && globalThis.IRC_CLIENT)?globalThis.IRC_CLIENT:(typeof window!=='undefined' && window.IRC_CLIENT)?window.IRC_CLIENT:null)();                 // normal chat
           break;
         case "Q":
           await SLOWPRINT("\nGoodbye!\n",2);

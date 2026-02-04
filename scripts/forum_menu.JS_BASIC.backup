@@ -43,13 +43,13 @@ async function FORUM_CREATE_TOPIC() {
   await ENSURE_LINE_EDITOR();
 
   COLOR(14,0);
-  await PRINT("\n--- CREATE TOPIC ---\n");
-  await PRINT("TITLE: ");
+  await PRINT(translate["\n--- CREATE TOPIC ---\n"]);
+  await PRINT(translate["TITLE: "]);
   var title = String(await INPUT()).trim();
   if (!title) return;
 
-  await PRINT("\nEntering LINE EDITOR for BODY.\n");
-  await PRINT("Type: append line / insert line / edit line / list lines / save / quit\n\n");
+  await PRINT(translate["\nEntering LINE EDITOR for BODY.\n"]);
+  await PRINT(translate["Type: append line / insert line / edit line / list lines / save / quit\n\n"]);
 
   var body = await LINE_EDITOR();      // <-- YOUR editor
   if (!body) return;                  // user quit without saving
@@ -68,15 +68,15 @@ async function FORUM_CREATE_TOPIC() {
   try {
     var j = JSON.parse(response);
     if (j.ok) {
-      await PRINT("\nOK! Topic created. ID=" + j.topic_id + "\n");
+      await PRINT(translate["\nOK! Topic created. ID="] + j.topic_id + "\n");
     } else {
-      await PRINT("\nERROR: " + response + "\n");
+      await PRINT(translate["\nERROR: "] + response + "\n");
     }
   } catch {
-    await PRINT("\nERROR: " + response + "\n");
+    await PRINT(translate["\nERROR: "] + response + "\n");
   }
 
-  await PRINT("\n****** PRESS ENTER ********");
+  await PRINT(translate["\n****** PRESS ENTER ********"]);
   await INPUT();
 }
 
@@ -91,23 +91,23 @@ async function FORUM_READ_POST(postId) {
   var j;
   try { j = JSON.parse(response); } catch { j = null; }
   if (!j || !j.post_id) {
-    await PRINT("\nERROR: " + response + "\n");
-    await PRINT("\n****** PRESS ENTER ********");
+    await PRINT(translate["\nERROR: "] + response + "\n");
+    await PRINT(translate["\n****** PRESS ENTER ********"]);
     await INPUT();
     return;
   }
 
   COLOR(7,0);
-  await PRINT("\n--- READ POST ---\n");
-  await PRINT("TOPIC: " + j.topic_id + " (" + j.topic_title + ")\n");
-  await PRINT("POST_ID: " + j.post_id + "\n");
-  await PRINT("PARENT: " + (j.parent_post_id === null ? "-" : j.parent_post_id) + "\n");
-  await PRINT("BY: " + j.author_nick + "\n");
-  await PRINT("AT: " + _fmtTime(j.created_at) + "\n");
-  await PRINT("SUBJECT: " + j.subject + "\n");
-  await PRINT("----------------------------------------\n");
+  await PRINT(translate["\n--- READ POST ---\n"]);
+  await PRINT(translate["TOPIC: "] + j.topic_id + " (" + j.topic_title + ")\n");
+  await PRINT(translate["POST_ID: "] + j.post_id + "\n");
+  await PRINT(translate["PARENT: "] + (j.parent_post_id === null ? "-" : j.parent_post_id) + "\n");
+  await PRINT(translate["BY: "] + j.author_nick + "\n");
+  await PRINT(translate["AT: "] + _fmtTime(j.created_at) + "\n");
+  await PRINT(translate["SUBJECT: "] + j.subject + "\n");
+  await PRINT(translate["----------------------------------------\n"]);
   await MORE(j.body + "\n");
-  await PRINT("\n****** PRESS ENTER ********");
+  await PRINT(translate["\n****** PRESS ENTER ********"]);
   await INPUT();
 }
 
@@ -115,12 +115,12 @@ async function FORUM_POST_REPLY(topicId, postsList) {
   await ENSURE_LINE_EDITOR();
 
   COLOR(14,0);
-  await PRINT("\nReply to: (T)opic or (R)eply ? ");
+  await PRINT(translate["\nReply to: (T)opic or (R)eply ? "]);
   var which = String(await INPUT()).trim().toUpperCase();
 
   var parentPostId = "";
   if (which === "R") {
-    await PRINT("Reply number to reply to: ");
+    await PRINT(translate["Reply number to reply to: "]);
     var n = parseInt(String(await INPUT()).trim(), 10);
     if (!n || n < 1 || n > postsList.length) return;
     parentPostId = String(postsList[n - 1].post_id);
@@ -128,12 +128,12 @@ async function FORUM_POST_REPLY(topicId, postsList) {
     parentPostId = "";
   }
 
-  await PRINT("SUBJECT: ");
+  await PRINT(translate["SUBJECT: "]);
   var subject = String(await INPUT()).trim();
   if (!subject) return;
 
-  await PRINT("\nEntering LINE EDITOR for BODY.\n");
-  await PRINT("Type: append line / insert line / edit line / list lines / save / quit\n\n");
+  await PRINT(translate["\nEntering LINE EDITOR for BODY.\n"]);
+  await PRINT(translate["Type: append line / insert line / edit line / list lines / save / quit\n\n"]);
 
   var body = await LINE_EDITOR();   // <-- YOUR editor
   if (!body) return;
@@ -155,15 +155,15 @@ async function FORUM_POST_REPLY(topicId, postsList) {
   try {
     var j = JSON.parse(response);
     if (j.ok) {
-      await PRINT("\nOK! Posted. POST_ID=" + j.post_id + "\n");
+      await PRINT(translate["\nOK! Posted. POST_ID="] + j.post_id + "\n");
     } else {
-      await PRINT("\nERROR: " + response + "\n");
+      await PRINT(translate["\nERROR: "] + response + "\n");
     }
   } catch {
-    await PRINT("\nERROR: " + response + "\n");
+    await PRINT(translate["\nERROR: "] + response + "\n");
   }
 
-  await PRINT("\n****** PRESS ENTER ********");
+  await PRINT(translate["\n****** PRESS ENTER ********"]);
   await INPUT();
 }
 
@@ -178,28 +178,28 @@ async function FORUM_VIEW_TOPIC(topicId) {
   var j;
   try { j = JSON.parse(response); } catch { j = null; }
   if (!j || !j.posts) {
-    await PRINT("\nERROR: " + response + "\n");
-    await PRINT("\n****** PRESS ENTER ********");
+    await PRINT(translate["\nERROR: "] + response + "\n");
+    await PRINT(translate["\n****** PRESS ENTER ********"]);
     await INPUT();
     return;
   }
 
   COLOR(11,0);
-  await PRINT("\n=== TOPIC " + j.topic.topic_id + " ===\n");
+  await PRINT(translate["\n=== TOPIC "] + j.topic.topic_id + translate[" ===\n"]);
   await PRINT(j.topic.title + "\n");
-  await PRINT("LOCKED: " + j.topic.is_locked + "\n\n");
+  await PRINT(translate["LOCKED: "] + j.topic.is_locked + "\n\n");
 
   var out = "";
   var idx = 1;
   for (var p of j.posts) {
     var parent = (p.parent_post_id === null || p.parent_post_id === undefined) ? "-" : String(p.parent_post_id);
-    var deleted = (String(p.is_deleted) === "1") ? " [DELETED]" : "";
+    var deleted = (String(p.is_deleted) === "1") ? translate[" [DELETED]"] : "";
     out +=
       ("[" + idx + "] " +
-       "POST_ID=" + p.post_id +
-       " PARENT=" + parent +
-       " BY=" + p.author_nick +
-       " AT=" + _fmtTime(p.created_at) +
+       translate["POST_ID="] + p.post_id +
+       translate[" PARENT="] + parent +
+       translate[" BY="] + p.author_nick +
+       translate[" AT="] + _fmtTime(p.created_at) +
        deleted + "\n" +
        "     " + p.subject + "\n" +
        (p.excerpt ? ("     " + p.excerpt + "\n") : "") +
@@ -211,14 +211,14 @@ async function FORUM_VIEW_TOPIC(topicId) {
 
   while (true) {
     COLOR(14,0);
-    await PRINT("\nOptions: (R)ead  (P)ost reply  (B)ack\n");
-    await PRINT("> ");
+    await PRINT(translate["\nOptions: (R)ead  (P)ost reply  (B)ack\n"]);
+    await PRINT(translate["> "]);
     var opt = String(await INPUT()).trim().toUpperCase();
 
     if (opt === "B" || opt === "") return;
 
     if (opt === "R") {
-      await PRINT("Reply number to read: ");
+      await PRINT(translate["Reply number to read: "]);
       var n = parseInt(String(await INPUT()).trim(), 10);
       if (!n || n < 1 || n > j.posts.length) continue;
       var postId = j.posts[n - 1].post_id;
@@ -257,20 +257,20 @@ async function FORUM_MENU() {
       total = "?";
     }
 
-    var out = "\n--- TOPICS PAGE " + page + " / " + pages + " (total " + total + ") ---\n\n";
+    var out = translate["\n--- TOPICS PAGE "] + page + " / " + pages + translate[" (total "] + total + ") ---\n\n";
     var i = 1;
     for (var t of topics) {
       out +=
         "[" + i + "] ID=" + t.topic_id +
-        " replies=" + t.reply_count +
-        " locked=" + t.is_locked + "\n" +
+        translate[" replies="] + t.reply_count +
+        translate[" locked="] + t.is_locked + "\n" +
         "    " + t.title + "\n" +
-        "    by " + t.creator_nick +
-        " created=" + _fmtTime(t.created_at) +
-        " last=" + _fmtTime(t.last_post_at) + "\n\n";
+        translate["    by "] + t.creator_nick +
+        translate[" created="] + _fmtTime(t.created_at) +
+        translate[" last="] + _fmtTime(t.last_post_at) + "\n\n";
       i++;
     }
-    if (topics.length === 0) out += "(no topics)\n";
+    if (topics.length === 0) out += translate["(no topics)\n"];
     await MORE(out);
   }
     if(i18n_getlang()=="English"){
@@ -289,7 +289,7 @@ async function FORUM_MENU() {
     COLOR(1,0);
     await SLOWPRINT(forum_menu,2);
     COLOR(9,0);
-    await PRINT("Page " + page + " / " + pages + "  > ");
+    await PRINT(translate["Page "] + page + " / " + pages + "  > ");
     var opt = String(await INPUT()).trim().toUpperCase();
 
     if (opt === "L") {
@@ -311,7 +311,7 @@ async function FORUM_MENU() {
     }
 
     if (opt === "J") {
-      await PRINT("Jump to page #: ");
+      await PRINT(translate["Jump to page #: "]);
       var p = parseInt(String(await INPUT()).trim(), 10);
       if (p && p >= 1) {
         offset = (p - 1) * limit;
@@ -329,7 +329,7 @@ async function FORUM_MENU() {
     }
 
     if (opt === "V") {
-      await PRINT("Enter TOPIC ID: ");
+      await PRINT(translate["Enter TOPIC ID: "]);
       var tid = parseInt(String(await INPUT()).trim(), 10);
       if (!tid) continue;
       await FORUM_VIEW_TOPIC(tid);
@@ -343,7 +343,7 @@ async function FORUM_MENU() {
       return;
     }
 
-    await SLOWPRINT("Invalid Option...", 2);
+    await SLOWPRINT(translate["Invalid Option!"], 2);
   }
 }
 

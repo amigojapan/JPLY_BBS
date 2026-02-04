@@ -32,6 +32,10 @@ wss.on("connection", (ws) => {
   console.log("Browser connected");
 
   let irc = null;
+
+// pending PM requests: reqId -> { target, ts }
+const pendingPM = new Map();
+
   let channel = null;
   let nick = null;
 
@@ -80,10 +84,13 @@ wss.on("connection", (ws) => {
       nick = (data.nick || "").trim();
       channel = (data.channel || "").trim();
 
-      if (!nick || !channel) {
-        sendToWS({ type: "status", value: "error", reason: "Missing nick or channel" });
+      if (!nick) {
+        sendToWS({ type: "status", value: "error", reason: "Missing nick" });
         return;
       }
+
+      // channel is optional (allows pure PM sessions)
+      channel = channel || "";
 
       irc = net.connect(IRC_PORT, IRC_HOST, () => {
         // Standard registration
@@ -110,9 +117,46 @@ wss.on("connection", (ws) => {
             continue;
           }
 
-          // After welcome, join requested channel
+          
+          
+          // Confirm JOIN (some networks may accept JOIN later than we send it)
+          // Example: :nick!user@host JOIN :#channel
+          const joinMatch = line.match(/^:([^!]+)!.*\sJOIN\s+:?(.+)$/);
+          if (joinMatch) {
+            const who = joinMatch[1];
+            const chan = joinMatch[2];
+            if (who === nick && chan === channel) {
+              sendToWS({ type: "irc_ready", confirm: true }); // irc_ready_join_confirm
+            }
+          }
+// PM error handling: if server rejects our PRIVMSG, report back to client
+          // Common numerics: 401 no such nick, 403 no such channel, 404 cannot send, 477/716/717 registered/callerid restrictions
+          const pmErr = line.match(/\s(401|403|404|477|716|717)\s+([^\s]+)\s+([^\s]+)\s+(.*)$/);
+          if (pmErr) {
+            const code = pmErr[1];
+            const ourNick = pmErr[2];
+            const target = pmErr[3];
+            const msg = (pmErr[4] || "").replace(/^:/, "").trim();
+            // Resolve any pending PM for this target
+            for (const [reqId, info] of pendingPM.entries()) {
+              if ((info.target || "") === target) {
+                pendingPM.delete(reqId);
+                sendToWS({ type: "pm_result", reqId, ok: false, line: `${code} ${target} ${msg}` });
+              }
+            }
+            // still forward raw line
+            sendToWS({ line });
+            continue;
+          }
+
+// After welcome, join requested channel
           if (line.includes(" 001 ")) {
-            sendIRC(`JOIN ${channel}`);
+            // After welcome, optionally join a channel (channel may be empty for PM-only sessions)
+            if (channel) {
+              sendIRC(`JOIN ${channel}`);
+            }
+            // Notify clients that IRC is ready to accept outgoing messages
+            sendToWS({ type: "irc_ready" });
             // also forward line to client
             sendToWS({ line });
             continue;
@@ -162,7 +206,43 @@ wss.on("connection", (ws) => {
       return;
     }
 
-    // Optional: client requests quit
+    
+    // Client -> bridge: send a private message (PM)
+    if (data.type === "privmsg") {
+      if (!irc) {
+        const reqId = (data.reqId || "").toString();
+        if (reqId) sendToWS({ type: "pm_result", reqId, ok: false, line: "bridge not ready (irc not connected yet)" });
+        return;
+      }
+      const target = (data.target || "").toString().trim();
+      const text = (data.text ?? "").toString();
+      const reqId = (data.reqId || "").toString();
+
+      // Keep target sane (basic IRC nick/channel charset)
+      const safeTarget = target.replace(/[^A-Za-z0-9_\-\[\]\\`^{}|]/g, "").trim();
+
+      // Prevent raw newlines from breaking IRC command
+      const safeText = text.replace(/[\r\n]+/g, " ").trim();
+
+      if (!safeTarget || !safeText) return;
+
+      sendIRC(`PRIVMSG ${safeTarget} :${safeText}`);
+
+      if (reqId) {
+        pendingPM.set(reqId, { target: safeTarget, ts: Date.now() });
+        // If no IRC error comes back soon, assume OK
+        setTimeout(() => {
+          const p = pendingPM.get(reqId);
+          if (p) {
+            pendingPM.delete(reqId);
+            sendToWS({ type: "pm_result", reqId, ok: true });
+          }
+        }, 1200);
+      }
+      return;
+    }
+
+// Optional: client requests quit
     if (data.type === "quit") {
       if (irc) {
         sendIRC("QUIT :bye");

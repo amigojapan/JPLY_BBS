@@ -115,6 +115,7 @@ async function FORUM_POST_REPLY(topicId, postsList) {
   await ENSURE_LINE_EDITOR();
 
   COLOR(14,0);
+  /*
   await PRINT(translate["\nReply to: (T)opic or (R)eply ? "]);
   var which = String(await INPUT()).trim().toUpperCase();
 
@@ -127,6 +128,8 @@ async function FORUM_POST_REPLY(topicId, postsList) {
   } else {
     parentPostId = "";
   }
+  */
+  parentPostId = "";
 
   await PRINT(translate["SUBJECT: "]);
   var subject = String(await INPUT()).trim();
