@@ -1,0 +1,36 @@
+quit=false;
+while(quit==false) {
+    if(i18n_getlang()=="English"){
+        menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/DOORGAMESEN.txt");
+    } else
+    if(i18n_getlang()=="Japanese"){
+        menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/DOORGAMESJP.txt");
+    } else
+    if(i18n_getlang()=="Spanish"){
+        menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/DOORGAMESES.txt");
+    } else {
+        throw new Error("INVALID LANGUAGE exception!");
+    }
+    await SLOWPRINT(menu,2);
+    option = await INPUT();
+    option = option.toUpperCase();
+    COLOR(12,0);
+    switch (option) {
+        case "O":
+            quit = true;   // <<< CRITICAL LINE
+            var code = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=" + encodeURIComponent(
+                "https://amjp.psy-k.org/JPLY_BBS/scripts/OregonTrail.JS_BASIC"
+            ));
+            await LOAD(code);
+            break;
+        case "B": {
+          // IMPORTANT: stop THIS loop before loading main menu
+          quit = true;
+          main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
+          await LOAD(main_menu);
+          break;
+        }
+        default:
+          await SLOWPRINT("Invalid Option or not implemented yet...",2);
+      }
+}

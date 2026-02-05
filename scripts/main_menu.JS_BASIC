@@ -35,6 +35,14 @@ while(quit==false) {
           ));
           await LOAD(code);
           break;
+        case "D":
+          // IMPORTANT: stop THIS loop before loading mail menu
+          quit = true;
+          var code = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=" + encodeURIComponent(
+            "https://amjp.psy-k.org/JPLY_BBS/scripts/doorgames_menu.JS_BASIC"
+          ));
+          await LOAD(code);
+          break;
         case "M":
           // IMPORTANT: stop THIS loop before loading mail menu
           quit = true;

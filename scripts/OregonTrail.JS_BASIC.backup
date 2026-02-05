@@ -1,0 +1,163 @@
+ECHOOFF();
+
+// Oregon Trail JS port from Python
+
+function RND(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
+async function forceInputAlphaNumeric(promptMessage) {
+  while (true) {
+    // Call the existing function and await its result [6]
+    let input = await INPUT(promptMessage);
+    
+    // Check if input exists, and has non-whitespace characters [1]
+    if (input && input.trim().length > 0) {
+      return input.trim(); // Return valid input
+    }
+    
+    // Optional: Alert the user to try again
+    SLOWPRINT("Input cannot be empty. Please try again.",2);
+  }
+}
+async function forceInputNumeric(message) {
+    let userInput;
+    let number;
+
+    while (true) {
+        // Use the existing await INPUT() function
+        userInput = await INPUT(message); 
+        
+        // Try to parse the input to a number
+        number = Number(userInput);
+
+        // Check if the input is a valid number and not empty
+        if (userInput !== null && userInput.trim() !== "" && !isNaN(number)) {
+            return number; // Return valid number and exit loop
+        }
+        
+        // Optional: Alert the user they must enter a number
+        SLOWPRINT("Invalid input. Please enter a valid number.",2);
+    }
+}
+
+async function game() {
+  PRINT(translate["Welcome to 'The Oregon Trail'!"]);
+
+  let player_name = await  forceInputAlphaNumeric(translate["What is your name?"]);
+  while (player_name.length < 1) {
+    player_name = await forceInputAlphaNumeric(translate["Please enter your name again:"]);
+  }
+
+  let year_set = await forceInputNumeric(translate["Enter your preferred year:"]);
+  while (isNaN(year_set)) {
+    year_set = await forceInputNumeric(translate["Error. Try again!"]);
+  }
+
+  let mode_choice = await forceInputAlphaNumeric(translate["(Easy,Normal,Hard,Impossible,Custom):"]);
+
+  let food_num = 0;
+  let health_num = 0;
+
+  if (mode_choice === translate["Easy"]) { food_num = 1000; health_num = 10; }
+  else if (mode_choice === translate["Normal"]) { food_num = 500; health_num = 5; }
+  else if (mode_choice === translate["Hard"]) { food_num = 300; health_num = 4; }
+  else if (mode_choice === translate["Impossible"]) { food_num = 150; health_num = 3; }
+  else if (mode_choice === translate["Custom"]) {
+    food_num = await forceInputNumeric(translate["How much food do you want:"]);
+    health_num = await forceInputNumeric(translate["How much health do you want:"]);
+  }else{
+    PRINT(translate["That choice does not exist. Using custom."]);
+    food_num = await forceInputNumeric(translate["How much food do you want:"]);
+    health_num = await forceInputNumeric(translate["How much health do you want:"]);
+  }
+
+  let player_move_distance = 0;
+  let month_num = 3;
+  let days_pass = 1;
+  let total_days = 0;
+
+  async function add_days(min, max) {
+    let random_result = RND(min, max);
+    PRINT(translate["Currently "] + random_result + translate["A day has passed…"]);
+
+    days_pass += random_result;
+    total_days += random_result;
+    food_num -= random_result * 5;
+
+    if (RND(1,10) <= 2) {
+      health_num -= 1;
+      PRINT(translate["Unfortunately, you lost 1 health during this period."]);
+    }
+
+    if (days_pass > 30) {
+      days_pass -= 30;
+      month_num += 1;
+    }
+  }
+
+  async function travel() {
+    await add_days(3,7);
+    let move = RND(30,60);
+    player_move_distance += move;
+  }
+
+  async function rest() {
+    await add_days(2,5);
+    health_num += 1;
+    if (health_num > 5) health_num = 5;
+  }
+
+  async function hunt() {
+    await add_days(2,5);
+    food_num += 100;
+    PRINT(translate["You gained 100 pounds of food!"]);
+  }
+
+  PRINT(translate["It is a 2000 mile journey from New York to Oregon. Good luck!"]);
+
+  while (player_move_distance < 2000 && month_num < 13) {
+
+    PRINT(translate["----------------------------------"]);
+    PRINT(player_name + translate[", currently "] + month_num + translate["Month "] + days_pass + translate["Day "] + year_set + translate["Year"]);
+    PRINT(translate["Distance: "] + player_move_distance + ", " + translate["Food: "] + food_num  + ", " + translate["HP: "] + health_num);
+
+    let choice = await forceInputAlphaNumeric(translate["Choose (Move,Rest,Hunt,Status,Help):"]);
+
+    if (choice === translate["Move"]) await travel();
+    else if (choice === translate["Rest"]) await rest();
+    else if (choice === translate["Hunt"]) await hunt();
+    else if (choice === "quit") {
+       // IMPORTANT: stop THIS loop before loading main menu
+          quit = true;
+          main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
+          await LOAD(main_menu);
+    } else if (choice === translate["Status"]) {
+      PRINT(translate["Food: "] + food_num);
+      PRINT(translate["HP: "] + health_num);
+      PRINT(translate["Distance: "] + player_move_distance);
+      PRINT(translate["Days passed: "] + total_days);
+    }
+    else if (choice === translate["Help"]) {
+      PRINT(translate["Move: travel 30-60 miles"]);
+      PRINT(translate["Rest: recover HP"]);
+      PRINT(translate["Hunt: +100 food"]);
+      PRINT(translate["Status: show current state"]);
+    }
+  }
+
+  if (player_move_distance >= 2000) PRINT(translate["Amazing! You have reached Oregon!"]);
+  if (food_num <= 0) PRINT(translate["Game over. You ran out of food."]);
+  if (health_num <= 0) PRINT(translate["Game over. You ran out of health."]);
+  if (month_num >= 13) PRINT(translate["Winter has come. Game over!"]);
+}
+
+await game();
+
+/*
+var code = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=" + encodeURIComponent(
+    "https://amjp.psy-k.org/JPLY_BBS/scripts/OregonTrail.JS_BASIC"
+));
+await LOAD(code);
+*/

@@ -1,0 +1,205 @@
+// Helper for INPUT
+const readline = require("readline");
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+function INPUT() {
+  return new Promise(resolve => rl.question("", () => resolve()));
+}
+
+function RND(min = 1, max = 100) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Game variables
+let A = 0, B = 0; // scores
+let D = 1;        // down
+let E = 0;        // yard
+let F = 0;        // first down marker
+let O = 0;        // offence (1 player, 0 computer)
+let T = 0;        // turn counter
+let Q = "";
+
+async function main() {
+  let N = RND();
+
+  if (N < 50) {
+    SLOWPRINT("YOU WON TOSS", 2);
+    SLOWPRINT("[ENTER] TO CONTINUE", 2);
+    await INPUT();
+    O = 1;
+  } else {
+    SLOWPRINT("YOU LOST TOSS", 2);
+    O = 0;
+  }
+
+  await kickoff();
+}
+
+async function kickoff() {
+  SLOWPRINT("KICKOFF", 2);
+  SLOWPRINT("[ENTER] TO CONTINUE", 2);
+  await INPUT();
+
+  E = RND(1, 30);
+  F = E + 10;
+  D = 1;
+
+  await menu();
+}
+
+async function menu() {
+  while (true) {
+    if (D === 5) {
+      await ballChangeSides();
+      continue;
+    }
+
+    T++;
+    if (T === 120) return gameOver();
+
+    SLOWPRINT("Score,YOU,COMP:", 2);
+    SLOWPRINT(`${A} ${B}`, 2);
+    await INPUT();
+
+    SLOWPRINT("Down,Yard:", 2);
+    SLOWPRINT(`${D} ${E}`, 2);
+    await INPUT();
+
+    SLOWPRINT("1stDn,Turn of120:", 2);
+    SLOWPRINT(`${F - E} ${T}`, 2);
+    await INPUT();
+
+    if (O === 0) {
+      await aiMove();
+      continue;
+    }
+
+    SLOWPRINT("1)LONG PASS 2)SHORT PASS", 2);
+    SLOWPRINT("3)RUN       4)PUNT", 2);
+    SLOWPRINT("5)FIELD GOAL6)INFO", 2);
+
+    Q = await askNumber();
+
+    switch (Q) {
+      case 1: await longPass(); break;
+      case 2: await shortPass(); break;
+      case 3: await run(); break;
+      case 4: await punt(); break;
+      case 5: await fieldGoal(); break;
+      case 6: break;
+      default:
+        SLOWPRINT("INCORRECT INPUT", 2);
+        await INPUT();
+    }
+  }
+}
+
+async function askNumber() {
+  const v = await INPUT();
+  return parseInt(v.trim(), 10);
+}
+
+async function longPass() {
+  SLOWPRINT("LONG PASS", 2);
+  if (RND() < 10) return success();
+  return failed();
+}
+
+async function shortPass() {
+  SLOWPRINT("SHORT PASS", 2);
+  if (RND() < 25) return success();
+  return failed();
+}
+
+async function run() {
+  SLOWPRINT("RUN", 2);
+  if (RND() < 50) return success();
+  return failed();
+}
+
+async function punt() {
+  SLOWPRINT("PUNT", 2);
+  E = RND(1, 50);
+  F = E + 10;
+  D = 1;
+  await ballChangeSides();
+}
+
+async function fieldGoal() {
+  SLOWPRINT("FIELD GOAL", 2);
+  if (RND() < 50) {
+    SLOWPRINT("SUCCEEDED", 2);
+    if (O === 1) A += 2;
+    else B += 2;
+  } else {
+    SLOWPRINT("FAILED", 2);
+  }
+  await ballChangeSides();
+}
+
+async function failed() {
+  SLOWPRINT("FAILED", 2);
+  await INPUT();
+  D++;
+}
+
+async function success() {
+  SLOWPRINT("SUCCEEDED", 2);
+  await INPUT();
+
+  let gain = RND(1, 20);
+  E += gain;
+
+  if (E > 99) return touchdown();
+
+  if (E > F) {
+    D = 1;
+    F = E + 10;
+  } else {
+    D++;
+    if (D > 4) await ballChangeSides();
+  }
+}
+
+async function touchdown() {
+  SLOWPRINT("TOUCHDOWN!", 2);
+  if (O === 1) {
+    A += 6;
+    A += RND(1, 2);
+  } else {
+    B += 6;
+    B += RND(1, 2);
+  }
+  await ballChangeSides();
+}
+
+async function ballChangeSides() {
+  O = O === 1 ? 0 : 1;
+  await kickoff();
+}
+
+async function aiMove() {
+  SLOWPRINT("COMPUTER MOVE", 2);
+
+  if (D === 4) {
+    if (E > 80) return fieldGoal();
+    if (E < 60) return punt();
+  }
+
+  let r = RND(1, 3);
+  if (r === 1) await run();
+  else if (r === 2) await shortPass();
+  else await longPass();
+}
+
+function gameOver() {
+  SLOWPRINT("GameOver,YOU,COMP:", 2);
+  SLOWPRINT(`${A} ${B}`, 2);
+  SLOWPRINT(A > B ? "YOU WIN" : "COMPUTER WINS", 2);
+  rl.close();
+}
+
+main();
