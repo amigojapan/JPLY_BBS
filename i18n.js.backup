@@ -167,7 +167,46 @@ i18n["English"] = {
 	" AT=":" AT=",
 	"Page ":"Page ",
 	"Jump to page #: ":"Jump to page #: ",
-	"Enter TOPIC ID: ":"Enter TOPIC ID: "
+	"Enter TOPIC ID: ":"Enter TOPIC ID: ",
+	" HP: ":" HP: ",
+
+	"A day has passed…":"A day has passed…",
+	"Food: ":"Food: ",
+	"(Easy,Normal,Hard,Impossible,Custom):":"(Easy,Normal,Hard,Impossible,Custom):",
+	"You gained 100 pounds of food!":"You gained 100 pounds of food!",
+	", currently ":", currently ",
+	"Welcome to 'The Oregon Trail'!":"Welcome to 'The Oregon Trail'!",
+	"That choice does not exist. Using custom.":"That choice does not exist. Using custom.",
+	"How much health do you want:":"How much health do you want:",
+	"How much food do you want:":"How much food do you want:",
+	"Please enter your name again:":"Please enter your name again:",
+	"Error. Try again!":"Error. Try again!",
+	"Custom":"Custom",
+	"Game over. You ran out of health.":"Game over. You ran out of health.",
+	"Game over. You ran out of food.":"Game over. You ran out of food.",
+	"It is a 2000 mile journey from New York to Oregon. Good luck!":"It is a 2000 mile journey from New York to Oregon. Good luck!",
+	"Help":"Help",
+	"Impossible":"Impossible",
+	"Rest":"Rest",
+	"Rest: recover HP":"Rest: recover HP",
+	"Winter has come. Game over!":"Winter has come. Game over!",
+	"What is your name?":"What is your name?",
+	"Enter your preferred year:":"Enter your preferred year:",
+	"Year":"Year",
+	"Day ":"Day ",
+	"Month ":"Month ",
+	"Unfortunately, you lost 1 health during this period.":"Unfortunately, you lost 1 health during this period.",
+	"Status":"Status",
+	"Status: show current state":"Status: show current state",
+	"Hunt":"Hunt",
+	"Hunt: +100 food":"Hunt: +100 food",
+	"Currently ":"Currently ",
+	"Move":"Move",
+	"Move: travel 30-60 miles":"Move: travel 30-60 miles",
+	"Amazing! You have reached Oregon!":"Amazing! You have reached Oregon!",
+	"Days passed: ":"Days passed: ",
+	"Distance: ":"Distance: ",
+	"Choose (Move,Rest,Hunt,Status,Help):":"Choose (Move,Rest,Hunt,Status,Help):"
 };
 i18n["Japanese"] = {
 	"enter nick or reg.":"\nハンドル名もしくは「ユーザー登録」を入力:\n",
@@ -335,7 +374,51 @@ i18n["Japanese"] = {
 	" AT=":" 日時=",
 	"Page ":"ページ ",
 	"Jump to page #: ":"ページ番号へ移動: ",
-	"Enter TOPIC ID: ":"トピックID入力: "
+	"Enter TOPIC ID: ":"トピックID入力: ",
+	" HP: ":" HP: ",
+	" 日にちがたった…":" 日にちがたった…",
+	" 食料: ":" 食料: ",
+	"(簡単,普通,難しい,不可能,カスタマイズ):":"(簡単,普通,難しい,不可能,カスタマイズ):",
+	"----------------------------------":"----------------------------------",
+	"100ポンドの食料を獲得した！":"100ポンドの食料を獲得した！",
+	"HP: ":"HP: ",
+	"A day has passed…":"日にちがたった…",
+	"Food: ":"食料: ",
+	"(Easy,Normal,Hard,Impossible,Custom):":"(簡単,普通,難しい,不可能,カスタマイズ):",
+	"You gained 100 pounds of food!":"100ポンドの食料を獲得した！",
+	", currently ":"、現在は ",
+	"Welcome to 'The Oregon Trail'!":"「オレゴントレイル」へようこそ！",
+	"That choice does not exist. Using custom.":"その選択はありません。カスタムで行きます。",
+	"How much health do you want:":"どれくらいの体力が欲しいですか:",
+	"How much food do you want:":"どれくらいの食料が欲しいですか:",
+	"Please enter your name again:":"もう一度入力してね。名前は？",
+	"Error. Try again!":"エラー。もう一度試して！",
+	"Custom":"カスタマイズ",
+	"Game over. You ran out of health.":"ゲームオーバー、体力が尽きました。",
+	"Game over. You ran out of food.":"ゲームオーバー、食料が尽きました。",
+	"It is a 2000 mile journey from New York to Oregon. Good luck!":"ニューヨークからオレゴンまで２０００マイルの旅です。頑張って下さい！",
+	"Help":"ヘルプ",
+	"Impossible":"不可能",
+	"Rest":"休憩",
+	"Rest: recover HP":"休憩: HP回復",
+	"Winter has come. Game over!":"冬が来ました、ゲームオーバーです！",
+	"What is your name?":"名前は？",
+	"Enter your preferred year:":"好きな年を入力して:",
+	"Year":"年",
+	"Day ":"日 ",
+	"Month ":"月 ",
+	"Unfortunately, you lost 1 health during this period.":"残念ながら、この期間中に体力が1減った。",
+	"Status":"状況",
+	"Status: show current state":"状況: 現在の状態表示",
+	"Hunt":"狩り",
+	"Hunt: +100 food":"狩り: 食料+100",
+	"Currently ":"現在 ",
+	"Move":"移動",
+	"Move: travel 30-60 miles":"移動: 30-60マイル進む",
+	"Amazing! You have reached Oregon!":"素晴らしい！あなたはオレゴンに到着しました！",
+	"Days passed: ":"経過日数: ",
+	"Distance: ":"距離: ",
+	"Choose (Move,Rest,Hunt,Status,Help):":"選択(移動,休憩,狩り,状況,ヘルプ):"
 };
 i18n["Spanish"] = {
 	"enter nick or reg.":'\nUSUARIO O "REGISTAR":\n',
@@ -370,9 +453,9 @@ i18n["Spanish"] = {
 	"Cleanlyness": " Limpieza：",
 	"Total Points": "Puntos en total：",
 	"Difficulty": "Dificultad",
-	"Easy": "Facil",
+	"Easy": "Fácil",
 	"Normal": "Normal",
-	"Hard": "Dificil",
+	"Hard": "Difícil",
 	"emotions": "Emociones",
 	"weather": "Clima",
 	"body parts": "Partes del cuerpo",
@@ -501,7 +584,46 @@ i18n["Spanish"] = {
 	" AT=":" EN=",
 	"Page ":"Página ",
 	"Jump to page #: ":"Saltar a página #: ",
-	"Enter TOPIC ID: ":"Ingrese ID del tema: "
+	"Enter TOPIC ID: ":"Ingrese ID del tema: ",
+	" HP: ":" HP: ",
+
+	"A day has passed…":"Ha pasado un día…",
+	"Food: ":"Comida: ",
+	"(Easy,Normal,Hard,Impossible,Custom):":"(Fácil,Normal,Difícil,Imposible,Personalizado):",
+	"You gained 100 pounds of food!":"¡Has ganado 100 libras de comida!",
+	", currently ":", actualmente ",
+	"Welcome to 'The Oregon Trail'!":"¡Bienvenido a 'La Ruta de Oregón'!",
+	"That choice does not exist. Using custom.":"Esa opción no existe. Usando personalizado.",
+	"How much health do you want:":"¿Cuánta salud quieres:",
+	"How much food do you want:":"¿Cuánta comida quieres:",
+	"Please enter your name again:":"Introduce tu nombre otra vez:",
+	"Error. Try again!":"Error. ¡Intenta otra vez!",
+	"Custom":"Personalizado",
+	"Game over. You ran out of health.":"Fin del juego. Te quedaste sin salud.",
+	"Game over. You ran out of food.":"Fin del juego. Te quedaste sin comida.",
+	"It is a 2000 mile journey from New York to Oregon. Good luck!":"Es un viaje de 2000 millas de Nueva York a Oregón. ¡Buena suerte!",
+	"Help":"Ayuda",
+	"Impossible":"Imposible",
+	"Rest":"Descansar",
+	"Rest: recover HP":"Descansar: recuperar salud",
+	"Winter has come. Game over!":"Ha llegado el invierno. ¡Fin del juego!",
+	"What is your name?":"¿Cómo te llamas?",
+	"Enter your preferred year:":"Introduce el año que prefieras:",
+	"Year":"Año",
+	"Day ":"Día ",
+	"Month ":"Mes ",
+	"Unfortunately, you lost 1 health during this period.":"Desafortunadamente, perdiste 1 de salud en este periodo.",
+	"Status":"Estado",
+	"Status: show current state":"Estado: mostrar estado actual",
+	"Hunt":"Cazar",
+	"Hunt: +100 food":"Cazar: +100 comida",
+	"Currently ":"Actualmente ",
+	"Move":"Moverse",
+	"Move: travel 30-60 miles":"Moverse: avanzar 30-60 millas",
+	"Amazing! You have reached Oregon!":"¡Increíble! ¡Has llegado a Oregón!",
+	"Days passed: ":"Días transcurridos: ",
+	"Distance: ":"Distancia: ",
+	"Choose (Move,Rest,Hunt,Status,Help):":"Elige (Moverse,Descansar,Cazar,Estado,Ayuda):"
 };
 
 let currentLanguage = null;
@@ -513,6 +635,9 @@ function i18n_setlang(lang) {
 function i18n_getlang() {
 	return currentLanguage;
 }
+
+window.i18n_setlang=i18n_setlang;
+window.i18n_getlang=i18n_getlang;
 
 //var translate = i18n_setlang("English");
 //console.log(translate["Hello World"]);
@@ -528,5 +653,3 @@ function i18n_getlang() {
 //"We would like you to see the story at least once."
 //"一回はストリーを見て欲しいです。"
 //"Nos gustaria que lean la historia por lo menos una vez."
-
-

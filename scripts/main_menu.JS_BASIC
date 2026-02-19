@@ -35,6 +35,19 @@ while(quit==false) {
           ));
           await LOAD(code);
           break;
+        case "W"://warez
+            if(i18n_getlang()=="English"){
+              OPENURLCONFIRMEN("https://amjp.psy-k.org/JPLY/en.php");
+            } else
+            if(i18n_getlang()=="Japanese"){
+              OPENURLCONFIRMJP("https://amjp.psy-k.org/JPLY/jp.php");
+            } else
+            if(i18n_getlang()=="Spanish"){
+              OPENURLCONFIRMES("https://amjp.psy-k.org/JPLY/es.php");
+            } else {
+                throw new Error("INVALID LANGUAGE exception!");
+            }
+          break;
         case "D":
           // IMPORTANT: stop THIS loop before loading mail menu
           quit = true;
@@ -81,24 +94,24 @@ while(quit==false) {
           await SLOWPRINT("\nDISCONECTED...\n");
           quit=true;
           break;
-        case "H":
-            await SLOWPRINT("\nUsers:\n",2);
-            var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/who.php', {
-                data: 'NICK='+NICK+'&PASSWORD='+PASSWORD
-            });
-            try {
-                var user_items = JSON.parse(response);
-                await SLOWPRINT("\n", 2);
-                output="";
-                for (var item of user_items) {
-                    output+=item.nick+"\n";
-                }
-                await MORE(output);
-                await PRINT("****** PRESS ENTER ********")
-                await INPUT();
-            } catch {
-                await SLOWPRINT(response,2);
-            }
+        case "G":
+          graffiti_wall = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/graffiti_wall.JS_BASIC");
+          await LOAD(graffiti_wall);
+          //check for mail
+          var code = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=" + encodeURIComponent(
+              "https://amjp.psy-k.org/JPLY_BBS/scripts/check_mail.JS_BASIC"
+          ));
+          LOAD(code);          
+          break;
+        case "U":
+          //graffiti_wall = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/graffiti_wall.JS_BASIC");
+          //await LOAD(graffiti_wall);
+          //check for mail
+          //quit = true;
+          var code = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=" + encodeURIComponent(
+              "https://amjp.psy-k.org/JPLY_BBS/scripts/ascii_menu.JS_BASIC"
+          ));
+          await LOAD(code);          
           break;
         default:
           await SLOWPRINT("Invalid Option or not implemented yet...",2);

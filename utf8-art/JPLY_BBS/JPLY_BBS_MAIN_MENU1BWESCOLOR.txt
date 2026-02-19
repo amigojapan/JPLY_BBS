@@ -11,7 +11,7 @@
 │  [C5,0]W[C9,0])arez      - Descargar Programas   │
 │  [C5,0]B[C9,0])ulletin   - Tablero de menajes    │
 │  [C5,0]M[C9,0])ail       - Mensajes privados     │
-│  w[C5,0]H[C9,0])o        - Lista de usuarios     │
+│  [C5,0]G[C9,0])rafitti   - Pared de Graffitti    │
 │  [C5,0]U[C9,0])TF8 art   - Galeria de arte       │
 │  [C5,0]C[C9,0])hat       - Charlar               │
 │  [C5,0]A[C9,0])bout      - Acerca de JPLY BBS    │

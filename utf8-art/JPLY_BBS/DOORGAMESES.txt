@@ -6,8 +6,11 @@
   \_______| |___|   |______ \/ ____|    
 [C10,0]--DoorGames Menu     BBS by amigojapan   
 [C9,0]┌──────────────────────────────────────┐
-│  [C5,0]O[C9,0])regon Trail - La ruta de Oregon   │
-│  [C5,0]B[C9,0])ack         - Rregrezar           │
+│  [C5,0]O[C9,0])regon Trail     - Ruta de Oregon  │
+│  [C5,0]A[C9,0])merican Football- Futbol EEUU     │
+│  [C5,0]G[C9,0])uess my number  -　Que numero es? │
+│  [C5,0]M[C9,0])emorize         -　Memorizar      │
+│  [C5,0]B[C9,0])ack             - Rregrezar       │
 └──────────────────────────────────────┘
 ┌──────────────────────────────────────┐
 │ Escribe una lettra y preciona[C5,0][ENTER][C9,0] │

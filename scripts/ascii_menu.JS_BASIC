@@ -1,0 +1,148 @@
+async function ASCII_MENU(id) {
+
+    let currentId = null;
+
+    function encodeForm(obj) {
+        return Object.keys(obj)
+            .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(obj[k]))
+            .join("&");
+    }
+
+    async function loadAscii(direction = null, id = null) {
+
+        let payload = {
+            NICK: NICK,
+            PASSWORD: PASSWORD,
+            direction: direction,
+            id: id
+        };
+
+        let result = await CURL(
+            "server_side/ascii_read.php",
+            { data: encodeForm(payload) }
+        );
+
+        // If CURL returned string, parse it
+        if (typeof result === "string") {
+            result = JSON.parse(result);
+        }
+
+        if (result.status == "empty") {
+            //CLS();
+            PRINT("No ASCII art found.\n");
+            PRINT("Press ENTER...\n");
+            await INPUT();
+            await uploadAscii();
+        }
+        
+
+        currentId = result.id;
+
+        //CLS();
+        PRINT("==================\n");
+        PRINT(" ASCII ART GALLERY\n");
+        PRINT("==================\n");
+        PRINT("ID: " + result.id);
+        PRINT("Title: " + result.title);
+        PRINT("By: " + result.username);
+        PRINT("Date: " + result.created_at);
+        PRINT("------------------");
+        PRINT(result.art);
+        PRINT("------------------\n");
+        PRINT("N)ext P)rev J)ump U)pld D)nld Q)uit\n");
+    }
+
+    async function uploadAscii() {
+
+        //CLS();
+        PRINT("Select ASCII file to upload...");
+
+        let input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".txt";
+        input.click();
+
+        let file = await new Promise(resolve => {
+            input.onchange = () => resolve(input.files[0]);
+        });
+
+        if (!file) {
+            PRINT("No file selected.");
+            await INPUT();
+            return;
+        }
+
+        let text = await file.text();
+        let title = file.name;
+
+        let postData =
+            "NICK=" + encodeURIComponent(NICK) +
+            "&PASSWORD=" + encodeURIComponent(PASSWORD) +
+            "&title=" + encodeURIComponent(title) +
+            "&art=" + encodeURIComponent(text);
+
+        let result = await CURL(
+            "server_side/ascii_post.php",
+            { data: postData }
+        );
+        //PRINT("DEBUG");
+        //PRINT(JSON.stringify(result));
+        //PRINT("Press ENTER...");
+        await INPUT();
+
+        if (result == "ok") {
+            PRINT("Upload successful!");
+        } else {
+            PRINT("Upload failed.");
+        }
+
+        PRINT("Press ENTER...");
+        await INPUT();
+    }
+
+    async function downloadAscii() {
+
+        if (!currentId) return;
+
+        let payload = encodeForm({
+            NICK: NICK,
+            PASSWORD: PASSWORD,
+            id: currentId
+        });
+
+        await CURL(
+            "server_side/ascii_download.php",
+            { data: payload }
+        );
+    }
+
+    // Load latest on entry
+    await loadAscii("next",1);
+    COLOR(9,0)
+
+    while (true) {
+
+        let choice = (await INPUT()).toUpperCase();
+
+        if (choice === "Q") return;
+
+        if (choice === "N") await loadAscii("next", currentId);
+        if (choice === "P") await loadAscii("prev", currentId);
+
+        if (choice === "J") {
+            PRINT("Enter ID:");
+            let jumpId = await INPUT();
+            await loadAscii(null, jumpId);
+        }
+
+        if (choice === "U") {
+            await uploadAscii();
+            await loadAscii("next", currentId+1);
+        }
+
+        if (choice === "D") {
+            await downloadAscii();
+        }
+    }
+}
+await ASCII_MENU(1);

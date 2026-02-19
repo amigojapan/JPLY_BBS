@@ -156,6 +156,7 @@ async function game() {
 await game();
 
 /*
+need to deal with other end game senarios like winter anddying and winning
 var code = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=" + encodeURIComponent(
     "https://amjp.psy-k.org/JPLY_BBS/scripts/OregonTrail.JS_BASIC"
 ));

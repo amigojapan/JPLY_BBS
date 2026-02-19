@@ -9,7 +9,7 @@ async function forceInputAlphaNumeric(promptMessage) {
     }
     
     // Optional: Alert the user to try again
-    PRINT(translate["Input cannot be empty. Please try again."],2);
+    PRINT("Input cannot be empty. Please try again.",2);
   }
 }
 async function forceInputNumeric(message) {
@@ -24,12 +24,12 @@ async function forceInputNumeric(message) {
         number = Number(userInput);
 
         // Check if the input is a valid number and not empty
-        if (userInput !== null && userInput.trim() !== translate[""] && !isNaN(number)) {
+        if (userInput !== null && userInput.trim() !== "" && !isNaN(number)) {
             return number; // Return valid number and exit loop
         }
         
         // Optional: Alert the user they must enter a number
-        PRINT(translate["Invalid input. Please enter a valid number."],2);
+        PRINT("Invalid input. Please enter a valid number.",2);
     }
 }
 
@@ -44,19 +44,19 @@ let E = 0;        // yard
 let F = 0;        // first down marker
 let O = 0;        // offence (1 player, 0 computer)
 let T = 0;        // turn counter
-let Q = translate[""];
+let Q = "";
 
 async function main() {
-    PRINT(translate["Welcome to AmericanFootball!\n\n"]);
+    PRINT("Welcome to AmericanFootball!\n\n");
   let N = RND();
 
   if (N < 50) {
-    PRINT(translate["YOU WON TOSS\n"]);
-    PRINT(translate["[ENTER] TO CONTINUE\n"]);
+    PRINT("YOU WON TOSS\n");
+    PRINT("[ENTER] TO CONTINUE\n");
     await INPUT();
     O = 1;
   } else {
-    PRINT(translate["YOU LOST TOSS\n"]);
+    PRINT("YOU LOST TOSS\n");
     O = 0;
   }
 
@@ -64,8 +64,8 @@ async function main() {
 }
 
 async function kickoff() {
-  PRINT(translate["KICKOFF\n"]);
-  PRINT(translate["[ENTER] TO CONTINUE\n"]);
+  PRINT("KICKOFF\n");
+  PRINT("[ENTER] TO CONTINUE\n");
   await INPUT();
 
   E = RND(1, 30);
@@ -85,15 +85,15 @@ async function menu() {
     T++;
     if (T === 120) return gameOver();
 
-    PRINT(translate["Score,YOU,COMP:\n"]);
+    PRINT("Score,YOU,COMP:\n");
     PRINT(`${A} ${B}`);
     await INPUT();
 
-    PRINT(translate["Down,Yard:\n"]);
+    PRINT("Down,Yard:\n");
     PRINT(`${D} ${E}`);
     await INPUT();
 
-    PRINT(translate["1stDn,Turn of 120:\n"]);
+    PRINT("1stDn,Turn of 120:\n");
     PRINT(`${F - E} ${T}`);
     await INPUT();
 
@@ -102,9 +102,9 @@ async function menu() {
       continue;
     }
 
-    PRINT(translate["1)LONG PASS 2)SHORT PASS\n"]);
-    PRINT(translate["3)RUN       4)PUNT\n"]);
-    PRINT(translate["5)FIELD GOAL6)INFO\n"]);
+    PRINT("1)LONG PASS 2)SHORT PASS\n");
+    PRINT("3)RUN       4)PUNT\n");
+    PRINT("5)FIELD GOAL6)INFO\n");
 
     Q = await forceInputNumeric();
 
@@ -116,32 +116,32 @@ async function menu() {
       case 5: await fieldGoal(); break;
       case 6: break;
       default:
-        PRINT(translate["INCORRECT INPUT\n"]);
+        PRINT("INCORRECT INPUT\n");
         await INPUT();
     }
   }
 }
 
 async function longPass() {
-  PRINT(translate["LONG PASS\n"]);
+  PRINT("LONG PASS\n");
   if (RND() < 10) return success();
   return failed();
 }
 
 async function shortPass() {
-  PRINT(translate["SHORT PASS\n"]);
+  PRINT("SHORT PASS\n");
   if (RND() < 25) return success();
   return failed();
 }
 
 async function run() {
-  PRINT(translate["RUN\n"]);
+  PRINT("RUN\n");
   if (RND() < 50) return success();
   return failed();
 }
 
 async function punt() {
-  PRINT(translate["PUNT\n"]);
+  PRINT("PUNT\n");
   E = RND(1, 50);
   F = E + 10;
   D = 1;
@@ -149,25 +149,25 @@ async function punt() {
 }
 
 async function fieldGoal() {
-  PRINT(translate["FIELD GOAL\n"]);
+  PRINT("FIELD GOAL\n");
   if (RND() < 50) {
-    PRINT(translate["SUCCEEDED\n"]);
+    PRINT("SUCCEEDED\n");
     if (O === 1) A += 2;
     else B += 2;
   } else {
-    PRINT(translate["FAILED\n"]);
+    PRINT("FAILED\n");
   }
   await ballChangeSides();
 }
 
 async function failed() {
-  PRINT(translate["FAILED\n"]);
+  PRINT("FAILED\n");
   await INPUT();
   D++;
 }
 
 async function success() {
-  PRINT(translate["SUCCEEDED\n"]);
+  PRINT("SUCCEEDED\n");
   await INPUT();
 
   let gain = RND(1, 20);
@@ -185,7 +185,7 @@ async function success() {
 }
 
 async function touchdown() {
-  PRINT(translate["TOUCHDOWN!\n"]);
+  PRINT("TOUCHDOWN!\n");
   if (O === 1) {
     A += 6;
     A += RND(1);
@@ -202,7 +202,7 @@ async function ballChangeSides() {
 }
 
 async function aiMove() {
-  PRINT(translate["COMPUTER MOVE\n"]);
+  PRINT("COMPUTER MOVE\n");
 
   if (D === 4) {
     if (E > 80) return fieldGoal();
@@ -216,18 +216,17 @@ async function aiMove() {
 }
 
 function gameOver() {
-  PRINT(translate["GameOver,YOU,COMP:\n"]);
+  PRINT("GameOver,YOU,COMP:\n");
   PRINT(`${A} ${B}`);
-  PRINT(A > B ? translate["YOU WIN\n"] : translate["COMPUTER WINS\n"]);
-  rl.close();er();
-
+  PRINT(A > B ? "YOU WIN\n" : "COMPUTER WINS\n");
+  rl.close();
 }
 
 main();
 
 /*
-var code = await CURL(translate["https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url="] + encodeURIComponent(
-    translate["https://amjp.psy-k.org/JPLY_BBS/scripts/AmericanFootball.JS_BASIC"]
+var code = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=" + encodeURIComponent(
+    "https://amjp.psy-k.org/JPLY_BBS/scripts/AmericanFootball.JS_BASIC"
 ));
 await LOAD(code);
 */

@@ -657,7 +657,7 @@ async function LOADINCONTEXT(program) {
 }
 
 
-//OPENURLCONFIRM("https://google.com");
+//OPENURLCONFIRM("https://amjp.psy-k.org/JPLY/en.php");
 //test injection
 //OPENURLCONFIRM("';alert(\"t\")'");
 function OPENURLCONFIRM(url) {
@@ -668,7 +668,7 @@ function OPENURLCONFIRM(url) {
     }
 
     const confirmed = confirm(
-        "YOU ARE SURE YOU WANT TO LOAD THIS URL?\n\n" +
+        "LOAD THIS URL?\n\n" +
         url + "\n\n" +
         "ARE YOU SURE YOU WANT TO CONTINUE?"
     );
@@ -677,6 +677,59 @@ function OPENURLCONFIRM(url) {
         window.open(url, '_blank');
     }
 }
+
+function OPENURLCONFIRMEN(url) {
+    // Basic sanitization: ensure it starts with http:// or https://
+    if (!/^https?:\/\//i.test(url)) {
+        alert("Invalid URL: must start with http:// or https://");
+        return;
+    }
+
+    const confirmed = confirm(
+        "LOAD THIS URL?\n\n" +
+        url + "\n\n" +
+        "ARE YOU SURE YOU WANT TO CONTINUE?"
+    );
+
+    if (confirmed) {
+        window.open(url, '_blank');
+    }
+}
+function OPENURLCONFIRMES(url) {
+    // Basic sanitization: ensure it starts with http:// or https://
+    if (!/^https?:\/\//i.test(url)) {
+        alert("Enlace Invalido: tiene que comenzar con http:// o https://");
+        return;
+    }
+
+    const confirmed = confirm(
+        "ABRIR ENLACE?\n\n" +
+        url + "\n\n" +
+        "SEGUR(O/A) QUE QUIERES CONTINUAR?"
+    );
+
+    if (confirmed) {
+        window.open(url, '_blank');
+    }
+}
+function OPENURLCONFIRMJP(url) {
+    // Basic sanitization: ensure it starts with http:// or https://
+    if (!/^https?:\/\//i.test(url)) {
+        alert("URLが無効です。: http:// か https://　で始まらない。");
+        return;
+    }
+
+    const confirmed = confirm(
+        "このURLを開きますか?\n\n" +
+        url + "\n\n" +
+        "キャンセルはいいえOKで承諾"
+    );
+
+    if (confirmed) {
+        window.open(url, '_blank');
+    }
+}
+
 //LOADCONFIRM("alert('test');");
 function LOADCONFIRM(program) {
     pre=""

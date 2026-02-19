@@ -1,0 +1,61 @@
+// Guess my number
+async function forceInputNumeric(message) {
+    let userInput;
+    let number;
+
+    while (true) {
+        // Use the existing await INPUT() function
+        userInput = await INPUT(message); 
+        
+        // Try to parse the input to a number
+        number = Number(userInput);
+
+        // Check if the input is a valid number and not empty
+        if (userInput !== null && userInput.trim() !== "" && !isNaN(number)) {
+            return number; // Return valid number and exit loop
+        }
+        
+        // Optional: Alert the user they must enter a number
+        PRINT(translate["Invalid input. Please enter a valid number."],2);
+    }
+}
+
+async function GuessMyNumber() {
+    PRINT(translate["Guessing a number from 1 to 100...\n"]);
+
+    let X = 1;
+    let Y = 100;
+
+    // BASIC RND gives a number between 0–1, so we scale it
+    let N = Math.floor(Math.random() * 100) + 1;
+
+    while (true) {
+        PRINT(translate["Your guess? \n"]);
+        let G = Number(await forceInputNumeric());
+
+        if (G === N) {
+            PRINT(translate["Got it!\n"]);
+            break;
+        }
+
+        if (G < N) {
+            PRINT(translate["Too low\n"]);
+        } else {
+            PRINT(translate["Too high\n"]);
+        }
+    }
+           // IMPORTANT: stop THIS loop before loading main menu
+          quit = true;
+          main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
+          await LOAD(main_menu);
+}
+
+await GuessMyNumber();
+
+
+/*
+var code = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=" + encodeURIComponent(
+    "https://amjp.psy-k.org/JPLY_BBS/scripts/GuessMyNumber.JS_BASIC"
+));
+await LOAD(code);
+*/

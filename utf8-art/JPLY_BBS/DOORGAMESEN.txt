@@ -6,8 +6,11 @@
   \_______| |___|   |______ \/ ____|    
 [C10,0]--DoorGames Menu     BBS by amigojapan   
 [C9,0]┌──────────────────────────────────────┐
-│  [C5,0]O[C9,0])regon Trail -                     │
-│  [C5,0]B[C9,0])ack         -                     │
+│  [C5,0]O[C9,0])regon Trail      -                │
+│  [C5,0]A[C9,0])merican Football -                │
+│  [C5,0]G[C9,0])uess my number   -                │
+│  [C5,0]M[C9,0])emorize          -                │
+│  [C5,0]B[C9,0])ack        　　　 -                │
 └──────────────────────────────────────┘
 ┌──────────────────────────────────────┐
 │   Type a letter then press [C5,0][ENTER][C9,0]   │

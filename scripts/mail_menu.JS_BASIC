@@ -74,7 +74,7 @@ while(quit==false) {
           break;
         }
 
-        case "W": {
+        case "G": {
             await SLOWPRINT("\nUsers:\n",2);
             var response = await CURL('https://amjp.psy-k.org/JPLY_BBS/server_side/who.php', {
                 data: 'NICK='+NICK+'&PASSWORD='+PASSWORD
