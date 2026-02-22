@@ -37,24 +37,15 @@ async function ASCII_MENU(id) {
         
 
         currentId = result.id;
-        
-        var postData2 =
-            "NICK=" + encodeURIComponent(NICK) +
-            "&PASSWORD=" + encodeURIComponent(PASSWORD);
 
-        var mc = await CURL(
-            "server_side/ascii_count.php",
-            { data: postData2 }
-        );
-
-
+        //CLS();
         PRINT("==================\n");
         PRINT(" ASCII ART GALLERY\n");
         PRINT("==================\n");
-        PRINT("ID: " + result.id + " of " + mc + " ");
-        PRINT("Title: " + result.title + " ");
-        PRINT("By: " + result.username + " ");
-        PRINT("Date: " + result.created_at + " ");
+        PRINT("ID: " + result.id);
+        PRINT("Title: " + result.title);
+        PRINT("By: " + result.username);
+        PRINT("Date: " + result.created_at);
         PRINT("------------------");
         PRINT(result.art);
         PRINT("------------------\n");

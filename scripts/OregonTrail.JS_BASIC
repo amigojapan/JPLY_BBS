@@ -43,19 +43,19 @@ async function forceInputNumeric(message) {
 }
 
 async function game() {
-  PRINT(translate["Welcome to 'The Oregon Trail'!"]);
+  PRINT(translate["Welcome to 'The Oregon Trail'!"]+" "+NICK+"!\n");
 
-  let player_name = await  forceInputAlphaNumeric(translate["What is your name?"]);
-  while (player_name.length < 1) {
-    player_name = await forceInputAlphaNumeric(translate["Please enter your name again:"]);
-  }
+  //let player_name = await  forceInputAlphaNumeric(translate["What is your name?"]);
+  //while (player_name.length < 1) {
+    player_name = NICK;//await forceInputAlphaNumeric(translate["Please enter your name again:"]);
+  //}
 
-  let year_set = await forceInputNumeric(translate["Enter your preferred year:"]);
+  let year_set = await forceInputNumeric(translate["Enter your preferred year:"]+"!\n");
   while (isNaN(year_set)) {
-    year_set = await forceInputNumeric(translate["Error. Try again!"]);
+    year_set = await forceInputNumeric(translate["Error. Try again!"]+"!\n");
   }
 
-  let mode_choice = await forceInputAlphaNumeric(translate["(Easy,Normal,Hard,Impossible,Custom):"]);
+  let mode_choice = await forceInputAlphaNumeric(translate["(Easy,Normal,Hard,Impossible,Custom):"]+"!\n");
 
   let food_num = 0;
   let health_num = 0;
@@ -65,12 +65,12 @@ async function game() {
   else if (mode_choice === translate["Hard"]) { food_num = 300; health_num = 4; }
   else if (mode_choice === translate["Impossible"]) { food_num = 150; health_num = 3; }
   else if (mode_choice === translate["Custom"]) {
-    food_num = await forceInputNumeric(translate["How much food do you want:"]);
-    health_num = await forceInputNumeric(translate["How much health do you want:"]);
+    food_num = await forceInputNumeric(translate["How much food do you want:"]+"!\n");
+    health_num = await forceInputNumeric(translate["How much health do you want:"]+"!\n");
   }else{
-    PRINT(translate["That choice does not exist. Using custom."]);
-    food_num = await forceInputNumeric(translate["How much food do you want:"]);
-    health_num = await forceInputNumeric(translate["How much health do you want:"]);
+    PRINT(translate["That choice does not exist. Using custom."]+"!\n");
+    food_num = await forceInputNumeric(translate["How much food do you want:"]+"!\n");
+    health_num = await forceInputNumeric(translate["How much health do you want:"]+"!\n");
   }
 
   let player_move_distance = 0;
@@ -124,22 +124,22 @@ async function game() {
     PRINT(translate["Distance: "] + player_move_distance + ", " + translate["Food: "] + food_num  + ", " + translate["HP: "] + health_num);
 
     let choice = await forceInputAlphaNumeric(translate["Choose (Move,Rest,Hunt,Status,Help):"]);
-
-    if (choice === translate["Move"]) await travel();
-    else if (choice === translate["Rest"]) await rest();
-    else if (choice === translate["Hunt"]) await hunt();
-    else if (choice === "quit") {
-       // IMPORTANT: stop THIS loop before loading main menu
+    choice = choice.toLowerCase();
+    if (choice === translate["Move"].toLowerCase()) await travel();
+    else if (choice === translate["Rest"].toLowerCase()) await rest();
+    else if (choice === translate["Hunt"].toLowerCase()) await hunt();
+    else if (choice === "quit".toLowerCase()) {
+          // IMPORTANT: stop THIS loop before loading main menu
           quit = true;
           main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
           await LOAD(main_menu);
-    } else if (choice === translate["Status"]) {
+    } else if (choice === translate["Status"].toLowerCase()) {
       PRINT(translate["Food: "] + food_num);
       PRINT(translate["HP: "] + health_num);
       PRINT(translate["Distance: "] + player_move_distance);
       PRINT(translate["Days passed: "] + total_days);
     }
-    else if (choice === translate["Help"]) {
+    else if (choice === translate["Help"].toLowerCase()) {
       PRINT(translate["Move: travel 30-60 miles"]);
       PRINT(translate["Rest: recover HP"]);
       PRINT(translate["Hunt: +100 food"]);

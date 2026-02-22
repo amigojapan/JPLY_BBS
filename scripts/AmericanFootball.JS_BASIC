@@ -114,7 +114,12 @@ async function menu() {
       case 3: await run(); break;
       case 4: await punt(); break;
       case 5: await fieldGoal(); break;
-      case 6: break;
+      case 6: 
+        // IMPORTANT: stop THIS loop before loading main menu
+        quit = true;
+        main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
+        await LOAD(main_menu);
+      break;
       default:
         PRINT(translate["INCORRECT INPUT\n"]);
         await INPUT();

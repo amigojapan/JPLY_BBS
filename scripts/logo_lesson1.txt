@@ -1,0 +1,1167 @@
+jedesa> ya!
+6:03 PM
+ 
+<jedesa> hehe, amigojapan-sensei
+6:03 PM
+ 
+<amigojapan> jedesa: hey so first I will link you to an Online LOGO programming langauge ok?
+6:03 PM
+ 
+<amigojapan> hehehe :)
+6:03 PM
+ 
+<jedesa> ok
+6:03 PM
+ 
+<Haniibooru> The London is here.
+6:03 PM
+ 
+<Haniibooru> The NewLondon
+6:04 PM
+ 
+<Haniibooru> I am a honeyball
+6:04 PM
+ 
+<jedesa> yooshi, I'm so fired up
+6:04 PM
+ 
+<amigojapan> hey Haniibooru and jedesa 
+6:04 PM
+ 
+<amigojapan> jedesa: Haniibooru , open this in yoru browser https://www.transum.org/Software/Logo/Level2/?Level=3
+6:04 PM
+ 
+<amigojapan> we are startign at level 3
+6:05 PM
+ 
+<jedesa> Cool
+6:05 PM
+ 
+<jedesa> I'm in
+6:05 PM
+ 
+<amigojapan> ok, everyone there?
+6:05 PM
+ 
+<amigojapan> you there Haniibooru ?
+6:05 PM
+ 
+<Haniibooru> Huh
+6:05 PM
+ 
+<Haniibooru> Am I going to class now
+6:05 PM
+ 
+<amigojapan> yes Haniibooru 
+6:05 PM
+ 
+<Haniibooru> good evening sensei amigojapan
+6:05 PM
+ 
+<amigojapan> open https://www.transum.org/Software/Logo/Level2/?Level=3 Haniibooru 
+6:05 PM
+ 
+<Haniibooru> I am here
+6:05 PM
+ 
+<amigojapan> good evening students,t ake your seats, bow and say rei, to the class :)
+6:06 PM
+ 
+<amigojapan> you know what rei is?
+6:06 PM
+ 
+<jedesa> ...
+6:06 PM
+ 
+<jedesa> :D
+6:06 PM
+ 
+<amigojapan> doing rei , is bowing, and saying "yoroshiku onegai shimasu" to the whole class :)
+6:07 PM
+ 
+<Haniibooru> Retro Emulator... Interaction!
+6:07 PM
+ 
+<Haniibooru> Oh
+6:07 PM
+ 
+<jedesa> Oh I  thought it's rise
+6:07 PM
+ 
+<amigojapan> no jedesa , its just something Japanese schools do
+6:07 PM
+ 
+<amigojapan> ok are we ready to begin?
+6:08 PM
+ 
+<jedesa> I'm good to go
+6:08 PM
+ 
+<amigojapan> Haniibooru: did you join hte web page?
+6:08 PM
+ 
+<Haniibooru> Yes, I'm here! I see a turtle!
+6:09 PM
+ 
+<Haniibooru> Kame!!
+6:09 PM
+ 
+<amigojapan> ok, Lesson one, makign hte turtle move
+6:09 PM
+ 
+<amigojapan> try fd 100 then click on run
+6:09 PM
+ 
+<jedesa> forward?
+6:10 PM
+ 
+<amigojapan> yes forward is fd in logo
+6:10 PM
+ 
+<jedesa> the turtle has moved
+6:10 PM
+ 
+<amigojapan> 100 means 100 pixels
+6:10 PM
+ 
+<Haniibooru> The turtle has moved north by about a knuckle's length.
+6:10 PM
+ 
+<amigojapan> good job Haniibooru , thats what I wanted
+6:11 PM
+ 
+<amigojapan> you with us jedesa ?
+6:11 PM
+ 
+<jedesa> Yeah
+6:11 PM
+ 
+<amigojapan> ok, lesson 2, turning hte turtle
+6:11 PM
+ 
+<amigojapan> there are two commands for turning hte turtle
+6:12 PM
+ 
+<amigojapan> rt which is right turn and lt which is left turn
+6:12 PM
+ 
+<amigojapan> then you give homany degrees youw ant it totun, in this lesson we will only use 90 degrees
+6:12 PM
+ 
+<amigojapan> so try rt 90  before fd 100
+6:12 PM
+ 
+<amigojapan> one lien up
+6:12 PM
+ 
+<Haniibooru> Help, I typed rt 360 and nothing had happened
+6:13 PM
+ 
+<Haniibooru> Haha, sorry. I'll stop being silly
+6:13 PM
+ 
+<amigojapan> your screen should look like this https://usercontent.irccloud-cdn.com/file/wB8UxPDF/image.png
+image.png160.33KB • image/png
+6:13 PM
+ 
+<jedesa> I see
+6:13 PM
+ 
+<Haniibooru> The turtle has now rotated to the right by 90 degrees and gone right the same amount as it had gone up.
+6:14 PM
+ 
+<jedesa> I have made the turtle moved around and turning
+6:14 PM
+ 
+<amigojapan> nice good work students!
+6:15 PM
+ 
+<Haniibooru> :D
+6:15 PM
+ 
+<amigojapan> excersize 1, make a square,in the web page press ctrl+r to refresh the screen, and then make a square
+6:16 PM
+ 
+<amigojapan> send screenshot when donr
+6:16 PM
+ 
+<Haniibooru> Sir yes sir!
+6:16 PM
+ 
+<amigojapan> :)
+6:16 PM
+ 
+<jedesa> what's for screenshot?
+6:16 PM
+ 
+<jedesa> umm
+6:17 PM
+ 
+<amigojapan> jedesa: I think the printscreen key shoudl work for taking screenshot, then upload it using hte site called x0.at
+6:18 PM
+ 
+<jedesa> Name: jedesa https://x0.at/dWV2.png
+6:18 PM
+ 
+<jedesa> :D
+6:18 PM
+ 
+<amigojapan> let me se
+6:18 PM
+ 
+<amigojapan> see
+6:18 PM
+ 
+<Haniibooru> https://x0.at/Ljmp.png
+6:18 PM
+ 
+<amigojapan> very good jedesa 
+6:18 PM
+ 
+<amigojapan> let me see Haniibooru 
+6:19 PM
+ 
+<amigojapan> very good Haniibooru , tho jedesa made a program, you gave repl comkmands
+6:19 PM
+ 
+<Haniibooru> Oh I see
+6:19 PM
+ 
+<amigojapan> Haniibooru: you can make a program by pressing shift+enter instead of just enter
+6:19 PM
+ 
+<Haniibooru> Oooooh
+6:19 PM
+ 
+<Haniibooru> Let me try again!
+6:19 PM
+ 
+<amigojapan> ok
+6:19 PM
+ 
+<jedesa> yup I just repeat
+6:20 PM
+ 
+<amigojapan> nie jedesa , show me
+6:20 PM
+ 
+→ JesseDesu joined (~jessedesu@157-131-97-186.fiber.dynamic.sonic.net)
+6:20 PM
+ 
+<amigojapan> jedesa: do you eman hte repeat loop? UI have not taught that yet
+6:21 PM
+ 
+<jedesa> I mean I also look at instructions..
+6:21 PM
+ 
+<Haniibooru>   https://x0.at/4cmr.png Hehe, I am proud to say I did the lazy thing and copy pasted it a total of twice to do this. :)
+6:21 PM
+ 
+<jedesa> https://x0.at/oS5Y.png
+6:21 PM
+ 
+<jedesa> Yaay nice
+6:21 PM
+ 
+<amigojapan> very nice
+6:21 PM
+ 
+<amigojapan> next lesson, loops
+6:22 PM
+ 
+<amigojapan> the most simple loop in LOGO is called "repeat
+6:22 PM
+ 
+<amigojapan> "repeat
+6:22 PM
+ 
+<amigojapan> "repeat"
+6:22 PM
+ 
+<JesseDesu> what are you watching
+6:22 PM
+ 
+<jedesa> Okay
+6:23 PM
+ 
+<amigojapan> nothing JesseDesu we are studing prorgammign instead
+6:23 PM
+ 
+<jedesa> JesseDesu: we are watching programming lesson from amigojapan 
+6:24 PM
+ 
+<amigojapan> jedesa: Haniibooru , first refresh the browser with ctrl+r   then type hte followign intot he program box repeat 4 [fd 100 rt 90]   then hit run
+6:24 PM
+ 
+<Haniibooru> ah, so repeat is like... a function!
+6:24 PM
+ 
+<amigojapan> Haniibooru: , no, it is a loop
+6:24 PM
+ 
+<Haniibooru> It is a loop
+6:24 PM
+ 
+<amigojapan> Haniibooru: we will see functions next
+6:24 PM
+ 
+<jedesa> The turtle has moved and draw a square
+6:25 PM
+ 
+<amigojapan> yes jedesa , Haniibooru , it repeats those instructions inside [] 4 times, making a square
+6:25 PM
+ 
+<Haniibooru> I see, I've gotten the same result
+6:25 PM
+ 
+<amigojapan> everyone with me now?
+6:25 PM
+ 
+<jedesa> Yes
+6:26 PM
+ 
+<Haniibooru> Yes
+6:26 PM
+ 
+<amigojapan> ok, next lesson
+6:26 PM
+ 
+<amigojapan> lesson 4 functions
+6:27 PM
+ 
+<amigojapan> refresh the browser adn run the folliwing program
+6:27 PM
+ 
+<amigojapan> https://www.irccloud.com/pastebin/QecK5UzN/
+ Plain Text • 5 lines raw | line numbers 
+6:28 PM
+ 
+<Haniibooru> Did you use tab to indent line 2?
+6:28 PM
+ 
+<amigojapan> yes Haniibooru 
+6:28 PM
+ 
+<Haniibooru> Is the syntax for sake of neatness or absolutely necessary?
+6:29 PM
+ 
+<amigojapan> for the sake of neatness
+6:29 PM
+ 
+<Haniibooru> I see :)
+6:29 PM
+ 
+<Haniibooru> Thank you
+6:29 PM
+ 
+<amigojapan> in LOGO, in python it is absolutely nessesary
+6:29 PM
+ 
+<amigojapan> no problem
+6:29 PM
+ 
+<amigojapan> let me know when you are done
+6:30 PM
+ 
+<Haniibooru> The function works as expected, another square was made upon calling the function(square)
+6:30 PM
+ 
+<amigojapan> yes exactly Haniibooru 
+6:30 PM
+ 
+<amigojapan> now let me deliniate what each word means
+6:30 PM
+ 
+<jedesa> wow the turtle have created some kind of flower!
+6:31 PM
+ 
+<amigojapan> https://www.irccloud.com/pastebin/KbvWmbbY/
+ Plain Text • 5 lines raw | line numbers 
+6:31 PM
+ 
+<jedesa> by means of adding another repeat and turns
+6:31 PM
+ 
+<amigojapan> jedesa: yeah, but wait, we will get there, you can send a screenshot if you want
+6:31 PM
+ 
+<Haniibooru> jedesa is a fast learner :)
+6:31 PM
+ 
+<jedesa> https://x0.at/ZqPw.png
+6:32 PM
+ 
+<amigojapan> yeah good job jedesa !
+6:32 PM
+ 
+<amigojapan> jedesa: that is called a "fractal image"
+6:32 PM
+ 
+<amigojapan> its quite useful
+6:33 PM
+ 
+<amigojapan> did you guys see the names of each part of a function?
+6:33 PM
+ 
+<jedesa> hehe thanks Haniibooru 
+6:33 PM
+ 
+<jedesa> Yup amigojapan 
+6:34 PM
+ 
+<Haniibooru> Hm, yes. I understand the syntax. functioname is the name of what we call the function, function body is what the function does, and functioncall is calling upon the function to what we specified it to do :)
+6:34 PM
+ 
+<amigojapan> a fucntion is really something we use so that we dont need to repeat code over and over, we can ahve many funciton calls, and just one funciton definition, reducint he ammount of code we need to write to do the same thign
+6:34 PM
+ 
+<amigojapan> :) exactly Haniibooru 
+6:35 PM
+ 
+<Haniibooru> Oooh, understanding this, I managed to make two squares, one on top of the other.
+6:35 PM
+ 
+<Haniibooru> https://x0.at/Is5Z.png
+6:35 PM
+ 
+<amigojapan> now, lets try using several ufcntion calls, I want the same fucnitond efinition, but this time, som somehting liek:
+6:35 PM
+ 
+<amigojapan> 
+6:35 PM
+ 
+<amigojapan> square
+6:35 PM
+ 
+<amigojapan> fd 100
+6:35 PM
+ 
+<amigojapan> square
+6:35 PM
+ 
+<Haniibooru> Oh haha I did exactly that just now hehe
+6:36 PM
+ 
+<jedesa> great
+6:36 PM
+ 
+<amigojapan> Haniibooru: fantatsic, you predicted the next lesson :)
+6:36 PM
+ 
+<amigojapan> jedesa: are you with us nup to now?
+6:36 PM
+ 
+<amigojapan> up to now*
+6:36 PM
+ 
+<Haniibooru> Hm, is the function square already implied to exist? I noticed that I can just type square and one will be made.
+6:37 PM
+ 
+<amigojapan> Haniibooru: it is probably just above the code I thinkk let me tyr]
+6:37 PM
+ 
+<jedesa> Yeah
+6:37 PM
+ 
+<jedesa> umm I usually also don't say much when class in session .-.
+6:38 PM
+ 
+<amigojapan> ah Haniibooru , godo discovery, it seems to already be implemented, I did nto know
+6:38 PM
+ 
+<Haniibooru> within line one I can type square after a refresh, and a square will be made anyhow, even if the function is not already specified
+6:38 PM
+ 
+<amigojapan> yeah Haniibooru , it seems it is predefined
+6:38 PM
+ 
+— amigojapan did not know
+6:39 PM
+ 
+<Haniibooru> Ah, I figured it out.
+6:39 PM
+ 
+<amigojapan> ok lext lesson, lesson 5, parameters
+6:40 PM
+ 
+<jedesa> okay
+6:40 PM
+ 
+<Haniibooru> If you create a function, you may call upon it again even if it is cleared. I made a function(line) with just [fd 100] and even after a refresh, calling on it will create one. Calling upon function(line) before specifying it does not create one :P
+6:41 PM
+ 
+<amigojapan> interestign Haniibooru , I did not know that, but dont coutn on the funciton preexisting
+6:41 PM
+ 
+<Haniibooru> I understand. :)
+6:41 PM
+ 
+<amigojapan> ok, next try the following program
+6:41 PM
+ 
+<amigojapan> https://www.irccloud.com/pastebin/6WT1EVe5/
+ Plain Text • 7 lines raw | line numbers 
+6:44 PM
+ 
+<jedesa> Turtle created square in increasingly bigger size
+6:44 PM
+ 
+<Haniibooru> There are now three squares, with the others being larger than the other before it by a factor of two.
+6:44 PM
+ 
+<amigojapan> is it clear why?
+6:45 PM
+ 
+<amigojapan> the size is a "variable" which is being sent tot he function as a "parameter" which is thgen takign place in the fucntion of hte number that was 100 before, now it is 50 100 and 200
+6:45 PM
+ 
+<jedesa> Because we specified different value for each function :D
+6:45 PM
+ 
+<amigojapan> yes jedesa 
+6:45 PM
+ 
+<amigojapan> jedesa: for each fucntionc all, yes
+6:45 PM
+ 
+<Haniibooru> Ah!
+6:45 PM
+ 
+<amigojapan> function call*
+6:46 PM
+ 
+<jedesa> oh right, I mean the call
+6:46 PM
+ 
+<amigojapan> good good jedesa :)
+6:46 PM
+ 
+<amigojapan> now lets learn one more command for LOGO
+6:48 PM
+ 
+<amigojapan> refresh the bvrowser and try this:
+6:48 PM
+ 
+<amigojapan> fd 100
+6:48 PM
+ 
+<amigojapan> penup
+6:48 PM
+ 
+<amigojapan> fd 100
+6:48 PM
+ 
+<amigojapan> pendown
+6:48 PM
+ 
+<amigojapan> fd 100
+6:49 PM
+ 
+<jedesa> Ohh
+6:49 PM
+ 
+<amigojapan> 1`did it work?
+6:49 PM
+ 
+<Haniibooru> https://x0.at/DAkl.png
+6:49 PM
+ 
+<jedesa> pen at rest and pen in use!
+6:50 PM
+ 
+<jedesa> pen or no pen
+6:50 PM
+ 
+<Haniibooru> that is the question
+6:50 PM
+ 
+<Haniibooru> Whether 'tis nobler in the mind to suffer
+6:50 PM
+ 
+<jedesa> ~~
+6:51 PM
+ 
+<amigojapan> let me see Haniibooru 
+6:51 PM
+ 
+<Haniibooru> I don't remember the rest of the lines of the Hamlet speech
+6:51 PM
+ 
+<amigojapan> yeah Haniibooru . seems I made a mistake, let me try to fix it
+6:51 PM
+ 
+<Haniibooru> Okay !
+6:52 PM
+ 
+<amigojapan> actually refresh teh browser and try this instead:
+6:52 PM
+ 
+<amigojapan> pendown
+6:52 PM
+ 
+<amigojapan> fd 10
+6:52 PM
+ 
+<amigojapan> penup
+6:52 PM
+ 
+<amigojapan> fd 10
+6:52 PM
+ 
+<amigojapan> pendown
+6:52 PM
+ 
+<amigojapan> fd 10pendown
+6:52 PM
+ 
+<amigojapan> fd 10
+6:52 PM
+ 
+<amigojapan> penup
+6:52 PM
+ 
+<amigojapan> fd 10
+6:52 PM
+ 
+<amigojapan> pendown
+6:52 PM
+ 
+<amigojapan> fd 10
+6:52 PM
+ 
+<amigojapan> that should make more sense
+6:53 PM
+ 
+<amigojapan> oops soryy I did not mean pentdown to be on that line
+6:53 PM
+ 
+<amigojapan> https://www.irccloud.com/pastebin/Fy3l1BdW/
+ Plain Text • 12 lines raw | line numbers 
+6:53 PM
+ 
+<amigojapan> there
+6:53 PM
+ 
+<Haniibooru> ignore line 6 of that?
+6:53 PM
+ 
+<amigojapan> is it clear what it is doing?
+6:54 PM
+ 
+<amigojapan> Haniibooru: just switch to the newest one i put
+6:54 PM
+ 
+<jedesa> dashes! isn't?
+6:54 PM
+ 
+<Haniibooru> Let me try now
+6:54 PM
+ 
+<amigojapan> yes jedesa , any quesiutons?
+6:55 PM
+ 
+<jedesa> Not yet, amigojapan-sensei
+6:55 PM
+ 
+<Haniibooru> I see three vertical lines, with a space between each
+6:55 PM
+ 
+<Haniibooru> https://x0.at/EVDV.png
+6:55 PM
+ 
+<amigojapan> eyah so as you see, when you do  penup, hte turtle stops drawing lines hwne it moves, then pendaown activates that again
+6:55 PM
+ 
+<amigojapan> let mje see Haniibooru 
+6:55 PM
+ 
+<amigojapan> yeah Haniibooru 
+6:56 PM
+ 
+<amigojapan> so everythign is clear?
+6:56 PM
+ 
+<Haniibooru> I understand, the turtle may move without drawing.
+6:56 PM
+ 
+<jedesa> Yeah
+6:56 PM
+ 
+<amigojapan> okok
+6:56 PM
+ 
+<amigojapan> excersize 2
+6:56 PM
+ 
+<amigojapan> draw this kanji 一
+6:56 PM
+ 
+<amigojapan> and show me a screenshot
+6:58 PM
+ 
+<jedesa> the kanji is somewhat the same as -?
+6:58 PM
+ 
+<jedesa> amigojapan
+6:58 PM
+ 
+<amigojapan> yes jedesa 
+6:59 PM
+ 
+<jedesa> okay here goes
+6:59 PM
+ 
+<jedesa> https://x0.at/F5Nd.png
+6:59 PM
+ 
+— amigojapan clicks
+6:59 PM
+ 
+<jedesa> my client actually couldn't display japanese characters yet
+6:59 PM
+ 
+<amigojapan> perfect jedesa !
+7:00 PM
+ 
+<jedesa> thank you
+7:00 PM
+ 
+<amigojapan> oh thats goign to be a problem jedesa , I will send you screenshort of my kanji
+7:00 PM
+ 
+<jedesa> okay
+7:00 PM
+ 
+<jedesa> I could also use unicode online
+7:01 PM
+ 
+<amigojapan> Haniibooru: any luck?
+7:01 PM
+ 
+<Haniibooru> My turtle is disappearing, please give me one moment
+7:02 PM
+ 
+<Haniibooru> https://x0.at/Mlp3.png
+7:03 PM
+ 
+<Haniibooru> the turtle does not like my keyboard shortcuts, haha
+7:03 PM
+ 
+<jedesa> what happens Haniibooru ? :3
+7:04 PM
+ 
+<Haniibooru> When I tab back to firefox the turtle sometimes disappears and I have to refresh the page and restart. :P
+7:05 PM
+ 
+<jedesa> the little turtle would like to play with you
+7:06 PM
+ 
+<amigojapan> very good Haniibooru 
+7:06 PM
+ 
+<Haniibooru> I could teach the turtle how to play with hanafuda cards
+7:06 PM
+ 
+<amigojapan> ok, lesson 3, write this kanji 三
+7:06 PM
+ 
+<amigojapan> can you see it jedesa ?
+7:06 PM
+ 
+<amigojapan> lol Haniibooru 
+7:06 PM
+ 
+<jedesa> A Han
+7:07 PM
+ 
+<amigojapan> err excersize 3*
+7:07 PM
+ 
+<jedesa> (if that's correct)
+7:07 PM
+ 
+<amigojapan> jedesa: it is the number 3 in kanji
+7:07 PM
+ 
+<amigojapan> jedesa: just three horizontal lines
+7:07 PM
+ 
+<jedesa> Oh okay the website I searched mentioned something about han character
+7:08 PM
+ 
+<amigojapan> I see
+7:09 PM
+ 
+<amigojapan> jedesa: maybe like this https://webwhiteboard.com/board/uXjVG8iAec4=/?boardAccessToken=XKU3ClVprJv9OjCCNKaiocfY5HlzXtmi
+7:09 PM
+ 
+<amigojapan> jedesa: can you see it?
+7:11 PM
+ 
+<jedesa> https://en.wiktionary.org/wiki/%E4%B8%89
+7:11 PM
+ 
+<jedesa> it's this
+7:11 PM
+ 
+<amigojapan> let me see
+7:11 PM
+ 
+<amigojapan> yeah that jedesa 
+7:12 PM
+ 
+<amigojapan> I will send wikipedia links next time, goo d idea jedesa 
+7:12 PM
+ 
+<amigojapan> good*
+7:13 PM
+ 
+— jedesa trying ..
+7:14 PM
+ 
+<amigojapan> its ok jedesa , take  your time
+7:17 PM
+ 
+→ Haniibooru_ joined (~haniiboor@user/Haniibooru)
+7:17 PM
+ 
+<amigojapan> Haniibooru: welcome back
+7:18 PM
+ 
+<Haniibooru_> Hello
+7:18 PM
+ 
+<Haniibooru_> I've done it!
+7:18 PM
+ 
+<Haniibooru_> https://x0.at/WCNa.png
+7:18 PM
+ 
+<amigojapan> ah ok, let me see
+7:18 PM
+ 
+⇐ Haniibooru quit (~haniiboor@user/Haniibooru) Ping timeout: 264 seconds
+7:18 PM
+ 
+<amigojapan> he left :(
+7:19 PM
+ 
+Haniibooru_ → Haniibooru
+7:19 PM
+ 
+<Haniibooru> I'm here
+7:19 PM
+ 
+<Haniibooru> My internet died and I had to ghost my nick
+7:19 PM
+ 
+<amigojapan> Haniibooru: ah ok, extra points for usign functions!
+7:19 PM
+ 
+<amigojapan> ah goctha
+7:19 PM
+ 
+<Haniibooru> Yay!
+7:20 PM
+ 
+<Haniibooru> making the function down was not very easy, I had to do a lot of testing
+7:20 PM
+ 
+<amigojapan> I see
+7:20 PM
+ 
+<jedesa> finished
+7:20 PM
+ 
+<jedesa> https://x0.at/mV8P.png
+7:20 PM
+ 
+<amigojapan> let me see jedesa 
+7:20 PM
+ 
+<jedesa> I but I didn't use function
+7:20 PM
+ 
+<Haniibooru> Maybe if there was a way for me to index the function(ichi) to always face east, it would be a lot easier. :P
+7:21 PM
+ 
+<amigojapan> good jedesa , but I owuld like Haniibooru to share his code with us so you can see what he did
+7:21 PM
+ 
+<amigojapan> Haniibooru: can you paste your code please?
+7:21 PM
+ 
+<Haniibooru> Sure, 
+7:23 PM
+ 
+<Haniibooru> https://pastebin.com/39VcNdXx
+7:24 PM
+ 
+<amigojapan> fantastic Haniibooru !
+7:24 PM
+ 
+<amigojapan> jedesa: do you get his code?
+7:24 PM
+ 
+<jedesa> I create one with function too
+7:24 PM
+ 
+<jedesa> https://x0.at/xfPj.png
+7:24 PM
+ 
+<amigojapan> Haniibooru: by the way, did you know you can put newlines inside funciton bodies?
+7:25 PM
+ 
+<amigojapan> let me see jedesa 
+7:25 PM
+ 
+<jedesa> Cool Haniibooru !
+7:25 PM
+ 
+<Haniibooru> amigojapan: Now I know! :D
+7:25 PM
+ 
+<amigojapan> :)
+7:25 PM
+ 
+<amigojapan> ok jedesa Haniibooru , you guys are great students! 
+7:26 PM
+ 
+<Haniibooru> Yay!
+7:26 PM
+ 
+<amigojapan> ok last excersize of the day!
+7:27 PM
+ 
+<amigojapan> make this using functions: https://ja.wiktionary.org/wiki/%E5%93%81      eventho the kanji are not technically made of squares, you may use squares
+7:27 PM
+ 
+<amigojapan> this will be the last thing for today
+7:27 PM
+ 
+<Haniibooru> Only functions?
+7:28 PM
+ 
+<amigojapan> Haniibooru: I mean, like use the suqre funtions at least
+7:28 PM
+ 
+<jedesa> we create square with our function?
+7:29 PM
+ 
+<amigojapan> yes jedesa 
+7:31 PM
+ 
+<amigojapan> by the way, this kanji in Japanese is called shina
+7:31 PM
+ 
+<amigojapan> it means "goods"
+7:32 PM
+ 
+— jedesa thinking ..
+7:33 PM
+ 
+<amigojapan> its ok jedesa , take yoru time
+7:33 PM
+ 
+<amigojapan> your*
+7:33 PM
+ 
+<amigojapan> its last for today
+7:36 PM
+ 
+<amigojapan> jedesa:  Haniibooru . one hint, it may be easier to draw the lines between one object and another, and later add penup so that they become invisible
+7:36 PM
+ 
+<amigojapan> sorry I forgot to say that earlier
+7:37 PM
+ 
+<Haniibooru> hm I see
+7:43 PM
+ 
+<Haniibooru> Hm, I'm going to have to do a bunch of mental gymnastics here.
+7:43 PM
+ 
+<amigojapan> I see Haniibooru , I am sorry if the last excersize was too hard
+7:43 PM
+ 
+— jedesa needs water cooling
+7:43 PM
+ 
+<amigojapan> sorry jedesa :(
+7:44 PM
+ 
+<jedesa> no amigojapan 
+7:44 PM
+ 
+<jedesa> I'm working on it
+7:44 PM
+ 
+<amigojapan> ok ok
+7:44 PM
+ 
+<jedesa> please wait a little
+7:44 PM
+ 
+<amigojapan> ok
+7:44 PM
+ 
+<amigojapan> no problem
+7:44 PM
+ 
+<Haniibooru> No, it's not too difficult... I think. I just need to figure out how to be lazy and do it with the least amount of functions haha
+7:44 PM
+ 
+<amigojapan> ok
+7:48 PM
+ 
+<Haniibooru> Ideally I can just type repeat 3[square shina] and then it would be there. :P
+7:48 PM
+ 
+<Haniibooru> I'm so close
+7:49 PM
+ 
+<amigojapan> its fine Haniibooru , take your time
+7:51 PM
+ 
+<jedesa> It could be better
+7:51 PM
+ 
+<jedesa> https://x0.at/hYzE.png
+7:52 PM
+ 
+— amigojapan clicks
+7:52 PM
+ 
+<amigojapan> jedesa: its fine, dont worry, now lest wait for Haniibooru 
+7:52 PM
+ 
+<jedesa> The idea was create a triangle and at each point draw square
+7:53 PM
+ 
+<amigojapan> jedesa: what do you think of LOGO, it is good  right?
+7:53 PM
+ 
+<Haniibooru> Haha, so far I've gotten this far.
+7:53 PM
+ 
+<Haniibooru> https://pastebin.com/dWFYcnS3
+7:53 PM
+ 
+<amigojapan> lets see Haniibooru 
+7:53 PM
+ 
+<Haniibooru> Please paste that code in.
+7:53 PM
+ 
+<Haniibooru> Now that you mention triangles, I think I can readjust this
+7:54 PM
+ 
+<jedesa> yeah amigojapan, now I feel like I should also brush up maths again
+7:54 PM
+ 
+<amigojapan> Haniibooru: a bit disfigured
+7:55 PM
+ 
+<amigojapan> Haniibooru: and jedesa , how about if we make perfecting it for homework?
+7:55 PM
+ 
+<Haniibooru> amigojapan: Haha, just a little. I'm trying to get that third square to line up.
+7:55 PM
+ 
+<amigojapan> ok Haniibooru 
+7:55 PM
+ 
+<jedesa> I don't mind .. I could use some excercise..
+7:55 PM
+ 
+<amigojapan> ok jedesa 
+7:56 PM
+ 
+<Haniibooru> I accept the homework
+7:56 PM
+ 
+<amigojapan> ok, class is over :) stand! say rei!
+7:57 PM
+ 
+— jedesa rises and bows :)
+7:58 PM
+ 
+<amigojapan> Haniibooru: jedesa , can I use your names in a documents I want to make about teaching programming in LOGO?
+7:58 PM
+ 
+<Haniibooru> You may
+7:58 PM
+ 
+<amigojapan> I will just copy and paste this all into a document
+7:58 PM
+ 
+<jedesa> jedesa would be happy
+7:58 PM
+ 
+<amigojapan> thanks Haniibooru !
+7:58 PM
+ 
+<amigojapan> thanks jedesa !
+7:59 PM
+ 
+— Haniibooru bows
+7:59 PM
+ 
+<Haniibooru> yoroshiku onegai shimasu
+7:59 PM
+ 
+— amigojapan bows yoroshiku onegai shimasu!
+7:59 PM
+ 
+<Haniibooru> Haha, I would do this for every beginning of Aikido practice too.
+8:01 PM
+
+
+
+shina program
+
+
+        to ms
+          penup
+          fd 25
+          seth 270
+          fd 25
+          seth 0
+          pendown
+          repeat 4[rt 90 fd 80]
+          penup
+          rt 90
+          fd 25
+          rt 90
+          fd 25
+          seth 0
+        end
+         
+        penup setpos[0 50] ms
+        penup setpos[-50 -50] ms
+        penup setpos[50 -50] ms
+
+
+    
+
+my version of shina　品
+
+home;send the turtle to the center fo the screen
+cs;clear screen
+to sq :s
+  repeat 4[fd :s rt 90]
+end
+pu
+setx -35;sets the x coordinate to 35
+pd
+sq 30
+pu
+setx 0
+pd
+sq 30
+pu;pen up
+fd 35
+setx -17
+pd; pen down
+sq 30
+ht; hide turtle
