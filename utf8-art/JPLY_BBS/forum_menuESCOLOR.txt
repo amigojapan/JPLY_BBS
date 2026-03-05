@@ -6,9 +6,6 @@
 [C10,0]--Menu del foro BBS by amigojapan   
 [C9,0]┌──────────────────────────────────────┐
 │  [C5,0]L[C9,0])ist topics  - listar topico │
-│  [C5,0]N[C9,0])ext page    - Prox. Pagina  │
-│  [C5,0]P[C9,0])rev page    - Prev. Pagina  │
-│  [C5,0]J[C9,0])ump to page - Brincar a Pag.│
 │  [C5,0]C[C9,0])reate topic - Crear topico  │
 │  [C5,0]V[C9,0])iew topic   - Ver topico    │
 │  [C5,0]B[C9,0])ack         - Regresar      │
