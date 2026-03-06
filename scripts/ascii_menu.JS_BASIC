@@ -1,3 +1,29 @@
+async function getMaxCount() {
+        var postData2 =
+        "NICK=" + encodeURIComponent(NICK) +
+        "&PASSWORD=" + encodeURIComponent(PASSWORD);
+
+       var mc = await CURL(
+            "server_side/ascii_count.php",
+            { data: postData2 }
+        );
+}
+async function printMenu(result) {
+        var mc = await getMaxCount();
+        COLOR(9,0)
+        PRINT("==================\n");
+        PRINT(" ASCII ART GALLERY\n");
+        PRINT("==================\n");
+        PRINT("ID: " + result.id + " of " + mc + " ");
+        PRINT("Title: " + result.title + " ");
+        PRINT("By: " + result.username + " ");
+        PRINT("Date: " + result.created_at + " ");
+        PRINT("------------------");
+        PRINT(result.art);
+        COLOR(9,0)
+        PRINT("------------------\n");
+        PRINT("N)ext P)rev J)ump U)pld D)nld Q)uit\n");
+}
 async function ASCII_MENU(id) {
 
     let currentId = null;
@@ -38,28 +64,8 @@ async function ASCII_MENU(id) {
 
         currentId = result.id;
         
-        var postData2 =
-            "NICK=" + encodeURIComponent(NICK) +
-            "&PASSWORD=" + encodeURIComponent(PASSWORD);
 
-        var mc = await CURL(
-            "server_side/ascii_count.php",
-            { data: postData2 }
-        );
-
-        COLOR(9,0)
-        PRINT("==================\n");
-        PRINT(" ASCII ART GALLERY\n");
-        PRINT("==================\n");
-        PRINT("ID: " + result.id + " of " + mc + " ");
-        PRINT("Title: " + result.title + " ");
-        PRINT("By: " + result.username + " ");
-        PRINT("Date: " + result.created_at + " ");
-        PRINT("------------------");
-        PRINT(result.art);
-        COLOR(9,0)
-        PRINT("------------------\n");
-        PRINT("N)ext P)rev J)ump U)pld D)nld Q)uit\n");
+        await printMenu(result);
     }
 
     async function uploadAscii() {
@@ -129,22 +135,65 @@ async function ASCII_MENU(id) {
     // Load latest on entry
     await loadAscii("next",1);
     COLOR(9,0)
-
+    postcount=1;
     while (true) {
 
         let choice = (await INPUT()).toUpperCase();
 
         if (choice === "Q") return;
 
-        if (choice === "N") await loadAscii("next", currentId);
-        if (choice === "P") await loadAscii("prev", currentId);
-
-        if (choice === "J") {
-            PRINT("Enter ID:");
-            let jumpId = await INPUT();
-            await loadAscii(null, jumpId);
+        if (choice === "N") {
+            var mc = await getMaxCount();
+            if(postcount==mc) {
+                PRINT("this is the last posted ascii art...");
+                await loadAscii("next", currentId-1);;
+            } else {
+                await loadAscii("next", currentId);
+            }
+            postcount++;
+        }
+        if (choice === "P") {
+            if(postcount==1) {
+                PRINT("this is the first posted ascii art...");
+                await loadAscii("prev", currentId+1);;
+            } else {
+                await loadAscii("prev", currentId);
+            }
+            postcount--;
         }
 
+        if (choice === "J") {
+            PRINT("Enter post number (1 = first):");
+            let number = await INPUT();
+            var mc = await getMaxCount();
+            if(number>mc || number<1) {
+                PRINT("that post is out of bounds...");
+                await loadAscii("next", currentId-1);;
+                continue;
+            } 
+            let postData =
+                "NICK=" + encodeURIComponent(NICK) +
+                "&PASSWORD=" + encodeURIComponent(PASSWORD) +
+                "&relative=" + encodeURIComponent(number);
+
+            let result = await CURL(
+                "server_side/ascii_read.php",
+                { data: postData }
+            );
+
+            if (typeof result === "string") {
+                result = JSON.parse(result);
+            }
+
+            if (result.status === "ok") {
+                currentId = result.id;
+
+                await printMenu(result);
+            } else {
+                PRINT("Post not found.");
+                await INPUT();
+            }
+        }
         if (choice === "U") {
             await uploadAscii();
             await loadAscii("next", currentId+1);

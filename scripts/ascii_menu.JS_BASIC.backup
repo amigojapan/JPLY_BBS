@@ -47,7 +47,7 @@ async function ASCII_MENU(id) {
             { data: postData2 }
         );
 
-
+        COLOR(9,0)
         PRINT("==================\n");
         PRINT(" ASCII ART GALLERY\n");
         PRINT("==================\n");
@@ -57,6 +57,7 @@ async function ASCII_MENU(id) {
         PRINT("Date: " + result.created_at + " ");
         PRINT("------------------");
         PRINT(result.art);
+        COLOR(9,0)
         PRINT("------------------\n");
         PRINT("N)ext P)rev J)ump U)pld D)nld Q)uit\n");
     }
