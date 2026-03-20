@@ -844,8 +844,11 @@ async function MORE(text) {
 
         // If screen is full, pause
         if (lineCounter >= PAGE_LINES) {
-            await SLOWPRINT("************ PRESS ENTER ************\n", 2);
-            await INPUT();
+            await SLOWPRINT("************ PRESS ENTER OR Q) ******\n", 2);
+            cont=await INPUT();
+            if(cont.toUpperCase()=="Q") {
+                return;
+            }
             lineCounter=0;
             //cursorY = 0; // reset logical page
         }
