@@ -37,6 +37,8 @@ $direction = $_POST["direction"] ?? null;
 //$result = $db->query($query);
 //$row = $result->fetchArray(SQLITE3_ASSOC);
 //out($row);
+
+
 $relative = isset($_POST['relative']) ? (int)$_POST['relative'] : null;
 
 if ($relative !== null && $relative > 0) {
@@ -46,9 +48,8 @@ if ($relative !== null && $relative > 0) {
     $stmt = $db->prepare("
         SELECT * FROM ascii_art
         ORDER BY id ASC
-        LIMIT 1 OFFSET :offset
+        LIMIT 1 OFFSET :offset;
     ");
-
     $stmt->bindValue(":offset", $offset, SQLITE3_INTEGER);
 
     $result = $stmt->execute();

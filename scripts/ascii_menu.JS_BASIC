@@ -1,3 +1,4 @@
+var currentId=1;
 async function getMaxCount() {
         var postData2 =
         "NICK=" + encodeURIComponent(NICK) +
@@ -7,6 +8,7 @@ async function getMaxCount() {
             "server_side/ascii_count.php",
             { data: postData2 }
         );
+        return mc;
 }
 async function printMenu(result) {
         var mc = await getMaxCount();
@@ -14,11 +16,11 @@ async function printMenu(result) {
         PRINT("==================\n");
         PRINT(" ASCII ART GALLERY\n");
         PRINT("==================\n");
-        PRINT("ID: " + result.id + " of " + mc + " ");
+        PRINT("ID: " + currentId + " of " + mc + " ");
         PRINT("Title: " + result.title + " ");
         PRINT("By: " + result.username + " ");
         PRINT("Date: " + result.created_at + " ");
-        PRINT("------------------");
+        PRINT("------------------\n");
         PRINT(result.art);
         COLOR(9,0)
         PRINT("------------------\n");
@@ -26,48 +28,40 @@ async function printMenu(result) {
 }
 async function ASCII_MENU(id) {
 
-    let currentId = null;
+    //var currentId = null;
 
     function encodeForm(obj) {
         return Object.keys(obj)
             .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(obj[k]))
             .join("&");
     }
+var currentId = null;
 
-    async function loadAscii(direction = null, id = null) {
+async function loadAscii(direction = null, id = null) {
+    let payload = {
+        NICK,
+        PASSWORD,
+        direction,
+        id
+    };
 
-        let payload = {
-            NICK: NICK,
-            PASSWORD: PASSWORD,
-            direction: direction,
-            id: id
-        };
+    let result = await CURL("server_side/ascii_read.php", {
+        data: encodeForm(payload)
+    });
 
-        let result = await CURL(
-            "server_side/ascii_read.php",
-            { data: encodeForm(payload) }
-        );
-
-        // If CURL returned string, parse it
-        if (typeof result === "string") {
-            result = JSON.parse(result);
-        }
-
-        if (result.status == "empty") {
-            //CLS();
-            PRINT("No ASCII art found.\n");
-            PRINT("Press ENTER...\n");
-            await INPUT();
-            //await uploadAscii();
-        }
-        
-
-        currentId = result.id;
-        
-
-        await printMenu(result);
+    if (typeof result === "string") {
+        result = JSON.parse(result);
     }
 
+    if (result.status === "empty") {
+        PRINT("No ASCII art found.\n");
+        await INPUT();
+        return;
+    }
+
+    currentId = result.id;
+    await printMenu(result);
+}
     async function uploadAscii() {
 
         //CLS();
@@ -147,6 +141,7 @@ async function ASCII_MENU(id) {
             if(postcount==mc) {
                 PRINT("this is the last posted ascii art...");
                 await loadAscii("next", currentId-1);;
+                currentId=currentId-1;
             } else {
                 await loadAscii("next", currentId);
             }
@@ -156,6 +151,7 @@ async function ASCII_MENU(id) {
             if(postcount==1) {
                 PRINT("this is the first posted ascii art...");
                 await loadAscii("prev", currentId+1);;
+                currentId=currentId+1;
             } else {
                 await loadAscii("prev", currentId);
             }
@@ -181,6 +177,7 @@ async function ASCII_MENU(id) {
                 { data: postData }
             );
 
+            currentId=number;
             if (typeof result === "string") {
                 result = JSON.parse(result);
             }

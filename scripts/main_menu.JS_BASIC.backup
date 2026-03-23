@@ -37,20 +37,17 @@ while(quit==false) {
           break;
         case "W"://warez
             if(i18n_getlang()=="English"){
-              OPENURL("https://amjp.psy-k.org/JPLY/en.php");
+              OPENURLCONFIRMEN("https://amjp.psy-k.org/JPLY/en.php");
             } else
             if(i18n_getlang()=="Japanese"){
-              OPENURL("https://amjp.psy-k.org/JPLY/jp.php");
+              OPENURLCONFIRMJP("https://amjp.psy-k.org/JPLY/jp.php");
             } else
             if(i18n_getlang()=="Spanish"){
-              OPENURL("https://amjp.psy-k.org/JPLY/es.php");
+              OPENURLCONFIRMES("https://amjp.psy-k.org/JPLY/es.php");
             } else {
                 throw new Error("INVALID LANGUAGE exception!");
             }
           break;
-        case "E"://warez
-              OPENURL("https://amjp.psy-k.org/utf8arteditor/editor.html");
-              break;
         case "D":
           // IMPORTANT: stop THIS loop before loading mail menu
           quit = true;

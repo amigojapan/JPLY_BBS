@@ -13,9 +13,9 @@
 │  [C5,0]M[C9,0])ail       - Mensajes privados     │
 │  [C5,0]G[C9,0])rafitti   - Pared de Graffitti    │
 │  [C5,0]U[C9,0])TF8 art   - Galeria de arte       │
+│  [C5,0]E[C9,0])ditor     - Editor de arte        │
 │  [C5,0]C[C9,0])hat       - Charlar               │
-│  [C5,0]A[C9,0])bout      - Acerca de JPLY BBS    │
-│  [C5,0]R[C9,0])ulz       - Reglas de este BBS    │
+│  [C5,0]A[C9,0])bout&rulz - Acerca de JPLY BBS    │
 │  [C5,0]Q[C9,0])uit       - Salir del sistems     │
 └──────────────────────────────────────┘
 ┌──────────────────────────────────────┐

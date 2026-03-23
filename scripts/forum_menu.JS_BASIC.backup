@@ -292,7 +292,7 @@ async function FORUM_MENU() {
     COLOR(1,0);
     await SLOWPRINT(forum_menu,2);
     COLOR(9,0);
-    await PRINT(translate["Page "] + page + " / " + pages + "  > ");
+    //await PRINT(translate["Page "] + page + " / " + pages + "  > ");
     var opt = String(await INPUT()).trim().toUpperCase();
 
     if (opt === "L") {
