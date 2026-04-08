@@ -129,6 +129,7 @@ async function game() {
     else if (choice === translate["Rest"].toLowerCase()) await rest();
     else if (choice === translate["Hunt"].toLowerCase()) await hunt();
     else if (choice === "quit".toLowerCase()) {
+          //*** put show high score here ***//
           // IMPORTANT: stop THIS loop before loading main menu
           quit = true;
           main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
@@ -147,10 +148,24 @@ async function game() {
     }
   }
 
-  if (player_move_distance >= 2000) PRINT(translate["Amazing! You have reached Oregon!"]);
+  if (player_move_distance >= 2000) {
+    PRINT(translate["Amazing! You have reached Oregon!"]);
+    //*** put wite high score here ***//
+    /* how can I cast a string to int in sqlite only if it is an int and nto a tsring, if it is null it shoudl return an empty string
+    SELECT 
+      CASE 
+        WHEN my_column IS NULL THEN ''
+        WHEN CAST(my_column AS TEXT) GLOB '*[^-0-9]*' THEN my_column
+        ELSE CAST(my_column AS INTEGER)
+      END AS converted_value
+    FROM my_table;
+    */
+
+  }
   if (food_num <= 0) PRINT(translate["Game over. You ran out of food."]);
   if (health_num <= 0) PRINT(translate["Game over. You ran out of health."]);
   if (month_num >= 13) PRINT(translate["Winter has come. Game over!"]);
+  //*** put show high score here ***//
 }
 
 await game();

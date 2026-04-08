@@ -1,3 +1,72 @@
+async function saveSCORE(NICK, SCORE, PASSWORD) {
+    fetch("./server_side/post_score.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body:
+            "NICK=" + encodeURIComponent(NICK) +
+            "&SCORE=" + encodeURIComponent(SCORE) +
+            "&PASSWORD=" + encodeURIComponent(PASSWORD)
+    })
+    //.then(res => res.text())
+    //.then(text => {
+    //    console.log("RAW >>>", JSON.stringify(text));
+    //})
+    .then(res => res.json())
+    .then(data => {
+        console.log("Save response:", data);
+    })
+    .catch(err => {
+        console.error("FULL ERROR:", err);
+    });
+    //.catch(err => console.error("Error:", err));
+}
+async function printreadSCOREs(NICK,order = "desc", PASSWORD) {
+    fetch("./server_side/read_scores.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body:
+            "NICK=" + encodeURIComponent(NICK) +
+            "&order=" + encodeURIComponent(order) +
+            "&PASSWORD=" + encodeURIComponent(PASSWORD)
+    })
+    .then(res => res.text())
+    .then(async text => {
+        console.log("READ RAW >>>", JSON.stringify(text));
+        //return JSON.parse(text);
+        const originalString = JSON.stringify(text)
+        // Removes all double quotes
+        const noDoubleQuotes = originalString.replaceAll('"', '');
+        // Removes all single quotes
+        const noSingleQuotes = noDoubleQuotes.replaceAll("'", "");
+
+        await MORE(noSingleQuotes);
+        return;
+    })
+    //.then(res => res.json())
+    .then(data => {
+        console.log("DATA >>>", data);   // 👈 ADD THIS LINE
+        if (data.status !== "ok") {
+            console.error("Error:", data.message);
+            return;
+        }
+        
+        let output = "";
+
+        data.data.forEach(entry => {
+            output += entry.NICK + " : " + entry.SCORE + "\n";
+        });
+
+        console.log(output);
+        return output;
+        // optional UI output
+        // document.getElementById("SCOREs").textContent = output;
+    })
+    .catch(err => console.error("Error:", err));
+}
 async function forceInputNumeric(message) {
     let userInput;
     let number;
@@ -68,6 +137,11 @@ async function MemorizeGame() {
         PRINT(translate["FAIL"] + LONG+ "\n");
         break;
     }
+    //*** put write high SCORE here ***//
+    await saveSCORE(NICK, (LONG-1).toString() ,PASSWORD);
+    //*** put show high SCORE here ***//
+    PRINT("HIGH SCORES:")
+    await printreadSCOREs(NICK,"ASC", PASSWORD);
     // IMPORTANT: stop THIS loop before loading main menu
     quit = true;
     main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");

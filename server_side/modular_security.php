@@ -31,9 +31,10 @@ function hash_string_with_salt(string $string, string $salt): string {
  * @param string|null $err       Output error text (optional)
  * @return bool
  */
-fu  string $nickname,
-    string $password,
-    ?string &$err = null
+function is_user_identified(
+    $nickname,
+    $password,
+    $err = null
 ): bool {
     $dbPath = 'userdb.sqlite3';
     $tableName = 'users';

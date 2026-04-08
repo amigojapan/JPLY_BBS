@@ -28,7 +28,7 @@ async function GuessMyNumber() {
 
     // BASIC RND gives a number between 0–1, so we scale it
     let N = Math.floor(Math.random() * 100) + 1;
-    let score = 0;
+
     while (true) {
         PRINT(translate["Your guess? \n"]);
         let G = Number(await forceInputNumeric());
@@ -40,18 +40,14 @@ async function GuessMyNumber() {
 
         if (G < N) {
             PRINT(translate["Too low\n"]);
-            score++;
         } else {
             PRINT(translate["Too high\n"]);
-            score++;
         }
     }
-            //*** put write high score here ***//
-            //*** put show high score here ***//
-            // IMPORTANT: stop THIS loop before loading main menu
-            quit = true;
-            main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
-            await LOAD(main_menu);
+           // IMPORTANT: stop THIS loop before loading main menu
+          quit = true;
+          main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
+          await LOAD(main_menu);
 }
 
 await GuessMyNumber();

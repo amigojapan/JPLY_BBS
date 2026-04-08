@@ -1,0 +1,84 @@
+async function forceInputNumeric(message) {
+    let userInput;
+    let number;
+
+    while (true) {
+        // Use the existing await INPUT() function
+        userInput = await INPUT(message); 
+        
+        // Try to parse the input to a number
+        number = Number(userInput);
+
+        // Check if the input is a valid number and not empty
+        if (userInput !== null && userInput.trim() !== "" && !isNaN(number)) {
+            return number; // Return valid number and exit loop
+        }
+        
+        // Optional: Alert the user they must enter a number
+        PRINT(translate["Invalid input. Please enter a valid number."],2);
+    }
+}
+
+function CLS() {
+    for (let i = 0; i < 30; i++) {
+        PRINT("\n");
+    }
+}
+function WAIT(ms) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+}
+
+async function MemorizeGame() {
+    PRINT(translate["MEMORIZATION GAME"]);
+
+    let LONG = 0;
+    let COMPMEM = "";
+
+    while (true) {
+        LONG = LONG + 1;
+        COMPMEM = "";
+
+        // Build computer memory string
+        for (let CHARS = 1; CHARS <= LONG; CHARS++) {
+            COMPMEM += String(Math.floor(Math.random() * 9) + 1);
+        }
+
+        PRINT(translate["MEMORIZE THIS: "] + COMPMEM + "\n");
+
+        // Delay loop (replacement for WAIT loop)
+        for (let SLEEP = 1; SLEEP <= 2000; SLEEP++) {
+            await WAIT(1);
+        }
+
+        CLS();
+        PRINT(translate["ENTER YOUR GUESS"]+ "\n");
+
+        let UI = await forceInputNumeric();
+        let USERINPUT = String(UI);
+
+        // Debug echo (matches original line 150)
+        PRINT(COMPMEM+ "\n");
+
+        if (COMPMEM === USERINPUT) {
+            continue; // GOTO 30
+        }
+
+        PRINT(translate["FAIL"] + LONG+ "\n");
+        break;
+    }
+    // IMPORTANT: stop THIS loop before loading main menu
+    quit = true;
+    main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
+    await LOAD(main_menu);
+}
+
+await MemorizeGame();
+
+/*
+var code = await CURL("https://amjp.psy-k.org/JPLY_BBS/scripts/proxy.php?url=" + encodeURIComponent(
+    "https://amjp.psy-k.org/JPLY_BBS/scripts/Memorize.JS_BASIC"
+));
+await LOAD(code);
+*/

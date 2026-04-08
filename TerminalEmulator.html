@@ -853,7 +853,7 @@ MORE(A);
 async function MORE(text) {
     const arr = splitStringEvery40(text);
     const PAGE_LINES = 22; // visible text rows (24th is input)
-    lineCounter=0;
+    let lineCounter = 0;
     for (const line of arr) {
 
         // If screen is full, pause

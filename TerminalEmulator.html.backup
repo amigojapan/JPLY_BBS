@@ -129,10 +129,16 @@
 
 <body>
 <script src="i18n.js"></script>
-<div class="tv">
-    <div id="screen"></div>
-</div>
+<div style="display:flex; flex-direction:column; align-items:center;">
+  <a href="https://amjp.psy-k.org/JPLY_BBS/androidapp/JPLY_BBS_APP.apk"
+     style="color:#6cffee; font-family:monospace; margin-bottom:12px;">
+     Android APK download
+  </a>
 
+  <div class="tv">
+      <div id="screen"></div>
+  </div>
+</div>
 <script>
 /* ==================================================
    GLOBALS
@@ -676,6 +682,14 @@ function OPENURLCONFIRM(url) {
     if (confirmed) {
         window.open(url, '_blank');
     }
+}
+function OPENURL(url) {
+    // Basic sanitization: ensure it starts with http:// or https://
+    if (!/^https?:\/\//i.test(url)) {
+        alert("Invalid URL: must start with http:// or https://");
+        return;
+    }
+    window.open(url, '_blank');
 }
 
 function OPENURLCONFIRMEN(url) {
