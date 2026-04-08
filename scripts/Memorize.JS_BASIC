@@ -1,11 +1,12 @@
-async function saveSCORE(NICK, SCORE, PASSWORD) {
+async function saveSCORE(GAMENAME,NICK, SCORE, PASSWORD) {
     fetch("./server_side/post_score.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
         },
         body:
-            "NICK=" + encodeURIComponent(NICK) +
+            "GAMENAME=" + encodeURIComponent(GAMENAME) +
+            "&NICK=" + encodeURIComponent(NICK) +
             "&SCORE=" + encodeURIComponent(SCORE) +
             "&PASSWORD=" + encodeURIComponent(PASSWORD)
     })
@@ -22,14 +23,15 @@ async function saveSCORE(NICK, SCORE, PASSWORD) {
     });
     //.catch(err => console.error("Error:", err));
 }
-async function printreadSCOREs(NICK,order = "desc", PASSWORD) {
-    fetch("./server_side/read_scores.php", {
+async function printreadSCOREs(GAMENAME,NICK,order = "desc", PASSWORD) {
+    await fetch("./server_side/read_scores.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
         },
         body:
-            "NICK=" + encodeURIComponent(NICK) +
+            "GAMENAME=" + encodeURIComponent(GAMENAME) +
+            "&NICK=" + encodeURIComponent(NICK) +
             "&order=" + encodeURIComponent(order) +
             "&PASSWORD=" + encodeURIComponent(PASSWORD)
     })
@@ -138,10 +140,12 @@ async function MemorizeGame() {
         break;
     }
     //*** put write high SCORE here ***//
-    await saveSCORE(NICK, (LONG-1).toString() ,PASSWORD);
+    await saveSCORE("Memorize",NICK, (LONG-1).toString() ,PASSWORD);
     //*** put show high SCORE here ***//
     PRINT("HIGH SCORES:")
-    await printreadSCOREs(NICK,"ASC", PASSWORD);
+    await printreadSCOREs("Memorize",NICK,"ASC", PASSWORD);
+    await PRINT("****** PRESS ENTER ******")
+    await INPUT();
     // IMPORTANT: stop THIS loop before loading main menu
     quit = true;
     main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");

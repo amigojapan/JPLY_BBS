@@ -29,16 +29,8 @@
     }
     
     // Open DB
-    $GAMENAME = (string)($_POST['GAMENAME'] ?? '');
-    if($GAMENAME=="Memorize") {
-        $db = new SQLite3("Memorize_scores.db");
-    } elseif($GAMENAME=="Guessmynumber") { 
-            $db = new SQLite3("Guessmynumber_scores.db");
-    } elseif($GAMENAME=="Americanfootball") { 
-            $db = new SQLite3("Americanfootball_scores.db");
-    } elseif($GAMENAME=="Oregontrain") { 
-            $db = new SQLite3("Oregontrain_scores.db");
-    }
+    $db = new SQLite3("scores.db");
+
     // Create table
     $db->exec("
         CREATE TABLE IF NOT EXISTS scores (
