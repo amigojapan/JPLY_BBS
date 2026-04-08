@@ -41,8 +41,8 @@
             $db = new SQLite3("Guessmynumber_scores.db");
     } elseif($GAMENAME=="Americanfootball") { 
             $db = new SQLite3("Americanfootball_scores.db");
-    } elseif($GAMENAME=="Oregontrain") { 
-            $db = new SQLite3("Oregontrain_scores.db");
+    } elseif($GAMENAME=="Oregontrail") { 
+            $db = new SQLite3("Oregontrail_scores.db");
     }
     $db->busyTimeout(5000);
     // Order (default DESC)

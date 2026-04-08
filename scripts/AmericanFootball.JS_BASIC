@@ -1,3 +1,75 @@
+async function saveSCORE(GAMENAME,NICK, SCORE, PASSWORD) {
+    fetch("./server_side/post_score.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body:
+            "GAMENAME=" + encodeURIComponent(GAMENAME) +
+            "&NICK=" + encodeURIComponent(NICK) +
+            "&SCORE=" + encodeURIComponent(SCORE) +
+            "&PASSWORD=" + encodeURIComponent(PASSWORD)
+    })
+    //.then(res => res.text())
+    //.then(text => {
+    //    console.log("RAW >>>", JSON.stringify(text));
+    //})
+    .then(res => res.json())
+    .then(data => {
+        console.log("Save response:", data);
+    })
+    .catch(err => {
+        console.error("FULL ERROR:", err);
+    });
+    //.catch(err => console.error("Error:", err));
+}
+async function printreadSCOREs(GAMENAME,NICK,order = "desc", PASSWORD) {
+    await fetch("./server_side/read_scores.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body:
+            "GAMENAME=" + encodeURIComponent(GAMENAME) +
+            "&NICK=" + encodeURIComponent(NICK) +
+            "&order=" + encodeURIComponent(order) +
+            "&PASSWORD=" + encodeURIComponent(PASSWORD)
+    })
+    .then(res => res.text())
+    .then(async text => {
+        console.log("READ RAW >>>", JSON.stringify(text));
+        //return JSON.parse(text);
+        const originalString = JSON.stringify(text)
+        // Removes all double quotes
+        const noDoubleQuotes = originalString.replaceAll('"', '');
+        // Removes all single quotes
+        const noSingleQuotes = noDoubleQuotes.replaceAll("'", "");
+
+        await MORE(noSingleQuotes);
+        return;
+    })
+    //.then(res => res.json())
+    .then(data => {
+        console.log("DATA >>>", data);   // 👈 ADD THIS LINE
+        if (data.status !== "ok") {
+            console.error("Error:", data.message);
+            return;
+        }
+        
+        let output = "";
+
+        data.data.forEach(entry => {
+            output += entry.NICK + " : " + entry.SCORE + "\n";
+        });
+
+        console.log(output);
+        return output;
+        // optional UI output
+        // document.getElementById("SCOREs").textContent = output;
+    })
+    .catch(err => console.error("Error:", err));
+}
+
 async function forceInputAlphaNumeric(promptMessage) {
   while (true) {
     // Call the existing function and await its result [6]
@@ -83,7 +155,7 @@ async function menu() {
     }
 
     T++;
-    if (T === 120) return gameOver();
+    if (T === 120) return await gameOver();
 
     PRINT(translate["Score,YOU,COMP:\n"]);
     PRINT(`${A} ${B}`);
@@ -116,7 +188,13 @@ async function menu() {
       case 5: await fieldGoal(); break;
       case 6: 
         // IMPORTANT: stop THIS loop before loading main menu
-        //*** put show high score here ***//
+
+        //*** put show high SCORE here ***//
+        PRINT("SUPERBOWL WINNERS, PLAYER.COMP:")
+        await printreadSCOREs("Americanfootball",NICK,"ASC", PASSWORD);
+        await PRINT("****** PRESS ENTER ******")
+        await INPUT();
+
         quit = true;
         main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
         await LOAD(main_menu);
@@ -221,17 +299,21 @@ async function aiMove() {
   else await longPass();
 }
 
-function gameOver() {
+async function gameOver() {
   PRINT(translate["GameOver,YOU,COMP:\n"]);
   PRINT(`${A} ${B}`);
   PRINT(A > B ? translate["YOU WIN\n"] : translate["COMPUTER WINS\n"]);
   winner = A > B ? translate["YOU WIN\n"] : translate["COMPUTER WINS\n"]
-  if(winner==translate["YOU WIN\n"]) {
-    //*** put wite high score here ***//
+  if(winner==translate["YOU WIN THE SUPERBOWL!!!\n"]) {
+    //*** put write high SCORE here ***//
+    await saveSCORE("Americanfootball",NICK,A.toString()+"."+B.toString() ,PASSWORD);
   }
-  //*** put show high score here ***//
+  //*** put show high SCORE here ***//
+  PRINT("SUPERBOWL WINNERS, PLAYER.COMP:")
+  await printreadSCOREs("Americanfootball",NICK,"ASC", PASSWORD);
+  await PRINT("****** PRESS ENTER ******")
+  await INPUT();
   rl.close();er();
-
 }
 
 main();

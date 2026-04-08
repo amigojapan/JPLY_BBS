@@ -1,4 +1,8 @@
-var currentId=1;
+let currentId= null;
+var mc = await getMaxCount();
+currentId= mc;
+
+
 async function getMaxCount() {
         var postData2 =
         "NICK=" + encodeURIComponent(NICK) +
@@ -10,6 +14,7 @@ async function getMaxCount() {
         );
         return mc;
 }
+
 async function printMenu(result) {
         var mc = await getMaxCount();
         COLOR(9,0)
@@ -26,50 +31,17 @@ async function printMenu(result) {
         PRINT("------------------\n");
         PRINT("N)ext P)rev J)ump U)pld D)nld Q)uit\n");
 }
+function encodeForm(obj) {
+    return Object.keys(obj)
+        .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(obj[k]))
+        .join("&");
+}
 async function ASCII_MENU(id) {
 
-    let currentId = null;
-
-    function encodeForm(obj) {
-        return Object.keys(obj)
-            .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(obj[k]))
-            .join("&");
-    }
-
     async function loadAscii(direction = null, id = null) {
-
-        let payload = {
-            NICK: NICK,
-            PASSWORD: PASSWORD,
-            direction: direction,
-            id: id
-        };
-
-        let result = await CURL(
-            "server_side/ascii_read.php",
-            { data: encodeForm(payload) }
-        );
-
-        // If CURL returned string, parse it
-        if (typeof result === "string") {
-            result = JSON.parse(result);
-        }
-
-        if (result.status == "empty") {
-            //CLS();
-            PRINT("No ASCII art found.\n");
-            PRINT("Press ENTER...\n");
-            await INPUT();
-            //await uploadAscii();
-        }
-        
-
-        currentId = result.id;
-        
-
-        await printMenu(result);
+        await jumpToPostNumber(mc);
+        //await printMenu(result);
     }
-
     async function uploadAscii() {
 
         //CLS();
@@ -136,44 +108,58 @@ async function ASCII_MENU(id) {
 
     // Load latest on entry
     await loadAscii("next",1);
-    COLOR(9,0)
-    postcount=1;
+    COLOR(9,0);
     while (true) {
 
         let choice = (await INPUT()).toUpperCase();
 
         if (choice === "Q") return;
-
+        var mc = await getMaxCount();
         if (choice === "N") {
-            var mc = await getMaxCount();
-            if(postcount==mc) {
+            
+            if(currentId>=mc) {
                 PRINT("this is the last posted ascii art...");
-                await loadAscii("next", currentId-1);;
-                currentId=currentId-1;
+                currentId=mc;
+                jumpToPostNumber(mc);
             } else {
-                await loadAscii("next", currentId);
+                currentId++;
+                jumpToPostNumber(currentId);
             }
-            postcount++;
         }
+        
         if (choice === "P") {
-            if(postcount==1) {
-                PRINT("this is the first posted ascii art...");
-                await loadAscii("prev", currentId+1);;
-                currentId=currentId+1;
+            
+            if(currentId<=1) {
+                PRINT("this is the last posted ascii art...");
+                currentId=mc;
+                jumpToPostNumber(1);
             } else {
-                await loadAscii("prev", currentId);
+                currentId--;
+                jumpToPostNumber(currentId);
             }
-            postcount--;
         }
 
         if (choice === "J") {
             PRINT("Enter post number (1 = first):");
             let number = await INPUT();
+            await jumpToPostNumber(number);
+        }
+        if (choice === "U") {
+            await uploadAscii();
+            await loadAscii("next", currentId+1);
+        }
+
+        if (choice === "D") {
+            await downloadAscii();
+        }
+    }
+}
+async function jumpToPostNumber(number) {
             var mc = await getMaxCount();
             if(number>mc || number<1) {
                 PRINT("that post is out of bounds...");
-                await loadAscii("next", currentId-1);;
-                continue;
+                jumpToPostNumber(mc);
+                return
             } 
             let postData =
                 "NICK=" + encodeURIComponent(NICK) +
@@ -185,28 +171,18 @@ async function ASCII_MENU(id) {
                 { data: postData }
             );
 
-            currentId=number;
+            //currentId=number;
             if (typeof result === "string") {
                 result = JSON.parse(result);
             }
 
             if (result.status === "ok") {
-                currentId = result.id;
+                //currentId = result.id;
 
                 await printMenu(result);
             } else {
                 PRINT("Post not found.");
                 await INPUT();
             }
-        }
-        if (choice === "U") {
-            await uploadAscii();
-            await loadAscii("next", currentId+1);
-        }
-
-        if (choice === "D") {
-            await downloadAscii();
-        }
-    }
 }
 await ASCII_MENU(1);
