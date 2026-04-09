@@ -333,8 +333,8 @@ i18n["Japanese"] = {
 //registration
 //tranlsation japanese
     "\nRegistration screen\n":"\n登録画面\n",
-    "new nickname Alphanumeric only:":"\n新しいハンドル名、半額文字数字のみ：",
-    "nickname must be Alphanumeric only!":"\nすみません、ハンドル名は半額文字数字のみです！",
+    "new nickname Alphanumeric only:":"\n新しいハンドル名、半角文字数字のみ：",
+    "nickname must be Alphanumeric only!":"\nすみません、ハンドル名は半角文字数字のみです！",
     "\nSorry that username already exists!\nplease try again with a different nick\n":"\nすみません、そのハンドル名既に存在します！\n別のハンドル名を選んで下さい！\n",
     "\nemail:\n":"\nインターネットメール:\n",
     "\n*Please confirm*\n\n":"\n*ご確認下さい*\n\n",
