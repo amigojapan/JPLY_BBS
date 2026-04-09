@@ -21,10 +21,14 @@ function isAlphanumeric(str) {
 await SLOWPRINT(translate["\nRegistration screen\n"],2);
 quit=false;
 while(quit==false) {
-    await SLOWPRINT(translate["new nickname Alphanumeric only:"],2);
+    await SLOWPRINT("\n"+translate["new nickname Alphanumeric only:"],2);
     NICK = await INPUT();
+    if(NICK==""){
+        await SLOWPRINT("\n*ERROR, string cannot be empty*\nStart over again...\n\n",2);
+        continue;    
+    }
     if(!isAlphanumeric(NICK)) {
-        await SLOWPRINT(translate["nickname must be Alphanumeric only!"],2);
+        await SLOWPRINT("\n"+translate["nickname must be Alphanumeric only!"],2);
         continue;
     }
     user_exixts = await USER_EXISTS_NICK(NICK);
@@ -32,10 +36,18 @@ while(quit==false) {
         await SLOWPRINT(translate["\nSorry that username already exists!\nplease try again with a different nick\n"],2);
         continue; 
     }
-    await SLOWPRINT(translate["pw prompt"],2);
+    await SLOWPRINT("\n"+translate["pw prompt"],2);
     PASSWORD = INPUT("");
+    if(PASSWORD==""){
+        await SLOWPRINT("\n*ERROR, string cannot be empty*\nStart over again...\n\n",2);
+        continue;    
+    }
     await SLOWPRINT(translate["\nemail:\n"],2);
     EMAIL = await INPUT("");
+    if(EMAIL==""){
+        await SLOWPRINT("\n*ERROR, string cannot be empty*\nStart over again...\n\n",2);
+        continue;    
+    }
     await SLOWPRINT(translate["\n*Please confirm*\n\n"],2);
     await SLOWPRINT(translate["\n*Write this informaiton down*\n\n"],2);
     await SLOWPRINT(translate["\nNICK:"]+NICK+"\n",2);

@@ -19,5 +19,5 @@
 │  [C5,0]Q[C9,0])uit       - Salir del sistems     │
 └──────────────────────────────────────┘
 ┌──────────────────────────────────────┐
-│ Escribe una lettra y preciona[C5,0][ENTER][C9,0] │
+│ Escribe una letra y preciona[C5,0][ENTER][C9,0] │
 └──────────────────────────────────────┘

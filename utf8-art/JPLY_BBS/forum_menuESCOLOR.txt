@@ -11,5 +11,5 @@
 │  [C5,0]B[C9,0])ack         - Regresar      │
 └──────────────────────────────────────┘
 ┌──────────────────────────────────────┐
-│ Escribe una lettra y preciona[C5,0][ENTER][C9,0] │
+│ Escribe una letra y preciona[C5,0][ENTER][C9,0] │
 └──────────────────────────────────────┘

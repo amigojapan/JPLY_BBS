@@ -547,7 +547,7 @@ i18n["Spanish"] = {
 	"Days Passed": " Dias pasaron",
 	"colors": "Colores",
 	"Shop": "Pueblo",
-	"Item count": "Numero de este articulo",
+	"Item count": "número  de este articulo",
 	"Price": "Precio",
 	"Gold": "Oro",
 	"grams": "gramos",
@@ -593,7 +593,7 @@ i18n["Spanish"] = {
     "\nEMAIL(Will not be displayed):":"\nCorreo electronico(No sera visible):",
     "\nCorrect? Y/N:\n":"\nCorrecto? Y para si / N para no:\n",
     "\nNew user registered!\n":"\nRegistracion de usuario completa!\n",
-    "************ PRESS ENTER ************":"************ PRECIONE ENTER ************",
+    "************ PRESS ENTER ************":"************ presione ENTER ************",
     "Invalid Option!":"Opcion Invalida!",
 	//send mail translation SPANISH
     //already exists translate["************ PRESS ENTER ************"]
@@ -729,15 +729,15 @@ i18n["Spanish"] = {
   "YOU WON TOSS\n":"GANASTE EL SORTEO\n",
   "[ENTER] TO CONTINUE\n":"[ENTER] PARA CONTINUAR\n",
 //Guess mu number spanish
-  "Guessing a number from 1 to 100...\n":"Escojiendo un numero del 1 al 100...\n",
-  "Your guess? \n":"Que numero es? \n",
+  "Guessing a number from 1 to 100...\n":"Escojiendo un número  del 1 al 100...\n",
+  "Your guess? \n":"Que número  es? \n",
   "Got it!\n":"Correcto!\n",
   "Too low\n":"Demasiado bajo\n",
   "Too high\n":"Demasiado alto\n",
   //Memorize Spanish
   "MEMORIZATION GAME":"JUEGO DE MEMORIZAR HECHO POR AMIGOJAPAN\nPARA SHARP PC-G801\nPORTEADO A JPLY BBS\n",
   "MEMORIZE THIS: ":"MEMORIZA ESTO: ",
-  "ENTER YOUR GUESS":"TECLEE ESE NUMERO:",
+  "ENTER YOUR GUESS":"TECLEE ESE número :",
   "FAIL":"FALLASTE\nFIN DEL JUEGO\nTU PUNTUAJE: " 
 };
 

@@ -110,7 +110,7 @@
       PRINT("-save、保存\n");
       PRINT("-quit、保存せずに終了\n");
 
-      PRINT("\n-line count, numero de lineas\n");
+      PRINT("\n-line count, número  de lineas\n");
       PRINT("-list lines, listar lienas\n");
       PRINT("-list lines from X to Y, mover lineas de X a Y\n");
       PRINT("-delete line X, borrar linea X\n");

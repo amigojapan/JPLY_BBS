@@ -54,10 +54,17 @@ async function ASCII_MENU(id) {
 
         let file = await new Promise(resolve => {
             input.onchange = () => resolve(input.files[0]);
+            
+            // Fired when the dialog is cancelled (Esc key or Cancel button)
+            input.oncancel = () => {
+                resolve(null); // Or reject(new Error('User cancelled'));
+            };
         });
 
-        if (!file) {
-            PRINT("No file selected.");
+        if (file === null) {
+            console.log("The user pressed cancel.");
+            await PRINT("No file selected.");
+            alert("No file selected.")
             await INPUT();
             return;
         }

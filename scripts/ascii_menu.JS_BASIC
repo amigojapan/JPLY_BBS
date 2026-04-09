@@ -1,6 +1,27 @@
 let currentId= null;
 var mc = await getMaxCount();
 currentId= mc;
+function downloadStringAsFile(content, fileName, contentType = 'text/plain') {
+    // 1. Create a Blob from the string content
+    const blob = new Blob([content], { type: contentType });
+
+    // 2. Generate a temporary local URL for the Blob
+    const url = URL.createObjectURL(blob);
+
+    // 3. Create a hidden anchor element
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName; // The suggested name for the saved file
+
+    // 4. Append to body, trigger click, and then cleanup
+    document.body.appendChild(link);
+    link.click();
+    
+    // Cleanup: remove element and revoke the URL to free memory
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
 
 
 async function getMaxCount() {
@@ -54,10 +75,17 @@ async function ASCII_MENU(id) {
 
         let file = await new Promise(resolve => {
             input.onchange = () => resolve(input.files[0]);
+            
+            // Fired when the dialog is cancelled (Esc key or Cancel button)
+            input.oncancel = () => {
+                resolve(null); // Or reject(new Error('User cancelled'));
+            };
         });
 
-        if (!file) {
-            PRINT("No file selected.");
+        if (file === null) {
+            console.log("The user pressed cancel.");
+            await PRINT("No file selected.");
+            alert("No file selected.")
             await INPUT();
             return;
         }
@@ -91,19 +119,20 @@ async function ASCII_MENU(id) {
     }
 
     async function downloadAscii() {
+            let postData =
+                "NICK=" + encodeURIComponent(NICK) +
+                "&PASSWORD=" + encodeURIComponent(PASSWORD) +
+                "&relative=" + encodeURIComponent(currentId);
 
-        if (!currentId) return;
-
-        let payload = encodeForm({
-            NICK: NICK,
-            PASSWORD: PASSWORD,
-            id: currentId
-        });
-
-        await CURL(
-            "server_side/ascii_download.php",
-            { data: payload }
-        );
+            var result = await CURL(
+                "server_side/ascii_read.php",
+                { data: postData }
+            );
+            
+            if (typeof result === "string") {
+                result = JSON.parse(result);
+            }
+            downloadStringAsFile(result.art,result.username+"_"+result.title);
     }
 
     // Load latest on entry
@@ -150,7 +179,7 @@ async function ASCII_MENU(id) {
         }
 
         if (choice === "D") {
-            await downloadAscii();
+           await downloadAscii();
         }
     }
 }

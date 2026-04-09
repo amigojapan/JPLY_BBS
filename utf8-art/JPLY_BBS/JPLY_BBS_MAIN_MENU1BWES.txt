@@ -19,5 +19,5 @@
 │  Q)uit       - Salir del systema     │
 └──────────────────────────────────────┘
 ┌──────────────────────────────────────┐
-│ Escribe una lettra y preciona[ENTER] │
+│ Escribe una letra y preciona[ENTER] │
 └──────────────────────────────────────┘
