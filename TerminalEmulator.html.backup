@@ -461,7 +461,7 @@ function OUCH() {
 function PEEK(n) {
     OUCH();
     if(n==42) {
-        return "You know hte meaning of life.";
+        return "You know the meaning of life.";
     }
     return "Easter egg";
 }
@@ -1096,7 +1096,7 @@ PRINT(A);
 
 test with color
 (fixed, actually the font size on vscode is not very accurate eventho it is set to monospace)bug, stll a few characters seem to be off at the end of the print
-remember, you need to test it with the version on hte server, otherwise you will get an error of failed to fetch
+remember, you need to test it with the version on the server, otherwise you will get an error of failed to fetch
 
 ECHOOFF();
 A = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/modem_speed_menu.txt");
@@ -1133,7 +1133,7 @@ PRINT(response);
 
 
 todo list
-//(fixed)bug seems it is not creating a newline when it reacher the end of hte width of the screen.
+//(fixed)bug seems it is not creating a newline when it reacher the end of the width of the screen.
 (done)add the COLOR(foregroudcolor,backroudcolor) command that takes numbers form getColor(colorNumber) by passing numbers as foreground and background colors, one it is called future print statements should use these foreground and background colors for the text being printed
 (done)LOAD()
 bug help appears as help in safai only, dont have a mac to test it, cant fix it
