@@ -18,8 +18,8 @@ const IRC_PORT = 6667;
 
 // TLS options (same paths you had)
 const server = https.createServer({
-  key: fs.readFileSync("/etc/letsencrypt/live/swiss.korman.es-0001/privkey.pem"),
-  cert: fs.readFileSync("/etc/letsencrypt/live/swiss.korman.es-0001/fullchain.pem"),
+  key: fs.readFileSync("/etc/letsencrypt/live/swiss.korman.es-0002/privkey.pem"),
+  cert: fs.readFileSync("/etc/letsencrypt/live/swiss.korman.es-0002/fullchain.pem"),
 });
 
 const wss = new WebSocket.Server({ server });
