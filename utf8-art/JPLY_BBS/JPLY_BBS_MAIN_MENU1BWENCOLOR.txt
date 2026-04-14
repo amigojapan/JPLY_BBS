@@ -15,7 +15,7 @@
 │  [C5,0]U[C9,0])TF8 art   - Art gallery           │
 │  [C5,0]E[C9,0])ditor     - Art editor            │
 │  [C5,0]C[C9,0])hat       - Chat                  │
-│  [C5,0]A[C9,0])bout      - About&rules JPLY BBS  │
+│  [C5,0]A[C9,0])bout&rulz - About&rules JPLY BBS  │
 │  [C5,0]Q[C9,0])uit       - Exit the system       │
 └──────────────────────────────────────┘
 ┌──────────────────────────────────────┐
