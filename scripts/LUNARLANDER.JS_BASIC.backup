@@ -1,0 +1,48 @@
+async function LUNAR_LANDER() {
+    await MORE("LUNAR LANDER SIMULATION");
+
+    let H = 100;
+    let V = 30;
+    let F = 200;
+
+    while (H > 0) {
+        await MORE("HEIGHT=" + H);
+        await MORE("VELOCITY=" + V);
+        await MORE("FUEL=" + F);
+
+        let B = parseFloat(await INPUT("FUEL BURN (0-20)"));
+        if (isNaN(B)) B = 0;
+        if (B > F) B = F;
+        if (B < 0) B = 0;
+        if (B > 20) B = 20;
+
+        F = F - B;
+        V = V + 5 - (B * 0.5);
+        H = H - V;
+
+        if (F <= 0 && H > 0) {
+            await MORE("OUT OF FUEL!");
+        }
+    }
+
+    
+
+    if (V < 10) {
+        await MORE("SAFE LANDING");
+
+        await saveSCORE("Lunarlander", NICK, Math.round(V).toString(), PASSWORD);
+        await PRINT("Survivors, velocity at landing:");
+        await printreadSCOREs("Lunarlander", NICK, "ASC", PASSWORD);
+        await PRINT("****** PRESS ENTER ******");
+        await INPUT();
+
+    } else {
+        await MORE("CRASHED");
+        await printreadSCOREs("Lunarlander", NICK, "ASC", PASSWORD);
+        await PRINT("****** PRESS ENTER ******");
+        await INPUT();
+    }
+    await MORE("VELOCITY: " + V);
+}
+
+LUNAR_LANDER();

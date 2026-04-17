@@ -34,7 +34,7 @@
     }
     // Open DB
     //$db = new SQLite3("scores.db");
-        $GAMENAME = (string)($_POST['GAMENAME'] ?? '');
+    $GAMENAME = (string)($_POST['GAMENAME'] ?? '');
     if($GAMENAME=="Memorize") {
         $db = new SQLite3("Memorize_scores.db");
     } elseif($GAMENAME=="Guessmynumber") { 
@@ -43,6 +43,10 @@
             $db = new SQLite3("Americanfootball_scores.db");
     } elseif($GAMENAME=="Oregontrail") { 
             $db = new SQLite3("Oregontrail_scores.db");
+    } elseif($GAMENAME=="Lunarlander") {
+            $db = new SQLite3("Lunarlander_scores.db");
+    } elseif($GAMENAME=="Minesweeper") { 
+            $db = new SQLite3("Minesweeper_scores.db");
     }
     $db->busyTimeout(5000);
     // Order (default DESC)

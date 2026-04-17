@@ -36,8 +36,12 @@
             $db = new SQLite3("Guessmynumber_scores.db");
     } elseif($GAMENAME=="Americanfootball") { 
             $db = new SQLite3("Americanfootball_scores.db");
-    } elseif($GAMENAME=="Oregontrain") { 
-            $db = new SQLite3("Oregontrain_scores.db");
+    } elseif($GAMENAME=="Oregontrail") { 
+            $db = new SQLite3("Oregontrail_scores.db");
+    } elseif($GAMENAME=="Lunarlander") {
+            $db = new SQLite3("Lunarlander_scores.db");
+    } elseif($GAMENAME=="Minesweeper") { 
+            $db = new SQLite3("Minesweeper_scores.db");
     }
     // Create table
     $db->exec("
@@ -58,7 +62,7 @@
     }
 
     // Insert
-    $stmt = $db->prepare("INSERT INTO scores (NICK, SCORE) VALUES (:NICK, :SCORE)");
+    $stmt = $db->prepare("INSERT INTO scores (NICK, SCORE) VALUES (:NICK, :SCORE);");
     //force write so it does not lock the DB
     $db->busyTimeout(5000);
     $db->exec("PRAGMA journal_mode=WAL;");
