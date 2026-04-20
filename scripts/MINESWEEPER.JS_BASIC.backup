@@ -14,7 +14,7 @@ async function saveSCORE(GAMENAME, NICK, SCORE, PASSWORD) {
             body: params.toString()
         });
 
-        const rawText = await response.text(); 
+        const rawText = await response.text(); // Get raw text to see errors
         console.log("SERVER RESPONSE RAW >>>", rawText);
 
         const data = JSON.parse(rawText); 
@@ -23,8 +23,7 @@ async function saveSCORE(GAMENAME, NICK, SCORE, PASSWORD) {
         console.error("Wiring Debug Error:", err);
     }
 }
-
-async function printreadSCOREs(GAMENAME, NICK, order = "desc", PASSWORD) {
+async function printreadSCOREs(GAMENAME,NICK,order = "desc", PASSWORD) {
     await fetch("./server_side/read_scores.php", {
         method: "POST",
         headers: {
@@ -39,47 +38,68 @@ async function printreadSCOREs(GAMENAME, NICK, order = "desc", PASSWORD) {
     .then(res => res.text())
     .then(async text => {
         console.log("READ RAW >>>", JSON.stringify(text));
+        //return JSON.parse(text);
         const originalString = JSON.stringify(text)
+        // Removes all double quotes
         const noDoubleQuotes = originalString.replaceAll('"', '');
+        // Removes all single quotes
         const noSingleQuotes = noDoubleQuotes.replaceAll("'", "");
+
         await MORE(noSingleQuotes);
         return;
+    })
+    //.then(res => res.json())
+    .then(data => {
+        console.log("DATA >>>", data);   // 👈 ADD THIS LINE
+        if (data.status !== "ok") {
+            console.error("Error:", data.message);
+            return;
+        }
+        
+        let output = "";
+
+        data.data.forEach(entry => {
+            output += entry.NICK + " : " + entry.SCORE + "\n";
+        });
+
+        console.log(output);
+        return output;
+        // optional UI output
+        // document.getElementById("SCOREs").textContent = output;
     })
     .catch(err => console.error("Error:", err));
 }
 
-async function MINESWEEPER() {
-    await PRINT("MINESWEEPER (10X10)");
 
-    let N = 10;
-    let M_count = 10; 
+async function MINESWEEPER() {
+    await PRINT("MINESWEEPER (5X5)");
+
+    let N = 5;
+    let M_count = 3;
     let E = 0;
     let startTime = Date.now();
 
-    // 0-indexed arrays
-    let M = Array.from({ length: N }, () => Array(N).fill(0));
-    let B = Array.from({ length: N }, () => Array(N).fill(0));
+    let M = Array.from({ length: N + 1 }, () => Array(N + 1).fill(0));
+    let B = Array.from({ length: N + 1 }, () => Array(N + 1).fill(0));
 
     let placed = 0;
     while (placed < M_count) {
-        let R = Math.floor(Math.random() * N);
-        let C = Math.floor(Math.random() * N);
+        let R = Math.floor(Math.random() * N) + 1;
+        let C = Math.floor(Math.random() * N) + 1;
         if (M[R][C] !== 9) {
             M[R][C] = 9;
             placed++;
         }
     }
 
-    for (let R = 0; R < N; R++) {
-        for (let C = 0; C < N; C++) {
+    for (let R = 1; R <= N; R++) {
+        for (let C = 1; C <= N; C++) {
             if (M[R][C] === 9) continue;
             let count = 0;
             for (let I = -1; I <= 1; I++) {
                 for (let J = -1; J <= 1; J++) {
-                    let nr = R + I;
-                    let nc = C + J;
-                    if (nr >= 0 && nr < N && nc >= 0 && nc < N) {
-                        if (M[nr][nc] === 9) count++;
+                    if (R + I >= 1 && R + I <= N && C + J >= 1 && C + J <= N) {
+                        if (M[R + I][C + J] === 9) count++;
                     }
                 }
             }
@@ -89,11 +109,11 @@ async function MINESWEEPER() {
 
     while (true) {
         await PRINT("");
-        await PRINT("   0 1 2 3 4 5 6 7 8 9");
-        await PRINT("   -------------------");
-        for (let R = 0; R < N; R++) {
+        await PRINT("   1 2 3 4 5");
+        await PRINT("   ---------");
+        for (let R = 1; R <= N; R++) {
             let line = R + "| ";
-            for (let C = 0; C < N; C++) {
+            for (let C = 1; C <= N; C++) {
                 if (B[R][C] === 0) {
                     line += "? ";
                 } else if (M[R][C] === 9) {
@@ -107,31 +127,27 @@ async function MINESWEEPER() {
             await PRINT(line);
         }
 
-        if (E === 1) {
-            await endgame();
-            break;
-        }
+        if (E === 1) await endgame();
 
-        let input = await INPUT(translate["ROW,COL (99,99 TO QUIT)"]);
+        let input = await INPUT("ROW,COL (0,0 TO QUIT)");
         let coords = input.split(",");
         let R = parseInt(coords[0]);
         let C = parseInt(coords[1]);
 
-        // New Quit Condition
-        if (R === 99 && C === 99) {
+        if (R === 0) {
             await endgame();
             break;
         }
 
-        if (isNaN(R) || R < 0 || R >= N || isNaN(C) || C < 0 || C >= N) {
-            await PRINT("ERR: USE 0-9");
+        if (isNaN(R) || R < 1 || R > N || isNaN(C) || C < 1 || C > N) {
+            await PRINT("ERR");
             continue;
         }
 
         if (M[R][C] === 9) {
             await PRINT("BOOM! GAME OVER");
-            for (let I = 0; I < N; I++) {
-                for (let J = 0; J < N; J++) B[I][J] = 1;
+            for (let I = 1; I <= N; I++) {
+                for (let J = 1; J <= N; J++) B[I][J] = 1;
             }
             E = 1;
             continue;
@@ -142,13 +158,13 @@ async function MINESWEEPER() {
         let F;
         do {
             F = 0;
-            for (let r = 0; r < N; r++) {
-                for (let c = 0; c < N; c++) {
+            for (let r = 1; r <= N; r++) {
+                for (let c = 1; c <= N; c++) {
                     if (B[r][c] === 1 && M[r][c] === 0) {
                         for (let i = -1; i <= 1; i++) {
                             for (let j = -1; j <= 1; j++) {
                                 let nr = r + i, nc = c + j;
-                                if (nr >= 0 && nr < N && nc >= 0 && nc < N) {
+                                if (nr >= 1 && nr <= N && nc >= 1 && nc <= N) {
                                     if (B[nr][nc] === 0) {
                                         B[nr][nc] = 1;
                                         F = 1;
@@ -162,8 +178,8 @@ async function MINESWEEPER() {
         } while (F === 1);
 
         let W = 0;
-        for (let I = 0; I < N; I++) {
-            for (let J = 0; J < N; J++) {
+        for (let I = 1; I <= N; I++) {
+            for (let J = 1; J <= N; J++) {
                 if (B[I][J] === 0) W++;
             }
         }
@@ -179,7 +195,7 @@ async function MINESWEEPER() {
 }
 
 async function endgame() {
-    await PRINT(translate["Survivors, time to clear seconds:"]);
+    await PRINT("Survivors, time to clear seconds:");
     await printreadSCOREs("Minesweeper", NICK, "ASC", PASSWORD);
     await PRINT("****** PRESS ENTER ******");
     await INPUT();
@@ -188,5 +204,4 @@ async function endgame() {
     main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
     await LOAD(main_menu);
 }
-
 MINESWEEPER();

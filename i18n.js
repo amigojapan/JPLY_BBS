@@ -244,7 +244,10 @@ i18n["English"] = {
   "MEMORIZATION GAME":"MEMORIZATION GAME BY AMIGOJAPAN\nFOR SHARP PC-G801\nPORTED TO JPLY BBS\n",
   "MEMORIZE THIS: ":"MEMORIZE THIS: ",
   "ENTER YOUR GUESS":"ENTER YOUR GUESS:",
-  "FAIL":"FAIL\nGAME OVER\nYOUR SCORE: "
+  "FAIL":"FAIL\nGAME OVER\nYOUR SCORE: ",
+  //Minesweeper
+  "ROW,COL (99,99 TO QUIT)":"ROW,COL (99,99 TO QUIT):",
+  "Survivors, time to clear seconds:":"Survivors, time to clear seconds:"
 };
 i18n["Japanese"] = {
 	"enter nick or reg.":"\nハンドル名もしくは「ユーザー登録」を入力:\n",
@@ -495,7 +498,10 @@ i18n["Japanese"] = {
   "MEMORIZATION GAME":"記憶ゲーム BY AMIGOJAPAN\nSHARP PC-G801\nJPLY BBSポート版\n",
   "MEMORIZE THIS: ":"これを記憶して: ",
   "ENTER YOUR GUESS":"その数字はなんだっけ？",
-  "FAIL":"失敗\nゲームオーバー\nスコア: "
+  "FAIL":"失敗\nゲームオーバー\nスコア: ",
+    //Minesweeper
+  "ROW,COL (99,99 TO QUIT)":"行,列 (99,99は終了)半額英数字：",
+  "Survivors, time to clear seconds:":"生存者, プレー時間:"
 };
 i18n["Spanish"] = {
 	"enter nick or reg.":'\nUSUARIO O "REGISTRAR":\n',
@@ -738,7 +744,10 @@ i18n["Spanish"] = {
   "MEMORIZATION GAME":"JUEGO DE MEMORIZAR HECHO POR AMIGOJAPAN\nPARA SHARP PC-G801\nPORTEADO A JPLY BBS\n",
   "MEMORIZE THIS: ":"MEMORIZA ESTO: ",
   "ENTER YOUR GUESS":"TECLEE ESE número :",
-  "FAIL":"FALLASTE\nFIN DEL JUEGO\nTU PUNTUAJE: " 
+  "FAIL":"FALLASTE\nFIN DEL JUEGO\nTU PUNTUAJE: ",
+  //Minesweeper
+  "ROW,COL (99,99 TO QUIT)":"FILA,COLUMNA (99,99 PARA SALIR):",
+  "Survivors, time to clear seconds:":"Sobrevividores, duracion de partida:"
 };
 
 let currentLanguage = null;
