@@ -1,2 +1,2 @@
 # JPLY_BBS
- Recreation in modetn tools of Night NAK BBS
+ Recreation in modern tools of Night NAK BBS
