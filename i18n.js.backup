@@ -206,12 +206,12 @@ i18n["English"] = {
 	"Amazing! You have reached Oregon!":"Amazing! You have reached Oregon!",
 	"Days passed: ":"Days passed: ",
 	"Distance: ":"Distance: ",
-	"Choose (Move,Rest,Hunt,Status,Help):":"Choose (Move,Rest,Hunt,Status,Help):",
+	"Choose (Move,Rest,Hunt,Status,Help):":"Choose (Move,Rest,Hunt,Status,Help,quit):",
 //american football english	  
   "1)LONG PASS 2)SHORT PASS\n":"1)LONG PASS 2)SHORT PASS\n",
   "1stDn,Turn of 120:\n":"1stDn,Turn of 120:\n",
   "3)RUN       4)PUNT\n":"3)RUN       4)PUNT\n",
-  "5)FIELD GOAL6)INFO\n":"5)FIELD GOAL6)INFO\n",
+  "5)FIELD GOAL6)INFO\n":"5)FIELD GOAL6)QUIT\n",
   "COMPUTER MOVE\n":"COMPUTER MOVE\n",
   "COMPUTER WINS\n":"COMPUTER WINS\n",
   "Down,Yard:\n":"Down,Yard:\n",
@@ -244,7 +244,10 @@ i18n["English"] = {
   "MEMORIZATION GAME":"MEMORIZATION GAME BY AMIGOJAPAN\nFOR SHARP PC-G801\nPORTED TO JPLY BBS\n",
   "MEMORIZE THIS: ":"MEMORIZE THIS: ",
   "ENTER YOUR GUESS":"ENTER YOUR GUESS:",
-  "FAIL":"FAIL\nGAME OVER\nYOUR SCORE: "
+  "FAIL":"FAIL\nGAME OVER\nYOUR SCORE: ",
+  //Minesweeper
+  "ROW,COL (99,99 TO QUIT)":"ROW,COL (99,99 TO QUIT):",
+  "Survivors, time to clear seconds:":"Survivors, time to clear seconds:"
 };
 i18n["Japanese"] = {
 	"enter nick or reg.":"\nハンドル名もしくは「ユーザー登録」を入力:\n",
@@ -457,12 +460,12 @@ i18n["Japanese"] = {
 	"Amazing! You have reached Oregon!":"素晴らしい！あなたはオレゴンに到着しました！",
 	"Days passed: ":"経過日数: ",
 	"Distance: ":"距離: ",
-	"Choose (Move,Rest,Hunt,Status,Help):":"選択(移動,休憩,狩り,状況,ヘルプ):",
+	"Choose (Move,Rest,Hunt,Status,Help):":"選択(移動,休憩,狩り,状況,ヘルプ,quit):",
 //american football japanese
   "1)LONG PASS 2)SHORT PASS\n":"1)ロングパス 2)ショートパス\n",
   "1stDn,Turn of 120:\n":"1ダウン目、残り120:\n",
   "3)RUN       4)PUNT\n":"3)ラン       4)パント\n",
-  "5)FIELD GOAL6)INFO\n":"5)フィールドゴール 6)情報\n",
+  "5)FIELD GOAL6)INFO\n":"5)フィールドゴール 6)ゲーム終了\n",
   "COMPUTER MOVE\n":"コンピュータの攻撃\n",
   "COMPUTER WINS\n":"コンピュータの勝ち\n",
   "Down,Yard:\n":"ダウン、ヤード:\n",
@@ -495,10 +498,13 @@ i18n["Japanese"] = {
   "MEMORIZATION GAME":"記憶ゲーム BY AMIGOJAPAN\nSHARP PC-G801\nJPLY BBSポート版\n",
   "MEMORIZE THIS: ":"これを記憶して: ",
   "ENTER YOUR GUESS":"その数字はなんだっけ？",
-  "FAIL":"失敗\nゲームオーバー\nスコア: "
+  "FAIL":"失敗\nゲームオーバー\nスコア: ",
+    //Minesweeper
+  "ROW,COL (99,99 TO QUIT)":"行,列 (99,99は終了)半額英数字：",
+  "Survivors, time to clear seconds:":"生存者, プレー時間:"
 };
 i18n["Spanish"] = {
-	"enter nick or reg.":'\nUSUARIO O "REGISTAR":\n',
+	"enter nick or reg.":'\nUSUARIO O "REGISTRAR":\n',
 	"pw prompt":"\nCONTRASEÑA:\n",
 	"welcome":"\nBIENVENID(O/A) ",
     "Hello World": "Hola Mundo",
@@ -700,12 +706,12 @@ i18n["Spanish"] = {
 	"Amazing! You have reached Oregon!":"¡Increíble! ¡Has llegado a Oregón!",
 	"Days passed: ":"Días transcurridos: ",
 	"Distance: ":"Distancia: ",
-	"Choose (Move,Rest,Hunt,Status,Help):":"Elige (Moverse,Descansar,Cazar,Estado,Ayuda):",
+	"Choose (Move,Rest,Hunt,Status,Help):":"Elige (Moverse,Descansar,Cazar,Estado,Ayuda,quit):",
 //american football spanish
   "1)LONG PASS 2)SHORT PASS\n":"1)PASE LARGO 2)PASE CORTO\n",
   "1stDn,Turn of 120:\n":"1er Down, Turno de 120:\n",
   "3)RUN       4)PUNT\n":"3)CARRERA   4)PATEAR\n",
-  "5)FIELD GOAL6)INFO\n":"5)GOL DE CAMPO 6)INFO\n",
+  "5)FIELD GOAL6)INFO\n":"5)GOL DE CAMPO 6)SALIR\n",
   "COMPUTER MOVE\n":"JUGADA DE LA COMPUTADORA\n",
   "COMPUTER WINS\n":"LA COMPUTADORA GANA\n",
   "Down,Yard:\n":"Down,Yardas:\n",
@@ -738,7 +744,10 @@ i18n["Spanish"] = {
   "MEMORIZATION GAME":"JUEGO DE MEMORIZAR HECHO POR AMIGOJAPAN\nPARA SHARP PC-G801\nPORTEADO A JPLY BBS\n",
   "MEMORIZE THIS: ":"MEMORIZA ESTO: ",
   "ENTER YOUR GUESS":"TECLEE ESE número :",
-  "FAIL":"FALLASTE\nFIN DEL JUEGO\nTU PUNTUAJE: " 
+  "FAIL":"FALLASTE\nFIN DEL JUEGO\nTU PUNTUAJE: ",
+  //Minesweeper
+  "ROW,COL (99,99 TO QUIT)":"FILA,COLUMNA (99,99 PARA SALIR):",
+  "Survivors, time to clear seconds:":"Sobrevividores, duracion de partida:"
 };
 
 let currentLanguage = null;

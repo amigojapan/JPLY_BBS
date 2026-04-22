@@ -1,16 +1,96 @@
+async function saveSCORE(GAMENAME,NICK, SCORE, PASSWORD) {
+    fetch("./server_side/post_score.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body:
+            "GAMENAME=" + encodeURIComponent(GAMENAME) +
+            "&NICK=" + encodeURIComponent(NICK) +
+            "&SCORE=" + encodeURIComponent(SCORE) +
+            "&PASSWORD=" + encodeURIComponent(PASSWORD)
+    })
+    //.then(res => res.text())
+    //.then(text => {
+    //    console.log("RAW >>>", JSON.stringify(text));
+    //})
+    .then(res => res.json())
+    .then(data => {
+        console.log("Save response:", data);
+    })
+    .catch(err => {
+        console.error("FULL ERROR:", err);
+    });
+    //.catch(err => console.error("Error:", err));
+}
+async function printreadSCOREs(GAMENAME,NICK,order = "desc", PASSWORD) {
+    await fetch("./server_side/read_scores.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body:
+            "GAMENAME=" + encodeURIComponent(GAMENAME) +
+            "&NICK=" + encodeURIComponent(NICK) +
+            "&order=" + encodeURIComponent(order) +
+            "&PASSWORD=" + encodeURIComponent(PASSWORD)
+    })
+    .then(res => res.text())
+    .then(async text => {
+        console.log("READ RAW >>>", JSON.stringify(text));
+        //return JSON.parse(text);
+        const originalString = JSON.stringify(text)
+        // Removes all double quotes
+        const noDoubleQuotes = originalString.replaceAll('"', '');
+        // Removes all single quotes
+        const noSingleQuotes = noDoubleQuotes.replaceAll("'", "");
+
+        await MORE(noSingleQuotes);
+        return;
+    })
+    //.then(res => res.json())
+    .then(data => {
+        console.log("DATA >>>", data);   // 👈 ADD THIS LINE
+        if (data.status !== "ok") {
+            console.error("Error:", data.message);
+            return;
+        }
+        
+        let output = "";
+
+        data.data.forEach(entry => {
+            output += entry.NICK + " : " + entry.SCORE + "\n";
+        });
+
+        console.log(output);
+        return output;
+        // optional UI output
+        // document.getElementById("SCOREs").textContent = output;
+    })
+    .catch(err => console.error("Error:", err));
+}
+
 async function LUNAR_LANDER() {
     await MORE("LUNAR LANDER SIMULATION");
 
     let H = 100;
     let V = 30;
     let F = 200;
+    let Q = 0;
 
     while (H > 0) {
         await MORE("HEIGHT=" + H);
         await MORE("VELOCITY=" + V);
         await MORE("FUEL=" + F);
 
-        let B = parseFloat(await INPUT("FUEL BURN (0-20)"));
+        let B = parseFloat(await INPUT("FUEL BURN (0-20, 21 TO QUIT)"));
+        
+        if (B === 21) {
+            Q = 1;
+            await endgame();
+            break;
+        }
+
         if (isNaN(B)) B = 0;
         if (B > F) B = F;
         if (B < 0) B = 0;
@@ -25,24 +105,32 @@ async function LUNAR_LANDER() {
         }
     }
 
-    
-
-    if (V < 10) {
-        await MORE("SAFE LANDING");
-
-        await saveSCORE("Lunarlander", NICK, Math.round(V).toString(), PASSWORD);
-        await PRINT("Survivors, velocity at landing:");
-        await printreadSCOREs("Lunarlander", NICK, "ASC", PASSWORD);
-        await PRINT("****** PRESS ENTER ******");
-        await INPUT();
-
+    if (Q === 1) {
+        await PRINT("GAME ABORTED.");
+        await endgame();
     } else {
-        await MORE("CRASHED");
-        await printreadSCOREs("Lunarlander", NICK, "ASC", PASSWORD);
-        await PRINT("****** PRESS ENTER ******");
-        await INPUT();
+        await MORE("LANDED. VELOCITY: " + V);
+        if (V < 10) {
+            await MORE("SAFE LANDING");
+            await saveSCORE("Lunarlander", NICK, Math.round(V).toString(), PASSWORD);
+            await endgame();
+        } else {
+            await MORE("CRASHED");
+            await endgame();
+        }
     }
-    await MORE("VELOCITY: " + V);
+
 }
 
+async function endgame() {
+    await PRINT("Survivors, velocity at landing:");
+    await printreadSCOREs("Lunarlander", NICK, "ASC", PASSWORD);
+    await PRINT("****** PRESS ENTER ******");
+    await INPUT();
+    // IMPORTANT: stop THIS loop before loading main menu
+    quit = true;
+    main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
+    await LOAD(main_menu);
+}
 LUNAR_LANDER();
+

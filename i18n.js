@@ -247,7 +247,19 @@ i18n["English"] = {
   "FAIL":"FAIL\nGAME OVER\nYOUR SCORE: ",
   //Minesweeper
   "ROW,COL (99,99 TO QUIT)":"ROW,COL (99,99 TO QUIT):",
-  "Survivors, time to clear seconds:":"Survivors, time to clear seconds:"
+  "Survivors, time to clear seconds:":"Survivors, time to clear seconds:",
+  //Lunar Lander
+	"LUNAR LANDER SIMULATION":"LUNAR LANDER SIMULATION",
+	"HEIGHT=":"HEIGHT=",
+	"VELOCITY=":"VELOCITY=",
+	"FUEL=":"FUEL=",
+	"OUT OF FUEL!":"OUT OF FUEL!",
+	"GAME ABORTED.":"GAME ABORTED.",
+	"FINAL VELOCITY:":"FINAL VELOCITY:",
+	"SAFE LANDING":"SAFE LANDING",
+	"CRASHED":"CRASHED",
+	"FUEL BURN (0-20, 21 TO QUIT)":"FUEL BURN (0-20, 21 TO QUIT)",
+	"Survivors, velocity at landing:":"Survivors, velocity at landing:"
 };
 i18n["Japanese"] = {
 	"enter nick or reg.":"\nハンドル名もしくは「ユーザー登録」を入力:\n",
@@ -499,9 +511,21 @@ i18n["Japanese"] = {
   "MEMORIZE THIS: ":"これを記憶して: ",
   "ENTER YOUR GUESS":"その数字はなんだっけ？",
   "FAIL":"失敗\nゲームオーバー\nスコア: ",
-    //Minesweeper
-  "ROW,COL (99,99 TO QUIT)":"行,列 (99,99は終了)半額英数字：",
-  "Survivors, time to clear seconds:":"生存者, プレー時間:"
+	//Minesweeper
+	"ROW,COL (99,99 TO QUIT)":"行,列 (99,99は終了)半額英数字：",
+	"Survivors, time to clear seconds:":"生存者, プレー時間:",
+	 //Lunar Lander
+	"LUNAR LANDER SIMULATION":"月面着陸シミュレーター",
+	"HEIGHT=":"高度=",
+	"VELOCITY=":"速度=",
+	"FUEL=":"燃料=",
+	"OUT OF FUEL!":"燃料切れ!",
+	"GAME ABORTED.":"ゲーム終了。",
+	"FINAL VELOCITY:":"最終的な速度:",
+	"SAFE LANDING":"月面着陸安全完了",
+	"CRASHED":"月に衝突",
+	"FUEL BURN (0-20, 21 TO QUIT)":"燃料消費量(0-20,21終了)半額文字：",
+	"Survivors, velocity at landing:":"生存者、最終的な速度："
 };
 i18n["Spanish"] = {
 	"enter nick or reg.":'\nUSUARIO O "REGISTRAR":\n',
@@ -747,7 +771,21 @@ i18n["Spanish"] = {
   "FAIL":"FALLASTE\nFIN DEL JUEGO\nTU PUNTUAJE: ",
   //Minesweeper
   "ROW,COL (99,99 TO QUIT)":"FILA,COLUMNA (99,99 PARA SALIR):",
-  "Survivors, time to clear seconds:":"Sobrevividores, duracion de partida:"
+  "Survivors, time to clear seconds:":"Sobrevividores, duracion de partida:",
+
+	//Lunar Lander
+	"LUNAR LANDER SIMULATION":"SIMULADOR DE ATERRIZAJE LUNAR",
+	"HEIGHT=":"ALTURA=",
+	"VELOCITY=":"VELOCIDAD=",
+	"FUEL=":"COMBUSTIBLE=",
+	"OUT OF FUEL!":"COMBUSTIBLE TERMINADO!",
+	"GAME ABORTED.":"JUEGO ABORTADO.",
+	"FINAL VELOCITY:":"VELOCIDAD FINAL:",
+	"SAFE LANDING":"ATTERIZAJE LUNAR SEGURO",
+	"CRASHED":"TE HAZ ESTRELLADO",
+	"FUEL BURN (0-20, 21 TO QUIT)":"CUANTO COMBUSTIBLE QUIERES USAR (0-20,    21 PARA SALIR)",
+	"Survivors, velocity at landing:":"Sobrevivientes, velocidad al atterizar en la luna:"
+
 };
 
 let currentLanguage = null;
@@ -777,3 +815,5 @@ window.i18n_getlang=i18n_getlang;
 //"We would like you to see the story at least once."
 //"一回はストリーを見て欲しいです。"
 //"Nos gustaria que lean la historia por lo menos una vez."
+
+

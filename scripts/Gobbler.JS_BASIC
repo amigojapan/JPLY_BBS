@@ -1,0 +1,277 @@
+async function forceInputAlphaNumeric(promptMessage) {
+  while (true) {
+    let input = await INPUT(promptMessage);
+    if (input && input.trim().length > 0) {
+      return input.trim(); 
+    }
+    PRINT(translate["Input cannot be empty. Please try again."],2);
+  }
+}
+async function forceInputNumeric(message) {
+    let userInput;
+    let number;
+
+    while (true) {
+        userInput = await INPUT(message); 
+        number = Number(userInput);
+        if (userInput !== null && userInput.trim() !== translate[""] && !isNaN(number)) {
+            return number;
+        }
+        PRINT(translate["Invalid input. Please enter a valid number."],2);
+    }
+}
+
+let board = Array.from({ length: 3 }, () => 
+    Array.from({ length: 3 }, () => Array(3).fill(-1))
+);
+let height = Array.from({ length: 3 }, () => Array(3).fill(0));
+let inven = [[2, 2, 2], [2, 2, 2]]; 
+let pl = 0; 
+
+function init() {
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+            height[r][c] = 0;
+            for (let i = 0; i < 3; i++) board[r][c][i] = -1;
+        }
+    }
+    inven = [[2, 2, 2], [2, 2, 2]];
+    pl = 0;
+}
+
+function show() {
+    PRINT("    0    1    2\n");
+    for (let r = 0; r < 3; r++) {
+        let line = r + " ";
+        for (let c = 0; c < 3; c++) {
+            let h = height[r][c];
+            if (h === 0) {
+                line += "[ . ]";
+            } else {
+                let p = board[r][c][h - 1];
+                if (p < 3) {
+                    line += `[ ${String.fromCharCode(65 + p)} ]`; 
+                } else {
+                    line += `[ ${String.fromCharCode(48 + (p - 3))} ]`; 
+                }
+            }
+        }
+        PRINT(line + "\n");
+    }
+
+    let userInv = "YOU ";
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < inven[0][r]; c++) userInv += String.fromCharCode(65 + r);
+    }
+    PRINT(userInv + "\n");
+
+    let cpuInv = "CPU ";
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < inven[1][r]; c++) cpuInv += String.fromCharCode(48 + r);
+    }
+    PRINT(cpuInv + "\n");
+}
+
+function check_win() {
+    let top = Array.from({ length: 3 }, () => Array(3).fill(-1));
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+            if (height[r][c] === 0) top[r][c] = -1;
+            else top[r][c] = Math.floor(board[r][c][height[r][c] - 1] / 3);
+        }
+    }
+
+    for (let i = 0; i < 3; i++) {
+        if (top[i][0] !== -1 && top[i][0] === top[i][1] && top[i][1] === top[i][2]) return top[i][0];
+        if (top[0][i] !== -1 && top[0][i] === top[1][i] && top[1][i] === top[2][i]) return top[0][i];
+    }
+    if (top[0][0] !== -1 && top[0][0] === top[1][1] && top[1][1] === top[2][2]) return top[0][0];
+    if (top[0][2] !== -1 && top[0][2] === top[1][1] && top[1][1] === top[2][0]) return top[0][2];
+
+    return -1;
+}
+
+function piece_new(p, sz, r, c) {
+    if (sz < 0 || sz > 2 || r < 0 || r > 2 || c < 0 || c > 2) return false;
+    if (inven[p][sz] <= 0) return false;
+    if (height[r][c] > 0 && (board[r][c][height[r][c] - 1] % 3) >= sz) return false;
+
+    board[r][c][height[r][c]++] = (p * 3) + sz;
+    inven[p][sz]--;
+    return true;
+}
+
+function piece_move(p, r1, c1, r2, c2) {
+    if (r1 < 0 || r1 > 2 || c1 < 0 || c1 > 2 || r2 < 0 || r2 > 2 || c2 < 0 || c2 > 2) return false;
+    if (height[r1][c1] === 0) return false;
+
+    let p_val = board[r1][c1][height[r1][c1] - 1];
+    if (Math.floor(p_val / 3) !== p) return false;
+
+    if (height[r2][c2] > 0) {
+        let target_sz = board[r2][c2][height[r2][c2] - 1] % 3;
+        if ((p_val % 3) <= target_sz) return false;
+    }
+
+    board[r2][c2][height[r2][c2]++] = p_val;
+    board[r1][c1][--height[r1][c1]] = -1;
+    return true;
+}
+
+function evaluate() {
+    let score = 0;
+    let win = check_win();
+    if (win === 1) return 1000;
+    if (win === 0) return -1000;
+
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+            if (height[r][c] > 0) {
+                if (Math.floor(board[r][c][height[r][c] - 1] / 3) === 1) score += 5;
+                else score -= 5;
+            }
+        }
+    }
+    return score;
+}
+
+function minimax(depth, alpha, beta, is_max) {
+    let score = evaluate();
+    if (depth === 0 || Math.abs(score) > 500) return score;
+
+    if (is_max) {
+        let best = -2000;
+        for (let sz = 2; sz >= 0; sz--) {
+            if (inven[1][sz] <= 0) continue;
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                    if (piece_new(1, sz, r, c)) {
+                        let v = minimax(depth - 1, alpha, beta, false);
+                        inven[1][sz]++; board[r][c][--height[r][c]] = -1;
+                        best = Math.max(best, v);
+                        alpha = Math.max(alpha, best);
+                        if (beta <= alpha) return best;
+                    }
+                }
+            }
+        }
+        for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+                if (height[r][c] > 0 && Math.floor(board[r][c][height[r][c] - 1] / 3) === 1) {
+                    for (let r2 = 0; r2 < 3; r2++) {
+                        for (let c2 = 0; c2 < 3; c2++) {
+                            if (r === r2 && c === c2) continue;
+                            if (piece_move(1, r, c, r2, c2)) {
+                                let v = minimax(depth - 1, alpha, beta, false);
+                                let pv = board[r2][c2][--height[r2][c2]];
+                                board[r2][c2][height[r2][c2]] = -1;
+                                board[r][c][height[r][c]++] = pv;
+                                best = Math.max(best, v);
+                                alpha = Math.max(alpha, best);
+                                if (beta <= alpha) return best;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return best;
+    } else {
+        let best = 2000;
+        for (let sz = 2; sz >= 0; sz--) {
+            if (inven[0][sz] <= 0) continue;
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                    if (piece_new(0, sz, r, c)) {
+                        let v = minimax(depth - 1, alpha, beta, true);
+                        inven[0][sz]++; board[r][c][--height[r][c]] = -1;
+                        best = Math.min(best, v);
+                        beta = Math.min(beta, best);
+                        if (beta <= alpha) return best;
+                    }
+                }
+            }
+        }
+        return best;
+    }
+}
+
+function cpu_play() {
+    let b_v = -2000, m_t = -1;
+    let b_sz, b_r, b_c, b_r2, b_c2;
+    PRINT("CPU THINKING...\n");
+
+    for (let sz = 2; sz >= 0; sz--) {
+        if (inven[1][sz] <= 0) continue;
+        for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+                if (piece_new(1, sz, r, c)) {
+                    let v = minimax(3, -2000, 2000, false);
+                    inven[1][sz]++; board[r][c][--height[r][c]] = -1;
+                    if (v > b_v) { b_v = v; m_t = 0; b_sz = sz; b_r = r; b_c = c; }
+                }
+            }
+        }
+    }
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+            if (height[r][c] > 0 && Math.floor(board[r][c][height[r][c] - 1] / 3) === 1) {
+                for (let r2 = 0; r2 < 3; r2++) {
+                    for (let c2 = 0; c2 < 3; c2++) {
+                        if (r === r2 && c === c2) continue;
+                        if (piece_move(1, r, c, r2, c2)) {
+                            let v = minimax(3, -2000, 2000, false);
+                            let pv = board[r2][c2][--height[r2][c2]];
+                            board[r2][c2][height[r2][c2]] = -1;
+                            board[r][c][height[r][c]++] = pv;
+                            if (v > b_v) {
+                                b_v = v; m_t = 1; b_r = r; b_c = c; b_r2 = r2; b_c2 = c2;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (m_t === 0) piece_new(1, b_sz, b_r, b_c);
+    else if (m_t === 1) piece_move(1, b_r, b_c, b_r2, b_c2);
+    pl = 0;
+}
+
+async function gameLoop() {
+    init();
+    while (true) {
+        show();
+        let winner = check_win();
+        if (winner !== -1) {
+            PRINT(winner === 0 ? "YOU WIN!\n" : "CPU WINS!\n");
+            break;
+        }
+
+        if (pl === 0) {
+            let t = await forceInputNumeric("\nYOU (1:NEW 2:MOV 0:QUIT): ");
+            if (t === 0) {
+                quit = true;
+                main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
+                await LOAD(main_menu);
+            }else if (t === 1) {
+                let sz = await forceInputNumeric("SIZE(0-2): ");
+                let r = await forceInputNumeric("ROW: ");
+                let c = await forceInputNumeric("COL: ");
+                if (piece_new(0, sz, r, c)) pl = 1;
+            } else if (t === 2) {
+                await PRINT("FROM: ");
+                let r = await forceInputNumeric("ROW: ");
+                let c = await forceInputNumeric("COL: ");
+                await PRINT("TO: ");
+                let r2 = await forceInputNumeric("ROW: ");
+                let c2 = await forceInputNumeric("COL: ");
+                if (piece_move(0, r, c, r2, c2)) pl = 1;
+            }
+        } else {
+            cpu_play();
+        }
+    }
+}
+
+gameLoop();

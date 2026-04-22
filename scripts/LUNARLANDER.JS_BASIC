@@ -71,7 +71,7 @@ async function printreadSCOREs(GAMENAME,NICK,order = "desc", PASSWORD) {
 }
 
 async function LUNAR_LANDER() {
-    await MORE("LUNAR LANDER SIMULATION");
+    await MORE(translate["LUNAR LANDER SIMULATION"]);
 
     let H = 100;
     let V = 30;
@@ -79,11 +79,11 @@ async function LUNAR_LANDER() {
     let Q = 0;
 
     while (H > 0) {
-        await MORE("HEIGHT=" + H);
-        await MORE("VELOCITY=" + V);
-        await MORE("FUEL=" + F);
+        await MORE(translate["HEIGHT="] + H);
+        await MORE(translate["VELOCITY="] + V);
+        await MORE(translate["FUEL="] + F);
 
-        let B = parseFloat(await INPUT("FUEL BURN (0-20, 21 TO QUIT)"));
+        let B = parseFloat(await INPUT(translate["FUEL BURN (0-20, 21 TO QUIT)"]));
         
         if (B === 21) {
             Q = 1;
@@ -101,21 +101,21 @@ async function LUNAR_LANDER() {
         H = H - V;
 
         if (F <= 0 && H > 0) {
-            await MORE("OUT OF FUEL!");
+            await MORE(translate["OUT OF FUEL!"]);
         }
     }
 
     if (Q === 1) {
-        await PRINT("GAME ABORTED.");
+        await PRINT(translate["GAME ABORTED."]);
         await endgame();
     } else {
-        await MORE("LANDED. VELOCITY: " + V);
+        await MORE(translate["FINAL VELOCITY:"] + V);
         if (V < 10) {
-            await MORE("SAFE LANDING");
+            await MORE(translate["SAFE LANDING"]);
             await saveSCORE("Lunarlander", NICK, Math.round(V).toString(), PASSWORD);
             await endgame();
         } else {
-            await MORE("CRASHED");
+            await MORE(translate["CRASHED"]);
             await endgame();
         }
     }
@@ -123,7 +123,7 @@ async function LUNAR_LANDER() {
 }
 
 async function endgame() {
-    await PRINT("Survivors, velocity at landing:");
+    await PRINT(translate["Survivors, velocity at landing:"]);
     await printreadSCOREs("Lunarlander", NICK, "ASC", PASSWORD);
     await PRINT("****** PRESS ENTER ******");
     await INPUT();
