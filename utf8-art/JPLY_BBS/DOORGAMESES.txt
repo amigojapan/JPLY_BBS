@@ -14,6 +14,7 @@
 │  Mine [C5,0]S[C9,0])weeper     - Limpia Minas    │
 │  Gobbl[C5,0]E[C9,0])r          - Tragador        │
 │  [C5,0]R[C9,0])obozzle         - Robozzle        │
+│  [C5,0]P[C9,0])acman           -                 │
 │  [C5,0]B[C9,0])ack             - Rregrezar       │
 └──────────────────────────────────────┘
 ┌──────────────────────────────────────┐

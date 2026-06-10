@@ -1,0 +1,189 @@
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+function CLS() {
+    for (let i = 0; i < 25; i++) {
+        PRINT("\n");
+    }
+}
+
+let B = Array.from({ length: 19 }, () => new Array(14).fill(0));
+let GX = [0, 0, 0], GY = [0, 0, 0];
+let SC = 0, LI = 3, PM = 0, TE = 0;
+let P$ = "^";
+let PX = 0, PY = 0;
+let DX = 0, DY = 0;
+
+const DATA = [
+    "###################",
+    "#^oooooooooooooooX#",
+    "#o#######o#######o#",
+    "#ooooooooooooooooo#",
+    "#o#o#####o#####o#o#",
+    "#o#o##ooooooo##o#o#",
+    "#o#o##o#####o##o#o#",
+    "#o#o##o#####o##o#o#",
+    "#o#o##ooooooo##o#o#",
+    "#o#o###########o#o#",
+    "#Moooooooooooooooo#",
+    "#o###############o#",
+    "#WoooooooooooooooX#",
+    "###################"
+];
+
+function init() {
+    SC = 0; LI = 3; PM = 0; TE = 0; P$ = "^";
+    
+    for (let Y = 0; Y <= 13; Y++) {
+        let R$ = DATA[Y];
+        for (let X = 0; X <= 18; X++) {
+            let C$ = R$.charAt(X);
+            
+            if (C$ === "#") B[X][Y] = 1;
+            else if (C$ === "o") { B[X][Y] = 2; TE++; }
+            else if (C$ === "X") { B[X][Y] = 3; TE++; }
+            else if (C$ === " ") B[X][Y] = 0;
+            else if (C$ === "^") { PX = X; PY = Y; B[X][Y] = 0; }
+            else if (C$ === "M") { GX[1] = X; GY[1] = Y; B[X][Y] = 0; }
+            else if (C$ === "W") { GX[2] = X; GY[2] = Y; B[X][Y] = 0; }
+        }
+    }
+}
+
+function draw() {
+    CLS();
+    
+    for (let Y = 0; Y <= 13; Y++) {
+        let rowString = "";
+        for (let X = 0; X <= 18; X++) {
+            let C = B[X][Y];
+            let C$ = " ";
+            
+            if (C === 1) C$ = "█";
+            else if (C === 2) C$ = "o";
+            else if (C === 3) C$ = "X";
+            
+            if (X === PX && Y === PY) C$ = P$;
+            else if (X === GX[1] && Y === GY[1]) C$ = "M";
+            else if (X === GX[2] && Y === GY[2]) C$ = "W";
+            
+            rowString += C$;
+        }
+        PRINT(rowString + "\n");
+    }
+}
+
+function moveGhosts() {
+    for (let I = 1; I <= 2; I++) {
+        let BD = -1;
+        if (PM === 0 && I === 2) BD = 999;
+        
+        let BX = GX[I], BY = GY[I];
+        let V = 0, N = 0;
+        
+        for (let D = 1; D <= 4; D++) {
+            let CX = 0, CY = 0;
+            if (D === 1) CY = -1;
+            else if (D === 2) CY = 1;
+            else if (D === 3) CX = -1;
+            else if (D === 4) CX = 1;
+            
+            let TX = GX[I] + CX;
+            let TY = GY[I] + CY;
+            
+            if (TX < 0 || TX > 18 || TY < 0 || TY > 13) continue;
+            if (B[TX][TY] === 1) continue;
+            
+            V = 1;
+            let MD = Math.abs(TX - PX) + Math.abs(TY - PY);
+            
+            if (PM > 0 && MD > BD) { BD = MD; BX = TX; BY = TY; }
+            if (PM > 0) continue;
+            
+            if (I === 2 && MD < BD) { BD = MD; BX = TX; BY = TY; }
+            if (I === 1) {
+                N++;
+                if (Math.random() < (1 / N)) { BX = TX; BY = TY; }
+            }
+        }
+        
+        if (V === 1) { GX[I] = BX; GY[I] = BY; }
+    }
+}
+
+async function checkCol() {
+    for (let I = 1; I <= 2; I++) {
+        if (PX !== GX[I] || PY !== GY[I]) continue;
+        
+        if (PM > 0) {
+            SC += 200;
+            GX[I] = 1; GY[I] = 10;
+            continue;
+        }
+        
+        LI--;
+        PX = 1; PY = 1; P$ = "^";
+        
+        await sleep(1000);
+    }
+}
+
+async function mainmenu() {
+    let quit = true;
+    let main_menu = await CURL("https://amjp.psy-k.org/JPLY_BBS/utf8-art/JPLY_BBS/proxy.php?url=https://amjp.psy-k.org/JPLY_BBS/scripts/main_menu.JS_BASIC");
+    await LOAD(main_menu);
+}
+
+async function main() {
+    CLS();
+    init();
+    
+    while (true) {
+        draw();
+        
+        PRINT(`SCORE: ${SC}  LIVES: ${LI}  POWER: ${PM}   \n`);
+        PRINT(`A=LEFT D=RIGHT W=UP S=DOWN then [ENTER]  \n`);
+        
+        if (TE === 0) { 
+            PRINT("YOU WIN!\n"); 
+            await mainmenu(); 
+            return; 
+        }
+        if (LI === 0) { 
+            PRINT("GAME OVER!\n"); 
+            await mainmenu(); 
+            return; 
+        }        
+        
+        let A$;
+        do {
+            A$ = INPUT();
+            await sleep(50);
+        } while (!A$);
+        
+        DX = 0; DY = 0;
+        if (A$ === "W" || A$ === "w") { DY = -1; P$ = "^"; }
+        else if (A$ === "S" || A$ === "s") { DY = 1; P$ = "V"; }
+        else if (A$ === "A" || A$ === "a") { DX = -1; P$ = "<"; }
+        else if (A$ === "D" || A$ === "d") { DX = 1; P$ = ">"; }
+        
+        if (DX === 0 && DY === 0) continue;
+        
+        let NX = PX + DX;
+        let NY = PY + DY;
+        
+        if (B[NX][NY] === 1) continue;
+        
+        PX = NX; PY = NY;
+        
+        if (B[PX][PY] === 2) { SC += 10; B[PX][PY] = 0; TE--; }
+        if (B[PX][PY] === 3) { SC += 50; B[PX][PY] = 0; TE--; PM = 10; }
+        
+        await checkCol();
+        moveGhosts();
+        await checkCol();
+        
+        if (PM > 0) PM--;
+    }
+}
+
+main();
